@@ -32,7 +32,7 @@ export interface HackerApplicationData {
     agreedToHawkHacksCoC: boolean;
     agreedToWLUCoC: boolean;
     agreedToMLHCoC: boolean;
-    agreetToMLHToCAndPrivacyPolicy: boolean;
+    agreedToMLHToCAndPrivacyPolicy: boolean;
     agreedToReceiveEmailsFromMLH: boolean;
     applicationStatus?: "pending" | "rejected" | "accepted";
     accepted?: boolean;

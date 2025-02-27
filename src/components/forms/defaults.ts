@@ -27,7 +27,7 @@ export const defaultApplication: ApplicationData = {
     agreedToWLUCoC: false,
     agreedToHawkHacksCoC: false,
     agreedToReceiveEmailsFromMLH: false,
-    agreetToMLHToCAndPrivacyPolicy: false,
+    agreedToMLHToCAndPrivacyPolicy: false,
     referralSources: [],
     describeSalt: "",
     generalResumeRef: "",

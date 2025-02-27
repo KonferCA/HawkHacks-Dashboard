@@ -225,7 +225,7 @@ export const ApplicationPage = () => {
             // application.agreedToHawkHacksCoC &&
             application.agreedToWLUCoC &&
             application.agreedToMLHCoC &&
-            application.agreetToMLHToCAndPrivacyPolicy;
+            application.agreedToMLHToCAndPrivacyPolicy;
 
         if (!allRequiredChecked) {
             setErrors([
@@ -676,11 +676,11 @@ export const ApplicationPage = () => {
                                 <input
                                     type="checkbox"
                                     checked={
-                                        application.agreetToMLHToCAndPrivacyPolicy
+                                        application.agreedToMLHToCAndPrivacyPolicy
                                     }
                                     onChange={(e) =>
                                         handleChange(
-                                            "agreetToMLHToCAndPrivacyPolicy",
+                                            "agreedToMLHToCAndPrivacyPolicy",
                                             e.target.checked
                                         )
                                     }

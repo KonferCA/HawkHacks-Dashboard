@@ -1,5 +1,6 @@
 import { ages } from "@/data";
 import { z } from "zod";
+import type { ApplicationData } from "./types";
 
 export const profileFormValidation = z.object({
     firstName: z
@@ -30,11 +31,25 @@ export const profileFormValidation = z.object({
             1,
             "Please select a major. If your major is not in the options, please type the major in the input field."
         ),
-});
+}) satisfies z.ZodType<
+    Pick<
+        ApplicationData,
+        | "firstName"
+        | "lastName"
+        | "countryOfResidence"
+        | "city"
+        | "phone"
+        | "school"
+        | "levelOfStudy"
+        | "age"
+        | "discord"
+        | "major"
+    >
+>;
 
 export const hackerAppFormValidation = z.object({
     gender: z.string().transform((val) => val ?? "Prefer not to answer"),
-    pronouns: z.string().min(1, "Please select your pronouns."),
+    pronouns: z.string().array().min(1, "Please select your pronouns."),
     sexuality: z.string(),
     race: z.string(),
     diets: z.string().array(),
@@ -46,15 +61,34 @@ export const hackerAppFormValidation = z.object({
     hackathonExperience: z.string(),
     programmingLanguages: z.string().array(),
     participatingAs: z
-        .string()
-        .refine((val) => ["Hacker", "Mentor", "Volunteer"].includes(val)),
+        .enum(["Hacker", "Mentor", "Volunteer"]),
     applicantId: z.string(),
     agreedToHawkHacksCoC: z.boolean(),
     agreedToWLUCoC: z.boolean(),
     agreedToMLHCoC: z.boolean(),
-    agreetToMLHToCAndPrivacyPolicy: z.boolean(),
+    agreedToMLHToCAndPrivacyPolicy: z.boolean(),
     agreedToReceiveEmailsFromMLH: z.boolean(),
-});
+}) satisfies z.ZodType<
+    Pick<
+        ApplicationData,
+        | "gender"
+        | "pronouns"
+        | "sexuality"
+        | "race"
+        | "diets"
+        | "allergies"
+        | "interests"
+        | "hackathonExperience"
+        | "programmingLanguages"
+        | "participatingAs"
+        | "applicantId"
+        | "agreedToHawkHacksCoC"
+        | "agreedToWLUCoC"
+        | "agreedToMLHCoC"
+        | "agreedToMLHToCAndPrivacyPolicy"
+        | "agreedToReceiveEmailsFromMLH"
+    >
+>;
 
 export const finalChecksValidation = z.object({
     referralSources: z
@@ -67,7 +101,9 @@ export const finalChecksValidation = z.object({
     describeSalt: z
         .string()
         .min(1, "Please tell us how you would describe the taste of salt."),
-});
+}) satisfies z.ZodType<
+    Pick<ApplicationData, "referralSources" | "describeSalt">
+>;
 
 export const hackerSpecificValidation = z.object({
     // hacker only
@@ -77,7 +113,9 @@ export const hackerSpecificValidation = z.object({
     revolutionizingTechnology: z
         .string()
         .min(1, "Please tell us about a new tech you are most excited about."),
-});
+}) satisfies z.ZodType<
+    Pick<ApplicationData, "reasonToBeInHawkHacks" | "revolutionizingTechnology">
+>;
 
 export const mentorSpecificValidation = z.object({
     // mentor only
@@ -88,19 +126,12 @@ export const mentorSpecificValidation = z.object({
     reasonToBeMentor: z
         .string()
         .min(1, "Please tell us why you want to be a mentor at HawkHacks."),
-    // linkedinUrl: z
-    //     .string()
-    //     .url("Please input a valid url for your LinkedIn.")
-    //     .optional(),
-    // githubUrl: z
-    //     .string()
-    //     .url("Please input a valid url for your GitHub.")
-    //     .optional(),
-    // personalWebsiteUrl: z
-    //     .string()
-    //     .url("Please input a valid url for your personal website.")
-    //     .optional(),
-});
+}) satisfies z.ZodType<
+    Pick<
+        ApplicationData,
+        "mentorResumeRef" | "mentorExperience" | "reasonToBeMentor"
+    >
+>;
 
 export const volunteerSpecificValidation = z.object({
     // volunteer only
@@ -119,4 +150,9 @@ export const volunteerSpecificValidation = z.object({
     reasonToBeVolunteer: z
         .string()
         .min(1, "Please tell us why you want to be a volunteer at HawkHacks."),
-});
+}) satisfies z.ZodType<
+    Pick<
+        ApplicationData,
+        "volunteerExperience" | "excitedToVolunteerFor" | "reasonToBeVolunteer"
+    >
+>;
