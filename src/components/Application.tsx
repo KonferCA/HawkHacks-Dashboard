@@ -1,8 +1,8 @@
 import { FC } from "react";
 import { ApplicationData } from "./forms/types";
-import { Button } from "./Button/Button";
-import { getResume } from "@/services/utils";
-import { useNotification } from "@/providers/notification.provider";
+// import { Button } from "./Button/Button";
+// import { getResume } from "@/services/utils";
+// import { useNotification } from "@/providers/notification.provider";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 interface ApplicationProps {
@@ -38,7 +38,7 @@ const Field = ({
 };
 
 export const Application: FC<ApplicationProps> = ({ app }) => {
-    const { showNotification } = useNotification();
+    // const { showNotification } = useNotification();
     return (
         <div className="divide-y divide-gray-300 w-fit border-t border-gray-300 pb-8">
             <div className="py-2 space-y-2">
@@ -116,7 +116,7 @@ export const Application: FC<ApplicationProps> = ({ app }) => {
                     {app.mentorResumeRef && (
                         <div className="py-2">
                             <p className="font-medium">Mentor Resume:</p>
-                            <Button
+                            {/* <Button
                                 onClick={() => {
                                     getResume(app.mentorResumeRef).catch(() =>
                                         showNotification({
@@ -128,7 +128,7 @@ export const Application: FC<ApplicationProps> = ({ app }) => {
                                 }}
                             >
                                 Get Mentor Resume
-                            </Button>
+                            </Button> */}
                         </div>
                     )}
                 </div>
@@ -152,7 +152,7 @@ export const Application: FC<ApplicationProps> = ({ app }) => {
             {app.generalResumeRef && (
                 <div className="py-2">
                     <p className="font-medium">Resume:</p>
-                    <Button
+                    {/* <Button
                         onClick={() => {
                             getResume(app.generalResumeRef).catch(() =>
                                 showNotification({
@@ -163,7 +163,7 @@ export const Application: FC<ApplicationProps> = ({ app }) => {
                         }}
                     >
                         Get Resume
-                    </Button>
+                    </Button> */}
                 </div>
             )}
             <div className="py-2 space-y-2 max-w-lg">
