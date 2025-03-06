@@ -10,7 +10,7 @@ import {
     setDoc,
     orderBy,
 } from "firebase/firestore";
-import { firestore, functions, storage } from "@/services/firebase";
+import { firestore, functions, storage } from "@/services/firebase/firebase";
 import type {
     CloudFunctionResponse,
     UserTicketData,

@@ -13,7 +13,7 @@ import {
     GoogleAuthProvider,
     OAuthProvider,
 } from "firebase/auth";
-import { auth } from "@/services/firebase";
+import { auth } from "@/services/firebase/firebase";
 import { useNotification } from "@/providers/notification.provider";
 import { verifyGitHubEmail } from "@/services/utils";
 import { LoadingAnimation } from "@/components";

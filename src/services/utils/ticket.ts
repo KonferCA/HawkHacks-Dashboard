@@ -1,4 +1,4 @@
-import { functions } from "@/services/firebase";
+import { functions } from "@/services/firebase/firebase";
 import { httpsCallable } from "firebase/functions";
 import { CloudFunctionResponse, ExtendedTicketData, TicketData } from "./types";
 import { handleError } from ".";

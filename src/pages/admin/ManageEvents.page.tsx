@@ -6,7 +6,7 @@ import { format, isAfter, parseISO } from "date-fns";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { FormEventHandler, useEffect, useRef, useState } from "react";
 import { nanoid } from "nanoid";
-import { firestore } from "@/services/firebase";
+import { firestore } from "@/services/firebase/firebase";
 import { z } from "zod";
 import { useEventsStore } from "@/stores/events.store";
 import { useShallow } from "zustand/react/shallow";
