@@ -1,4 +1,4 @@
-import { functions } from "@/services/firebase/firebase";
+import { functions } from "@/services/firebase";
 import { handleError } from "@/services/utils";
 import { httpsCallable } from "firebase/functions";
 import type {
