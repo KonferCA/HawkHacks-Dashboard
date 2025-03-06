@@ -22,7 +22,7 @@ export const firestore = getFirestore(app);
 export const auth = getAuth(app);
 export const functions = getFunctions(app);
 export const storage = getStorage(app);
-// @ts-ignore
+// @ts-ignore self refers to the window object that is used by the appcheck in debug mode
 self.FIREBASE_APPCHECK_DEBUG_TOKEN =
     import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN;
 initializeAppCheck(app, {
