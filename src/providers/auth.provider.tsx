@@ -13,9 +13,9 @@ import {
     GoogleAuthProvider,
     OAuthProvider,
 } from "firebase/auth";
-import { auth } from "@/services/firebase/firebase";
+import { auth } from "@/services/firebase";
 import { useNotification } from "@/providers/notification.provider";
-import { verifyGitHubEmail } from "@/services/utils";
+import { verifyGitHubEmail } from "@/services/firebase/user";
 import { LoadingAnimation } from "@/components";
 
 import type { User, AuthProvider as FirebaseAuthProvider } from "firebase/auth";

@@ -2,10 +2,10 @@ import { Button, LoadingAnimation, PageWrapper } from "@/components";
 import { useAuth } from "@/providers/auth.provider";
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import type { TicketData } from "@/services/utils/types";
-import { getTicketData } from "@/services/utils/ticket";
+import type { TicketData } from "@/services/firebase/types";
+import { getTicketData } from "@/services/firebase/ticket";
 import { useNotification } from "@/providers/notification.provider";
-import { getResume } from "@/services/utils";
+import { getResume } from "@/services/firebase/files";
 
 type TicketDataKey = keyof TicketData;
 

@@ -35,10 +35,10 @@ import {
     volunteerSpecificValidation,
 } from "@/components/forms/validations";
 import {
-    submitApplication,
     uploadGeneralResume,
     uploadMentorResume,
-} from "@/services/utils";
+} from "@/services/firebase/files";
+import { submitApplication } from "@/services/firebase/application";
 import { TextArea } from "@/components/TextArea/TextArea";
 import { referralSources } from "@/data";
 import { logEvent } from "firebase/analytics";

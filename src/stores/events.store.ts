@@ -1,4 +1,4 @@
-import { EventItem } from "@/services/utils/types";
+import { EventItem } from "@/services/firebase/types";
 import { create } from "zustand";
 
 export interface EventStore {

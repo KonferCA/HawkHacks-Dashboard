@@ -9,13 +9,12 @@ import {
 import { LoadingAnimation } from "@/components/LoadingAnimation";
 import {
     getResumeURL,
-    getSocials,
-    updateSocials,
     uploadGeneralResume,
     uploadMentorResume,
-} from "@/services/utils";
+} from "@/services/firebase/files";
+import { getSocials, updateSocials } from "@/services/firebase/user";
 import { useNotification } from "@/providers/notification.provider";
-import type { ResumeVisibility, Socials } from "@/services/utils/types";
+import type { ResumeVisibility, Socials } from "@/services/firebase/types";
 import { Modal, Select } from "@/components";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { useUserStore } from "@/stores/user.store";

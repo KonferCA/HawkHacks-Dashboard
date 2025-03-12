@@ -27,11 +27,13 @@ dist-ssr
 # Test Coverage
 coverage
 
+env
 .env
 .env.*
-.firebase
-
 env.development
 env.production
+environment
+
+.firebase
 .runtimeconfig.json
 hawkhacks-googleWallet-key.json

@@ -4,7 +4,7 @@ import { faqs, sponsors, importantDateTimes } from "@data";
 import { useAuth } from "@/providers/auth.provider";
 import { useState } from "react";
 import { useNotification } from "@/providers/notification.provider";
-import { withdrawRSVP } from "@/services/utils";
+import { withdrawRSVP } from "@/services/firebase/rsvp";
 
 const ImportantInfoBlocks = importantDateTimes.map((importantDateTime, i) => {
     const entries = Object.entries(importantDateTime.events);

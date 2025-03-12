@@ -1,6 +1,6 @@
 import { Button, LoadingAnimation } from "@/components";
 import { useAuth } from "@/providers/auth.provider";
-import { verifyRSVP } from "@/services/utils";
+import { verifyRSVP } from "@/services/firebase/rsvp";
 import { useNotification } from "@/providers/notification.provider";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";

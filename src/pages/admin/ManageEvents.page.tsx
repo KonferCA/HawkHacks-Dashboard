@@ -1,7 +1,7 @@
 import { Button, LoadingAnimation, Select, TextInput } from "@/components";
 import { useNotification } from "@/providers/notification.provider";
-import { getRedeemableItems } from "@/services/utils";
-import { EventItem } from "@/services/utils/types";
+import { getRedeemableItems } from "@/services/firebase/redeem";
+import { EventItem } from "@/services/firebase/types";
 import { format, isAfter, parseISO } from "date-fns";
 import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { FormEventHandler, useEffect, useRef, useState } from "react";

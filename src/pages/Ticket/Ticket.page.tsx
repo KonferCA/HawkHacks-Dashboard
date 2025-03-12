@@ -6,7 +6,7 @@ import { GoogleWalletBadge, AppleWalletBadge, LoadingDots } from "@/assets";
 import { useAuth } from "@/providers/hooks";
 import { Navigate } from "react-router-dom";
 import { useAvailableRoutes } from "@/providers/routes.provider";
-import { handleError } from "@/services/utils";
+import { logError } from "@/services/firebase/log";
 
 export const TicketPage = () => {
     const functions = getFunctions();
@@ -96,10 +96,7 @@ export const TicketPage = () => {
                 }:`,
                 error
             );
-            handleError(
-                error as Error,
-                `create_${service}_wallet_ticket_error`
-            );
+            logError(error as Error, `create_${service}_wallet_ticket_error`);
         }
         setLoading(false);
     };

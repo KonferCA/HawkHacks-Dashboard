@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { ApplicationData } from "./forms/types";
 import { Button } from "./Button/Button";
-import { getResume } from "@/services/utils";
+import { getResume } from "@/services/firebase/files";
 import { useNotification } from "@/providers/notification.provider";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 

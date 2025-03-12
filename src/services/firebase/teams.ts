@@ -1,5 +1,5 @@
 import { functions } from "@/services/firebase";
-import { handleError } from "@/services/utils";
+import { logError } from "@/services/firebase/log";
 import { httpsCallable } from "firebase/functions";
 import type {
     CloudFunctionResponse,
@@ -20,7 +20,7 @@ export async function getTeamByUser() {
         const { data } = await fn();
         return data;
     } catch (e) {
-        await handleError(e as Error, "get_team_error");
+        await logError(e as Error, "get_team_error");
         throw e;
     }
 }
@@ -39,7 +39,7 @@ export async function isTeamNameAvailable(name: string) {
             return data.data;
         }
     } catch (e) {
-        await handleError(e as Error, "available_team_name_error");
+        await logError(e as Error, "available_team_name_error");
         throw e;
     }
 
@@ -58,7 +58,7 @@ export async function createTeam(name: string) {
         const { data } = await fn({ name });
         return data;
     } catch (e) {
-        await handleError(e as Error, "create_team_error");
+        await logError(e as Error, "create_team_error");
         throw e;
     }
 }
@@ -77,7 +77,7 @@ export async function inviteMember(email: string) {
         const { data } = await fn({ email });
         return data;
     } catch (e) {
-        await handleError(e as Error, "invite_members_error");
+        await logError(e as Error, "invite_members_error");
         throw e;
     }
 }
@@ -94,7 +94,7 @@ export async function updateTeamName(name: string) {
         const { data } = await fn({ name });
         return data;
     } catch (e) {
-        await handleError(e as Error, "update_team_name_error");
+        await logError(e as Error, "update_team_name_error");
         throw e;
     }
 }
@@ -112,7 +112,7 @@ export async function removeMembers(emails: string[]) {
         const { data } = await fn({ emails });
         return data;
     } catch (e) {
-        await handleError(e as Error, "remove_members_error");
+        await logError(e as Error, "remove_members_error");
         throw e;
     }
 }
@@ -129,7 +129,7 @@ export async function deleteTeam() {
         const { data } = await fn();
         return data;
     } catch (e) {
-        await handleError(e as Error, "delete_team_error");
+        await logError(e as Error, "delete_team_error");
         throw e;
     }
 }
@@ -148,7 +148,7 @@ export async function validateTeamInvitation(code: string) {
         const { data } = await fn({ code });
         return data;
     } catch (e) {
-        await handleError(e as Error, "validate_team_invitation_error");
+        await logError(e as Error, "validate_team_invitation_error");
         throw e;
     }
 }
@@ -165,7 +165,7 @@ export async function rejectInvitation(code: string) {
         const { data } = await fn({ code });
         return data;
     } catch (e) {
-        await handleError(e as Error, "reject_invitation_error");
+        await logError(e as Error, "reject_invitation_error");
         throw e;
     }
 }
@@ -182,7 +182,7 @@ export async function checkInvitation(code: string) {
         const { data } = await fn({ code });
         return data;
     } catch (e) {
-        await handleError(e as Error, "check_invitation_error");
+        await logError(e as Error, "check_invitation_error");
         throw e;
     }
 }
@@ -199,7 +199,7 @@ export async function getUserInviations() {
         const { data } = await fn();
         return data;
     } catch (e) {
-        await handleError(e as Error, "get_user_invitations_errro");
+        await logError(e as Error, "get_user_invitations_errro");
         throw e;
     }
 }

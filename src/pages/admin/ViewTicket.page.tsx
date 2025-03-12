@@ -2,10 +2,10 @@ import { Tab } from "@headlessui/react";
 import { useAuth } from "@/providers/auth.provider";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { EventItem, type ExtendedTicketData } from "@/services/utils/types";
-import { getExtendedTicketData } from "@/services/utils/ticket";
+import { EventItem, type ExtendedTicketData } from "@/services/firebase/types";
+import { getExtendedTicketData } from "@/services/firebase/ticket";
 import { useNotification } from "@/providers/notification.provider";
-import { getRedeemableItems, redeemItem } from "@/services/utils";
+import { getRedeemableItems, redeemItem } from "@/services/firebase/redeem";
 import { Button, LoadingAnimation, Modal } from "@/components";
 import { getButtonStyles } from "@/components/Button/Button.styles";
 
