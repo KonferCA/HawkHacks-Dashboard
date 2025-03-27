@@ -1,148 +1,140 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- * import { onRequest } from "firebase-functions/v2/https";
- * import * as logger from "firebase-functions/logger";
- * https://firebase.google.com/docs/functions/typescript
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
+import * as functions from "firebase-functions/v1";
+import {
+    info as logInfo,
+    error as logError,
+    log,
+} from "firebase-functions/logger";
+import { initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 import { Octokit } from "octokit";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { HttpStatus, response } from "./utils";
 import * as QRCode from "qrcode";
+import type { Context } from "./types";
 
-const config = functions.config();
+initializeApp();
 
-admin.initializeApp();
+export const fetchOrGenerateTicket = onCall(async (_, res) => {
+    const context = res as Context;
+    if (!context || !context.auth) {
+        throw new HttpsError(
+            "permission-denied",
+            "User must be authenticated to initiate this operation."
+        );
+    }
 
-export const fetchOrGenerateTicket = functions.https.onCall(
-    async (_, context) => {
-        if (!context.auth) {
-            throw new functions.https.HttpsError(
-                "permission-denied",
-                "User must be authenticated to initiate this operation."
-            );
-        }
+    const userId = context.auth.uid;
+    const ticketsRef = getFirestore().collection("tickets");
+    const ticketQuery = await ticketsRef
+        .where("userId", "==", userId)
+        .limit(1)
+        .get();
 
-        const userId = context.auth.uid;
-        const ticketsRef = admin.firestore().collection("tickets");
-        const ticketQuery = await ticketsRef
-            .where("userId", "==", userId)
-            .limit(1)
+    if (ticketQuery.empty) {
+        let ticketId = "";
+        let createTicket = false;
+        const snap = await getFirestore()
+            .collection("tickets")
+            .where("userId", "==", context.auth.uid)
             .get();
+        const data = snap.docs[0]?.data();
+        if (!data) {
+            ticketId = uuidv4();
+            createTicket = true;
+        } else {
+            ticketId = data.ticketId;
+        }
+        const qrCodeValue = `${process.env.FE_URL}/ticket/${ticketId}`;
 
-        if (ticketQuery.empty) {
-            let ticketId = "";
-            let createTicket = false;
-            const snap = await admin
-                .firestore()
-                .collection("tickets")
-                .where("userId", "==", context.auth.uid)
-                .get();
-            const data = snap.docs[0]?.data();
-            if (!data) {
-                ticketId = uuidv4();
-                createTicket = true;
+        try {
+            const qrCodeDataURL = await QRCode.toDataURL(qrCodeValue, {
+                width: 256,
+            });
+
+            const base64Data = qrCodeDataURL.split(",")[1];
+            const buffer = Buffer.from(base64Data, "base64");
+
+            const storageRef = getStorage().bucket();
+            const fileRef = storageRef.file(
+                `qrCodes/${userId}/${ticketId}.png`
+            );
+            await fileRef.save(buffer, {
+                metadata: {
+                    contentType: "image/png",
+                },
+            });
+
+            await fileRef.makePublic();
+
+            const qrCodeUrl = fileRef.publicUrl();
+
+            if (createTicket) {
+                await ticketsRef.doc(ticketId).set({
+                    userId: userId,
+                    ticketId: ticketId,
+                    qrCodeUrl: qrCodeUrl,
+                    foods: [],
+                    events: [],
+                    timestamp: new Date(),
+                });
             } else {
-                ticketId = data.ticketId;
-            }
-            const qrCodeValue = `${config.fe.url}/ticket/${ticketId}`;
-
-            try {
-                const qrCodeDataURL = await QRCode.toDataURL(qrCodeValue, {
-                    width: 256,
-                });
-
-                const base64Data = qrCodeDataURL.split(",")[1];
-                const buffer = Buffer.from(base64Data, "base64");
-
-                const storageRef = admin.storage().bucket();
-                const fileRef = storageRef.file(
-                    `qrCodes/${userId}/${ticketId}.png`
-                );
-                await fileRef.save(buffer, {
-                    metadata: {
-                        contentType: "image/png",
-                    },
-                });
-
-                await fileRef.makePublic();
-
-                const qrCodeUrl = fileRef.publicUrl();
-
-                if (createTicket) {
-                    await ticketsRef.doc(ticketId).set({
-                        userId: userId,
-                        ticketId: ticketId,
+                await getFirestore()
+                    .collection("tickets")
+                    .doc(ticketId)
+                    .update({
                         qrCodeUrl: qrCodeUrl,
-                        foods: [],
-                        events: [],
                         timestamp: new Date(),
                     });
-                } else {
-                    await admin
-                        .firestore()
-                        .collection("tickets")
-                        .doc(ticketId)
-                        .update({
-                            qrCodeUrl: qrCodeUrl,
-                            timestamp: new Date(),
-                        });
-                }
-
-                return { qrCodeUrl };
-            } catch (error) {
-                functions.logger.error(
-                    "Error generating or uploading QR code:",
-                    error
-                );
-                throw new functions.https.HttpsError(
-                    "internal",
-                    "Failed to generate or upload QR code",
-                    error instanceof Error ? error.message : "Unknown error"
-                );
             }
-        } else {
-            const ticketData = ticketQuery.docs[0].data();
-            return { qrCodeUrl: ticketData.qrCodeUrl };
+
+            return { qrCodeUrl };
+        } catch (error) {
+            logError("Error generating or uploading QR code:", error);
+            throw new HttpsError(
+                "internal",
+                "Failed to generate or upload QR code",
+                error instanceof Error ? error.message : "Unknown error"
+            );
         }
+    } else {
+        const ticketData = ticketQuery.docs[0].data();
+        return { qrCodeUrl: ticketData.qrCodeUrl as string };
     }
-);
+});
 
 // Default on-sign-up Claims function
 export const addDefaultClaims = functions.auth.user().onCreate(async (user) => {
     const { uid } = user;
     try {
-        await admin.auth().setCustomUserClaims(uid, {
+        await getAuth().setCustomUserClaims(uid, {
             // Default Claims
             admin: false, // Example: set to true for admin users
             phoneVerified: false,
             rsvpVerified: false,
             type: "hacker",
         });
-        functions.logger.info(`Custom claims added for user: ${uid}`);
+        logInfo(`Custom claims added for user: ${uid}`);
     } catch (error) {
-        functions.logger.error("Error adding custom claims:", error);
+        logError("Error adding custom claims:", error);
     }
 });
 
 // onCall Function to be called from Frontend for making user Admin
-export const addAdminRole = functions.https.onCall((data, context) => {
+export const addAdminRole = onCall((data: any, res) => {
+    const context = res as Context;
     // If user is not an Admin, decline request
-    if (context.auth?.token.admin !== true) {
+    if (context?.auth?.token?.admin !== true) {
         return { error: "Only admins can add other admins" };
     }
     // Get USER and ADD custom claim (admin) based on Email
-    return admin
-        .auth()
+    return getAuth()
         .getUserByEmail(data.email)
         .then((user) => {
-            return admin.auth().setCustomUserClaims(user.uid, {
+            return getAuth().setCustomUserClaims(user.uid, {
                 admin: true,
             });
         })
@@ -167,23 +159,23 @@ interface Socials {
     resumeVisibility: "Public" | "Private" | "Sponsors Only";
 }
 
-export const requestSocials = functions.https.onCall(async (_, context) => {
-    if (!context.auth)
+export const requestSocials = onCall(async (_, res) => {
+    const context = res as Context;
+    if (!context || !context.auth)
         return response(HttpStatus.UNAUTHORIZED, { message: "unauthorized" });
 
     const func = "requestSocials";
 
-    functions.logger.info("Getting socials...");
+    logInfo("Getting socials...");
     let socials: Socials | undefined;
     try {
-        const snap = await admin
-            .firestore()
+        const snap = await getFirestore()
             .collection("socials")
             .where("uid", "==", context.auth.uid)
             .get();
         socials = snap.docs[0]?.data() as Socials;
     } catch (e) {
-        functions.logger.error("Failed to get socials.", { error: e, func });
+        logError("Failed to get socials.", { error: e, func });
         return response(HttpStatus.INTERNAL_SERVER_ERROR, {
             message: "internal (get_socials) ",
         });
@@ -192,8 +184,7 @@ export const requestSocials = functions.https.onCall(async (_, context) => {
     if (!socials) {
         // create a new socials document
         const app = (
-            await admin
-                .firestore()
+            await getFirestore()
                 .collection("applications")
                 .where("applicantId", "==", context.auth.uid)
                 .get()
@@ -201,9 +192,7 @@ export const requestSocials = functions.https.onCall(async (_, context) => {
         const docId = uuidv4();
 
         if (!app) {
-            functions.logger.info(
-                "Creating new socials with default values..."
-            );
+            logInfo("Creating new socials with default values...");
             // create with default
             socials = {
                 instagram: "",
@@ -216,9 +205,7 @@ export const requestSocials = functions.https.onCall(async (_, context) => {
                 resumeVisibility: "Public",
             };
         } else {
-            functions.logger.info(
-                "Creating new socials with selected application values..."
-            );
+            logInfo("Creating new socials with selected application values...");
             socials = {
                 instagram: "",
                 github: app.githubUrl ?? "",
@@ -233,28 +220,25 @@ export const requestSocials = functions.https.onCall(async (_, context) => {
                 resumeVisibility: "Public",
             };
         }
-        await admin.firestore().collection("socials").doc(docId).set(socials);
-        functions.logger.info("Socials saved.");
+        await getFirestore().collection("socials").doc(docId).set(socials);
+        logInfo("Socials saved.");
     }
 
     return response(HttpStatus.OK, { message: "ok", data: socials });
 });
 
-export const updateSocials = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
-        functions.logger.info("Authentication required.");
-        throw new functions.https.HttpsError(
-            "permission-denied",
-            "Not authenticated"
-        );
+export const updateSocials = onCall(async (data: any, res) => {
+    const context = res as Context;
+    if (!context || !context.auth) {
+        logInfo("Authentication required.");
+        throw new HttpsError("permission-denied", "Not authenticated");
     }
 
-    functions.logger.info("Updating socials:", data);
-    functions.logger.info("User ID in Func:", context.auth.uid);
+    logInfo("Updating socials:", data);
+    logInfo("User ID in Func:", context.auth.uid);
 
     try {
-        const doc = await admin
-            .firestore()
+        const doc = await getFirestore()
             .collection("socials")
             .doc(data.docId)
             .get();
@@ -267,10 +251,10 @@ export const updateSocials = functions.https.onCall(async (data, context) => {
                 message: "cannot update socials",
             });
 
-        functions.logger.info("Updating socials for application:", doc.id);
-        functions.logger.info("Data in ref:", doc);
+        logInfo("Updating socials for application:", doc.id);
+        logInfo("Data in ref:", doc);
 
-        const db = admin.firestore();
+        const db = getFirestore();
         db.settings({ ignoreUndefinedProperties: true });
         await db.collection("socials").doc(doc.id).update({
             instagram: data.instagram,
@@ -280,15 +264,11 @@ export const updateSocials = functions.https.onCall(async (data, context) => {
             resumeRef: data.resumeRef,
             resumeVisibility: data.resumeVisibility,
         });
-        functions.logger.info("Socials updated:", data);
+        logInfo("Socials updated:", data);
         return response(HttpStatus.OK, { message: "ok" });
     } catch (error) {
-        functions.logger.error("Failed to update socials", { error });
-        throw new functions.https.HttpsError(
-            "internal",
-            "Failed to update socials",
-            error
-        );
+        logError("Failed to update socials", { error });
+        throw new HttpsError("internal", "Failed to update socials", error);
     }
 });
 
@@ -305,67 +285,56 @@ export const updateSocials = functions.https.onCall(async (data, context) => {
  *
  * Sends back true/false of verification status
  */
-export const verifyGitHubEmail = functions.https.onCall(
-    async (data, context) => {
-        if (!context.auth) {
-            return new functions.https.HttpsError(
-                "permission-denied",
-                "Not authenticated"
-            );
-        }
-
-        const { token, email } = data;
-
-        if (!token || !email) {
-            return new functions.https.HttpsError(
-                "failed-precondition",
-                "Invalid Payload"
-            );
-        }
-
-        try {
-            const octokit = new Octokit({
-                auth: token,
-            });
-
-            const res = await octokit.request("GET /user/emails", {
-                headers: {
-                    "X-GitHub-Api-Version": "2022-11-28",
-                },
-            });
-
-            if (res.status === 200) {
-                const payloadEmail = res.data.filter(
-                    (data) => data.email === email
-                )[0];
-                if (!payloadEmail)
-                    return new functions.https.HttpsError(
-                        "aborted",
-                        "Fail to match email in payload"
-                    );
-
-                // since we got the email data we need, we check if its verified
-                admin.auth().updateUser(context.auth.uid, {
-                    emailVerified: payloadEmail.verified,
-                });
-                return payloadEmail.verified;
-            } else {
-                return new functions.https.HttpsError(
-                    "unavailable",
-                    "Service unavailable"
-                );
-            }
-        } catch {
-            return new functions.https.HttpsError(
-                "internal",
-                "Failed to verify email"
-            );
-        }
+export const verifyGitHubEmail = onCall(async (data: any, res) => {
+    const context = res as Context;
+    if (!context || !context.auth) {
+        return new HttpsError("permission-denied", "Not authenticated");
     }
-);
 
-export const logEvent = functions.https.onCall((data, context) => {
-    const uid = context.auth?.uid;
+    const { token, email } = data;
+
+    if (!token || !email) {
+        return new HttpsError("failed-precondition", "Invalid Payload");
+    }
+
+    try {
+        const octokit = new Octokit({
+            auth: token,
+        });
+
+        const res = await octokit.request("GET /user/emails", {
+            headers: {
+                "X-GitHub-Api-Version": "2022-11-28",
+            },
+        });
+
+        if (res.status === 200) {
+            const payloadEmail = res.data.filter(
+                (data) => data.email === email
+            )[0];
+            if (!payloadEmail)
+                return new HttpsError(
+                    "aborted",
+                    "Fail to match email in payload"
+                );
+
+            // since we got the email data we need, we check if its verified
+            getAuth().updateUser(context.auth.uid, {
+                emailVerified: payloadEmail.verified,
+            });
+            return payloadEmail.verified;
+        } else {
+            return new HttpsError("unavailable", "Service unavailable");
+        }
+    } catch {
+        return new HttpsError("internal", "Failed to verify email");
+    }
+});
+
+export const logEvent = onCall((data: any, res) => {
+    const context = res as Context;
+
+    const uid = context?.auth?.uid;
 
     const payloadValidation = z.object({
         type: z
@@ -375,29 +344,25 @@ export const logEvent = functions.https.onCall((data, context) => {
     });
 
     const result = payloadValidation.safeParse(data);
-    if (!result.success) functions.logger.info("Invalid log payload");
+    if (!result.success) logInfo("Invalid log payload");
     else {
         switch (result.data.type) {
             case "error":
-                functions.logger.error({ data: result.data.data, uid });
+                logError({ data: result.data.data, uid });
                 break;
             case "info":
-                functions.logger.info({ data: result.data.data, uid });
+                logInfo({ data: result.data.data, uid });
                 break;
             default:
-                functions.logger.log({ data: result.data.data, uid });
+                log({ data: result.data.data, uid });
                 break;
         }
     }
 });
 
 async function internalGetTicketData(id: string, extended = false) {
-    functions.logger.info("Checking for ticket data...");
-    const ticketDoc = await admin
-        .firestore()
-        .collection("tickets")
-        .doc(id)
-        .get();
+    logInfo("Checking for ticket data...");
+    const ticketDoc = await getFirestore().collection("tickets").doc(id).get();
     if (!ticketDoc.exists) {
         return response(HttpStatus.NOT_FOUND, { message: "not found" });
     }
@@ -408,10 +373,9 @@ async function internalGetTicketData(id: string, extended = false) {
         events: string[];
     };
 
-    functions.logger.info("Checking for application data...");
+    logInfo("Checking for application data...");
     const app = (
-        await admin
-            .firestore()
+        await getFirestore()
             .collection("applications")
             .where("applicantId", "==", ticket.userId)
             .get()
@@ -427,10 +391,8 @@ async function internalGetTicketData(id: string, extended = false) {
 
     if (!app) {
         // grab from user record
-        functions.logger.info(
-            "No application data, taking name from user record."
-        );
-        const user = await admin.auth().getUser(ticket.userId);
+        logInfo("No application data, taking name from user record.");
+        const user = await getAuth().getUser(ticket.userId);
         const parts = user.displayName?.split(" ") ?? ["", ""];
         firstName = parts[0];
         lastName = parts[1];
@@ -449,16 +411,15 @@ async function internalGetTicketData(id: string, extended = false) {
     }
 
     // get social ticket
-    functions.logger.info("Checking for social data...");
+    logInfo("Checking for social data...");
     let socials = (
-        await admin
-            .firestore()
+        await getFirestore()
             .collection("socials")
             .where("uid", "==", ticket.userId)
             .get()
     ).docs[0]?.data();
     if (!socials) {
-        functions.logger.info("No socials found, using default data...");
+        logInfo("No socials found, using default data...");
         socials = {
             instagram: "",
             linkedin: linkedin ?? "",
@@ -488,7 +449,7 @@ async function internalGetTicketData(id: string, extended = false) {
     return data;
 }
 
-export const getTicketData = functions.https.onCall(async (data) => {
+export const getTicketData = onCall(async (data: any) => {
     if (!z.string().uuid().safeParse(data.id).success) {
         return response(HttpStatus.BAD_REQUEST, { message: "bad request" });
     }
@@ -500,14 +461,14 @@ export const getTicketData = functions.https.onCall(async (data) => {
             data: ticketData,
         });
     } catch (e) {
-        functions.logger.error("Failed to get ticket data.", { error: e });
+        logError("Failed to get ticket data.", { error: e });
         return response(HttpStatus.INTERNAL_SERVER_ERROR, {
             message: "internal error",
         });
     }
 });
 
-export const getExtendedTicketData = functions.https.onCall(async (data) => {
+export const getExtendedTicketData = onCall(async (data: any) => {
     if (!z.string().uuid().safeParse(data.id).success) {
         return response(HttpStatus.BAD_REQUEST, { message: "bad request" });
     }
@@ -520,7 +481,7 @@ export const getExtendedTicketData = functions.https.onCall(async (data) => {
             data: ticketData,
         });
     } catch (e) {
-        functions.logger.error("Failed to get extended ticket data.", {
+        logError("Failed to get extended ticket data.", {
             error: e,
         });
         return response(HttpStatus.INTERNAL_SERVER_ERROR, {
@@ -529,11 +490,12 @@ export const getExtendedTicketData = functions.https.onCall(async (data) => {
     }
 });
 
-export const redeemItem = functions.https.onCall(async (data, context) => {
-    if (!context.auth)
+export const redeemItem = onCall(async (data: any, res) => {
+    const context = res as Context;
+    if (!context || !context.auth)
         return response(HttpStatus.UNAUTHORIZED, { message: "unauthorized" });
 
-    const user = await admin.auth().getUser(context.auth.uid);
+    const user = await getAuth().getUser(context.auth.uid);
     if (!user.customClaims?.admin)
         return response(HttpStatus.UNAUTHORIZED, { message: "unauthorized" });
 
@@ -545,14 +507,14 @@ export const redeemItem = functions.https.onCall(async (data, context) => {
         })
         .safeParse(data);
     if (!validateResults.success) {
-        functions.logger.error("Bad request", {
+        logError("Bad request", {
             issues: validateResults.error.issues.map((i) => i.path),
         });
         return response(HttpStatus.BAD_REQUEST, { message: "bad request" });
     }
 
     const ticket = (
-        await admin.firestore().collection("tickets").doc(data.ticketId).get()
+        await getFirestore().collection("tickets").doc(data.ticketId).get()
     ).data();
     if (!ticket)
         return response(HttpStatus.NOT_FOUND, { message: "ticket not found" });
@@ -560,15 +522,13 @@ export const redeemItem = functions.https.onCall(async (data, context) => {
     let events = [];
     if (data.action === "check") {
         events = [...ticket.events, data.itemId];
-        await admin
-            .firestore()
+        await getFirestore()
             .collection("tickets")
             .doc(data.ticketId)
             .update({ events });
     } else {
         events = ticket.events.filter((evt: string) => evt !== data.itemId);
-        await admin
-            .firestore()
+        await getFirestore()
             .collection("tickets")
             .doc(data.ticketId)
             .update({ events });

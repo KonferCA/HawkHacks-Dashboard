@@ -1,33 +1,33 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { info as logInfo, error as logError } from "firebase-functions/logger";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 import { v4 as uuidv4 } from "uuid";
 import { PKPass } from "passkit-generator";
 import axios from "axios";
+import type { Context } from "./types";
 
-const config = functions.config();
-
-const signerCert = config.certs.signer_cert;
-const signerKey = config.certs.signer_key;
-const wwdr = config.certs.wwdr_cert;
-const signerKeyPassphrase = config.certs.signer_key_passphrase;
-const teamIdentifier = config.certs.team_id;
+const signerCert = process.env.APPLE_WALLET_CERTS_SIGNER_CERT;
+const signerKey = process.env.APPLE_WALLET_CERTS_SIGNER_KEY;
+const wwdr = process.env.APPLE_WALLET_CERTS_WWDR_CERT;
+const signerKeyPassphrase =
+    process.env.APPLE_WALLET_CERTS_SIGNER_KEY_PASSPHRASE;
+const teamIdentifier = process.env.APPLE_WALLET_CERTS_TEAM_ID;
 
 // apple wallet ticket
-export const createTicket = functions.https.onCall(async (_, context) => {
-    if (!context.auth) {
-        throw new functions.https.HttpsError(
-            "permission-denied",
-            "Not authenticated"
-        );
+export const createTicket = onCall(async (_, res) => {
+    const context = res as Context;
+    if (!context?.auth) {
+        throw new HttpsError("permission-denied", "Not authenticated");
     }
 
     try {
         const userId = context.auth.uid;
 
-        const user = await admin.auth().getUser(userId);
+        const user = await getAuth().getUser(userId);
         const app = (
-            await admin
-                .firestore()
+            await getFirestore()
                 .collection("applications")
                 .where("applicantId", "==", userId)
                 .get()
@@ -36,7 +36,7 @@ export const createTicket = functions.https.onCall(async (_, context) => {
         let firstName = app?.firstName;
         let lastName = app?.lastName;
         if (!app) {
-            functions.logger.info(
+            logInfo(
                 "No application found for user. Will try to get name from user record."
             );
             const [f, l] = user?.displayName?.split(" ") ?? [
@@ -47,7 +47,7 @@ export const createTicket = functions.https.onCall(async (_, context) => {
             lastName = l;
         }
 
-        const ticketsRef = admin.firestore().collection("tickets");
+        const ticketsRef = getFirestore().collection("tickets");
         const ticketDoc = (await ticketsRef.where("userId", "==", userId).get())
             .docs[0];
         let ticketId = "";
@@ -85,7 +85,7 @@ export const createTicket = functions.https.onCall(async (_, context) => {
                 logoText: "HawkHacks",
                 barcodes: [
                     {
-                        message: `${config.fe.url}/ticket/${ticketId}`,
+                        message: `${process.env.FE_URL}/ticket/${ticketId}`,
                         format: "PKBarcodeFormatQR",
                         messageEncoding: "iso-8859-1",
                     },
@@ -188,7 +188,7 @@ export const createTicket = functions.https.onCall(async (_, context) => {
 
         const buffer = await pass.getAsBuffer();
 
-        const storageRef = admin.storage().bucket();
+        const storageRef = getStorage().bucket();
         const fileRef = storageRef.file(`passes/${userId}/pass.pkpass`);
         await fileRef.save(buffer, {
             metadata: {
@@ -201,8 +201,8 @@ export const createTicket = functions.https.onCall(async (_, context) => {
 
         return { url: passUrl };
     } catch (error) {
-        functions.logger.error("Error creating ticket:", { error });
-        throw new functions.https.HttpsError(
+        logError("Error creating ticket:", { error });
+        throw new HttpsError(
             "internal",
             "Failed to create ticket",
             error instanceof Error ? error.message : "Unknown error"

@@ -1,10 +1,14 @@
-import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
+import { onCall } from "firebase-functions/v2/https";
+import { info as logInfo, error as logError } from "firebase-functions/logger";
+import { getAuth } from "firebase-admin/auth";
+import type { UserRecord } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
 import { Timestamp } from "firebase-admin/firestore";
 import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { Resend } from "resend";
 import { HttpStatus, response } from "./utils";
+import type { Context } from "./types";
 
 type InvitationStatus = "pending" | "rejected" | "accepted";
 
@@ -52,19 +56,16 @@ interface UserProfile {
     uid: string;
 }
 
-const config = functions.config();
-
-const RESEND_API_KEY = config.resend.key;
-const NOREPLY_EMAIL = config.email.noreply;
-const FE_URL = config.fe.url;
-const APP_ENV = config.app.env;
+const RESEND_API_KEY = process.env.RESEND_KEY;
+const NOREPLY_EMAIL = process.env.EMAIL_NOREPLY;
+const FE_URL = process.env.FE_URL;
+const APP_ENV = process.env.APP_ENV;
 const TEAMS_COLLECTION = "teams";
 const USER_PROFILES_COLLECTION = "user-profiles";
 const INVITATIONS_COLLECTION = "invitations";
 
 async function internalSearchTeam(name: string): Promise<Team | undefined> {
-    const snap = await admin
-        .firestore()
+    const snap = await getFirestore()
         .collection(TEAMS_COLLECTION)
         .where("name", "==", name)
         .get();
@@ -73,8 +74,7 @@ async function internalSearchTeam(name: string): Promise<Team | undefined> {
 
 async function internalGetTeamByUser(uid: string): Promise<Team | undefined> {
     // get the user profile
-    const profileSnap = await admin
-        .firestore()
+    const profileSnap = await getFirestore()
         .collection(USER_PROFILES_COLLECTION)
         .where("uid", "==", uid)
         .where("teamId", "!=", "")
@@ -85,8 +85,7 @@ async function internalGetTeamByUser(uid: string): Promise<Team | undefined> {
     }
 
     // have to get the team first
-    const snap = await admin
-        .firestore()
+    const snap = await getFirestore()
         .collection(TEAMS_COLLECTION)
         .doc(profile.teamId)
         .get();
@@ -99,8 +98,7 @@ async function internalGetTeamByUser(uid: string): Promise<Team | undefined> {
 }
 
 async function internalGetMembersByTeam(teamId: string): Promise<MemberData[]> {
-    const snap = await admin
-        .firestore()
+    const snap = await getFirestore()
         .collection(USER_PROFILES_COLLECTION)
         .where("teamId", "==", teamId)
         .get();
@@ -119,14 +117,13 @@ async function internalGetMembersByTeam(teamId: string): Promise<MemberData[]> {
 }
 
 /**
- * This functions differs from `internalGetMembersByTeam` because it gets the potential team members
+ * This function differs from `internalGetMembersByTeam` because it gets the potential team members
  * based on invitations sent to join the given team.
  */
 async function internalGetInvitedMembersByTeam(
     teamId: string
 ): Promise<MemberData[]> {
-    const snap = await admin
-        .firestore()
+    const snap = await getFirestore()
         .collection(INVITATIONS_COLLECTION)
         .where("teamId", "==", teamId)
         .where("status", "==", "pending")
@@ -147,53 +144,49 @@ async function internalGetInvitedMembersByTeam(
 /**
  * Searches if team name is available or not
  */
-export const isTeamNameAvailable = functions.https.onCall(
-    async (data, context) => {
-        if (!context.auth) {
-            return response(HttpStatus.UNAUTHORIZED, {
-                message: "Unauthorized",
-            });
-        }
-
-        if (!z.string().min(1).safeParse(data.name).success) {
-            return response(HttpStatus.BAD_REQUEST, {
-                message: "Invalid payload.",
-            });
-        }
-
-        const func = "isTeamNameAvailable";
-
-        // search team
-        try {
-            functions.logger.info(
-                "Searching for team with given name",
-                data.name,
-                { func }
-            );
-            const team = await internalSearchTeam(data.name);
-            // team name is available if no team was found
-            return response(HttpStatus.OK, { data: team === undefined });
-        } catch (e) {
-            functions.logger.error(
-                "Failed to find if team name is available or not.",
-                { error: e, func }
-            );
-            return response(HttpStatus.INTERNAL_SERVER_ERROR, {
-                message: "Servide down 1201",
-            });
-        }
+export const isTeamNameAvailable = onCall(async (data, res) => {
+    const context = res as Context;
+    if (!context?.auth) {
+        return response(HttpStatus.UNAUTHORIZED, {
+            message: "Unauthorized",
+        });
     }
-);
+
+    if (!z.string().min(1).safeParse(data.name).success) {
+        return response(HttpStatus.BAD_REQUEST, {
+            message: "Invalid payload.",
+        });
+    }
+
+    const func = "isTeamNameAvailable";
+
+    // search team
+    try {
+        logInfo("Searching for team with given name", data.name, { func });
+        const team = await internalSearchTeam(data.name);
+        // team name is available if no team was found
+        return response(HttpStatus.OK, { data: team === undefined });
+    } catch (e) {
+        logError("Failed to find if team name is available or not.", {
+            error: e,
+            func,
+        });
+        return response(HttpStatus.INTERNAL_SERVER_ERROR, {
+            message: "Servide down 1201",
+        });
+    }
+});
 
 /**
  * Creates a new team and adds the requesting user to the team doc
  */
-export const createTeam = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
+export const createTeam = onCall(async (data, res) => {
+    const context = res as Context;
+    if (!context?.auth) {
         return response(HttpStatus.UNAUTHORIZED, { message: "Unauthorized" });
     }
 
-    if (config.teams.allow.create_team !== "true") {
+    if (process.env.TEAMS_ALLOW_CREATE_TEAM !== "true") {
         return response(HttpStatus.BAD_REQUEST, {
             message: "Team creation is not available.",
         });
@@ -210,21 +203,19 @@ export const createTeam = functions.https.onCall(async (data, context) => {
     let firstName = "";
     let lastName = "";
     try {
-        functions.logger.info("Checking if user has been accepted or not", {
+        logInfo("Checking if user has been accepted or not", {
             func,
         });
-        const snap = await admin
-            .firestore()
+        const snap = await getFirestore()
             .collection("applications")
             .where("applicantId", "==", context.auth.uid)
             .where("accepted", "==", true)
             .get();
         if (snap.size < 1) {
             // user either did not apply or not accepted
-            functions.logger.info(
-                "Requesting user either did not apply or not accepted",
-                { func }
-            );
+            logInfo("Requesting user either did not apply or not accepted", {
+                func,
+            });
             return response(HttpStatus.BAD_REQUEST, {
                 message: "Not accepted into the hackathon.",
             });
@@ -234,7 +225,7 @@ export const createTeam = functions.https.onCall(async (data, context) => {
         firstName = data.firstName;
         lastName = data.lastName;
     } catch (error) {
-        functions.logger.error("Failed to check if user has been accepted", {
+        logError("Failed to check if user has been accepted", {
             error,
             func,
         });
@@ -246,38 +237,34 @@ export const createTeam = functions.https.onCall(async (data, context) => {
     // we need to get the user email so we are getting it from the firebase auth records
     let email = "";
     try {
-        functions.logger.info("Getting user auth records for email access...", {
+        logInfo("Getting user auth records for email access...", {
             func,
         });
-        const userRecord = await admin.auth().getUser(context.auth.uid);
+        const userRecord = await getAuth().getUser(context.auth.uid);
         email = userRecord.email ?? "";
     } catch (error) {
-        functions.logger.error("Failed to get user records", { func, error });
+        logError("Failed to get user records", { func, error });
         return response(HttpStatus.INTERNAL_SERVER_ERROR, {
             message: "Servicde down 1206",
         });
     }
 
     try {
-        functions.logger.info(
-            "Checking if requesting user owns/belongs to a team already",
-            { func }
-        );
+        logInfo("Checking if requesting user owns/belongs to a team already", {
+            func,
+        });
         const team = await internalGetTeamByUser(context.auth.uid);
         if (team) {
-            functions.logger.info(
-                "Requesting user owns/belongs to a team already",
-                {
-                    func,
-                    team,
-                }
-            );
+            logInfo("Requesting user owns/belongs to a team already", {
+                func,
+                team,
+            });
             return response(HttpStatus.BAD_REQUEST, {
                 message: "Requesting user owns/belongs to a team already",
             });
         }
     } catch (e) {
-        functions.logger.error(
+        logError(
             "Failed to check if requesting user owns/belongs to a team already.",
             { func, error: e }
         );
@@ -289,9 +276,8 @@ export const createTeam = functions.https.onCall(async (data, context) => {
     // create a team
     const teamId = uuidv4();
     try {
-        functions.logger.info("Creating team for requesting user...", { func });
-        await admin
-            .firestore()
+        logInfo("Creating team for requesting user...", { func });
+        await getFirestore()
             .collection(TEAMS_COLLECTION)
             .doc(teamId)
             .set({
@@ -301,29 +287,27 @@ export const createTeam = functions.https.onCall(async (data, context) => {
                 createdAt: Timestamp.now(),
             } as Team);
     } catch (e) {
-        functions.logger.error("Failed to create a team", { error: e, func });
+        logError("Failed to create a team", { error: e, func });
         return response(HttpStatus.INTERNAL_SERVER_ERROR, {
             message: "Service dwon 1203",
         });
     }
 
-    functions.logger.info("New team created.", { name: data.name, func });
+    logInfo("New team created.", { name: data.name, func });
     // find user profile or create one
     try {
-        functions.logger.info("Looking for user profile", { func });
-        const snap = await admin
-            .firestore()
+        logInfo("Looking for user profile", { func });
+        const snap = await getFirestore()
             .collection(USER_PROFILES_COLLECTION)
             .where("uid", "==", context.auth.uid)
             .where("teamId", "==", "")
             .get();
         const doc = snap.docs[0];
         if (!doc) {
-            functions.logger.info("User profile not found, creating one...", {
+            logInfo("User profile not found, creating one...", {
                 func,
             });
-            await admin
-                .firestore()
+            await getFirestore()
                 .collection(USER_PROFILES_COLLECTION)
                 .add({
                     firstName,
@@ -332,17 +316,16 @@ export const createTeam = functions.https.onCall(async (data, context) => {
                     teamId,
                     uid: context.auth.uid,
                 } as UserProfile);
-            functions.logger.info("User profile created.", { func });
+            logInfo("User profile created.", { func });
         } else {
-            functions.logger.info("User profile found, updating...", { func });
-            await admin
-                .firestore()
+            logInfo("User profile found, updating...", { func });
+            await getFirestore()
                 .collection(USER_PROFILES_COLLECTION)
                 .doc(doc.id)
                 .update({ teamId });
         }
     } catch (error) {
-        functions.logger.error("Failed to check user profile", { error, func });
+        logError("Failed to check user profile", { error, func });
         return response(HttpStatus.INTERNAL_SERVER_ERROR, {
             message: "Failed to create team. (3)",
         });
@@ -363,7 +346,7 @@ export const createTeam = functions.https.onCall(async (data, context) => {
             data: teamData,
         });
     } catch (error) {
-        functions.logger.error(
+        logError(
             "Failed to add requesting user as a member of newly created team...",
             { func, error }
         );
@@ -376,22 +359,23 @@ export const createTeam = functions.https.onCall(async (data, context) => {
 /**
  * Gets the team that the requesting user belongs to
  */
-export const getTeamByUser = functions.https.onCall(async (_, context) => {
-    if (!context.auth) {
+export const getTeamByUser = onCall(async (_, res) => {
+    const context = res as Context;
+    if (!context?.auth) {
         return response(HttpStatus.UNAUTHORIZED, { message: "Unauthorized" });
     }
 
     const func = "getTeamByUser";
 
     try {
-        functions.logger.info("Getting team for requesting user...", { func });
+        logInfo("Getting team for requesting user...", { func });
         const team = await internalGetTeamByUser(context.auth.uid);
         if (!team)
             return response(HttpStatus.NOT_FOUND, {
                 message: "No team found for requesting user.",
             });
 
-        functions.logger.info("Getting team members...", { func });
+        logInfo("Getting team members...", { func });
         const members = await internalGetMembersByTeam(team.id);
         const invitedMembers = await internalGetInvitedMembersByTeam(team.id);
         const totalMembers = [...members, ...invitedMembers];
@@ -403,14 +387,14 @@ export const getTeamByUser = functions.https.onCall(async (_, context) => {
             isOwner: team.owner === context.auth.uid,
             members: totalMembers
                 // do not include themselves as members
-                .filter((m) => m.email !== context.auth?.token.email),
+                .filter((m) => m.email !== context.auth?.token?.email),
         };
 
-        functions.logger.info("data", { teamData });
+        logInfo("data", { teamData });
 
         return response(HttpStatus.OK, { data: teamData });
     } catch (error) {
-        functions.logger.error("Failed to get team for requesting user.", {
+        logError("Failed to get team for requesting user.", {
             error,
             func,
         });
@@ -423,12 +407,13 @@ export const getTeamByUser = functions.https.onCall(async (_, context) => {
 /**
  * Sends an email invitation
  */
-export const inviteMember = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
+export const inviteMember = onCall(async (data, res) => {
+    const context = res as Context;
+    if (!context?.auth) {
         return response(HttpStatus.UNAUTHORIZED, { message: "Unauthorized" });
     }
 
-    if (config.teams.allow.invite_member !== "true") {
+    if (process.env.TEAMS_ALLOW_INVITE_MEMBER !== "true") {
         return response(HttpStatus.BAD_REQUEST, {
             message: "Invite member is not available.",
         });
@@ -443,10 +428,10 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
     // try to find requesting user team
     let team: Team | undefined;
     try {
-        functions.logger.info("Getting requesting user's team...", { func });
+        logInfo("Getting requesting user's team...", { func });
         team = await internalGetTeamByUser(context.auth.uid);
         if (!team) {
-            functions.logger.info(
+            logInfo(
                 "Team not found for requesting user. Cannot proceed with invitation",
                 { func }
             );
@@ -456,7 +441,7 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
             });
         }
     } catch (error) {
-        functions.logger.error("Failed to get requesting user's team", {
+        logError("Failed to get requesting user's team", {
             error,
             func,
         });
@@ -467,22 +452,21 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
 
     // check if user is owner
     if (team.owner !== context.auth.uid) {
-        functions.logger.info("Invitation attempt by non-owner user", { func });
+        logInfo("Invitation attempt by non-owner user", { func });
         return response(HttpStatus.BAD_REQUEST, {
             message: "You must be the owner of the team to invite others.",
         });
     }
 
     // check if invitee is a real user in the app
-    let userRecord: admin.auth.UserRecord | undefined;
+    let userRecord: UserRecord | undefined;
     try {
-        userRecord = await admin.auth().getUserByEmail(data.email);
+        userRecord = await getAuth().getUserByEmail(data.email);
     } catch (error) {
-        functions.logger.error(
-            "Failed to find user record with email",
-            data.email,
-            { error, func }
-        );
+        logError("Failed to find user record with email", data.email, {
+            error,
+            func,
+        });
         return response(HttpStatus.NOT_FOUND, {
             message: "The email you have entered does not match.",
         });
@@ -503,7 +487,7 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
             });
         }
     } catch (e) {
-        functions.logger.error(
+        logError(
             "Failed to check if invitation is for a user who does not have a team.",
             { error: e, func }
         );
@@ -515,12 +499,10 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
     // only send invitation if invitee has been accepted
     let app: { firstName: string; lastName: string; accepted: boolean };
     try {
-        functions.logger.info(
-            "Checking if invitee has been accepted to HawkHacks...",
-            { func }
-        );
-        const snap = await admin
-            .firestore()
+        logInfo("Checking if invitee has been accepted to HawkHacks...", {
+            func,
+        });
+        const snap = await getFirestore()
             .collection("applications")
             .where("applicantId", "==", userRecord.uid)
             .get();
@@ -530,7 +512,7 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
             accepted: boolean;
         };
         if (app && !app.accepted) {
-            functions.logger.info(
+            logInfo(
                 "Invitee was not accepted to HawkHacks. Skip sending invitation email.",
                 { func }
             );
@@ -539,7 +521,7 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
                     "This email doesn't match our records of RSVP'd hackers. Make sure you've typed their email correctly, and that they've already RSVP'd.",
             });
         } else if (!app) {
-            functions.logger.info("Invitee did not apply to HawkHacks", {
+            logInfo("Invitee did not apply to HawkHacks", {
                 func,
             });
             return response(HttpStatus.BAD_REQUEST, {
@@ -547,7 +529,7 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
             });
         }
     } catch (error) {
-        functions.logger.error(
+        logError(
             "Failed to check if inviteee has been accpeted to HawkHacks.",
             { func }
         );
@@ -559,11 +541,10 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
     const invitationId = uuidv4();
     // add invitee to the team members collection
     try {
-        functions.logger.info("Adding invitee to team members collection", {
+        logInfo("Adding invitee to team members collection", {
             func,
         });
-        await admin
-            .firestore()
+        await getFirestore()
             .collection(INVITATIONS_COLLECTION)
             .doc(invitationId)
             .set({
@@ -578,10 +559,10 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
                 invitationSentAt: Timestamp.now(),
             } as Invitation);
     } catch (error) {
-        functions.logger.error(
-            "Failed to add invitee to team members collection.",
-            { func, error }
-        );
+        logError("Failed to add invitee to team members collection.", {
+            func,
+            error,
+        });
         return response(HttpStatus.INTERNAL_SERVER_ERROR, {
             message: "Failed to invite member to join team.",
         });
@@ -590,13 +571,12 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
     // send invitation
     if (APP_ENV === "production") {
         try {
-            functions.logger.info("Sending invitation email", {
+            logInfo("Sending invitation email", {
                 to: data.email,
                 func,
             });
 
-            const getTeamMember = await admin
-                .firestore()
+            const getTeamMember = await getFirestore()
                 .collection(USER_PROFILES_COLLECTION)
                 .where("uid", "==", context.auth.uid)
                 .get();
@@ -618,28 +598,27 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
                 html: htmlContent,
             });
 
-            functions.logger.info("Invitation email sent!", {
+            logInfo("Invitation email sent!", {
                 to: data.email,
                 func,
             });
 
-            functions.logger.info("Updating invitation with resend email id.", {
+            logInfo("Updating invitation with resend email id.", {
                 func,
             });
 
-            await admin
-                .firestore()
+            await getFirestore()
                 .collection(INVITATIONS_COLLECTION)
                 .doc(invitationId)
                 .update({ resendEmailId: sent.data?.id ?? "" })
                 .catch((e) =>
-                    functions.logger.error(
+                    logError(
                         "Failed to update invitation with resend email id",
                         { func, error: e }
                     )
                 );
         } catch (error) {
-            functions.logger.error("Failed to invite member to join team.", {
+            logError("Failed to invite member to join team.", {
                 error,
                 func,
                 email: data.email,
@@ -666,12 +645,13 @@ export const inviteMember = functions.https.onCall(async (data, context) => {
  * Updates the name for the requesting user's team
  * The requesting user must be the owner
  */
-export const updateTeamName = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
+export const updateTeamNxtame = onCall(async (data, res) => {
+    const context = res as Context;
+    if (!context?.auth) {
         return response(HttpStatus.UNAUTHORIZED, { message: "Unauthorized" });
     }
 
-    if (config.teams.allow.update_team_name !== "true") {
+    if (process.env.TEAMS_ALLOW_UPDATE_TEAM_NAME !== "true") {
         return response(HttpStatus.BAD_REQUEST, {
             message: "Team name update is not available.",
         });
@@ -685,29 +665,27 @@ export const updateTeamName = functions.https.onCall(async (data, context) => {
 
     // find the team the requesting user owns and update name
     try {
-        functions.logger.info("Getting team requesting user owns", { func });
-        const snap = await admin
-            .firestore()
+        logInfo("Getting team requesting user owns", { func });
+        const snap = await getFirestore()
             .collection(TEAMS_COLLECTION)
             .where("owner", "==", context.auth.uid)
             .get();
         const team = snap.docs[0]?.data() as Team | undefined;
         if (!team) {
-            functions.logger.info("Requesting user's team not found", { func });
+            logInfo("Requesting user's team not found", { func });
             return response(HttpStatus.NOT_FOUND, {
                 message: "Failed to find team.",
             });
         }
-        functions.logger.info("Found requesting user's team", { func });
-        functions.logger.info("Updating team's name...", { func });
-        await admin
-            .firestore()
+        logInfo("Found requesting user's team", { func });
+        logInfo("Updating team's name...", { func });
+        await getFirestore()
             .collection(TEAMS_COLLECTION)
             .doc(team.id)
             .update({ name: data.name });
-        functions.logger.info("Team name updated!", { func });
+        logInfo("Team name updated!", { func });
     } catch (error) {
-        functions.logger.error("Failed to get team for requesting user.", {
+        logError("Failed to get team for requesting user.", {
             func,
             error,
         });
@@ -724,12 +702,13 @@ export const updateTeamName = functions.https.onCall(async (data, context) => {
  * a team. It will just remove the members from the team the user owns to avoid others messing up
  * with other teams.
  */
-export const removeMembers = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
+export const removeMembers = onCall(async (data, res) => {
+    const context = res as Context;
+    if (!context?.auth) {
         return response(HttpStatus.UNAUTHORIZED, { message: "Unauthorized" });
     }
 
-    if (config.teams.allow.remove_members !== "true") {
+    if (process.env.TEAMS_ALLOW_REMOVE_MEMBERS !== "true") {
         return response(HttpStatus.BAD_REQUEST, {
             message: "Remove members not available.",
         });
@@ -743,54 +722,48 @@ export const removeMembers = functions.https.onCall(async (data, context) => {
 
     // find the team the requesting user owns and update members
     try {
-        functions.logger.info("Getting team that requesting user owns", {
+        logInfo("Getting team that requesting user owns", {
             func,
         });
-        const snap = await admin
-            .firestore()
+        const snap = await getFirestore()
             .collection(TEAMS_COLLECTION)
             .where("owner", "==", context.auth.uid)
             .get();
         const team = snap.docs[0]?.data() as Team | undefined;
         if (!team) {
-            functions.logger.info("Team not found", { func });
+            logInfo("Team not found", { func });
             return response(HttpStatus.NOT_FOUND, {
                 message: "Team not found.",
             });
         }
-        functions.logger.info("Found team requesting user owns.", { func });
+        logInfo("Found team requesting user owns.", { func });
 
         // now we need to remove any document form team-members collection that are in the given team
         // and it matches any email in the payload
-        const deleteSnap = await admin
-            .firestore()
+        const deleteSnap = await getFirestore()
             .collection(USER_PROFILES_COLLECTION)
             .where("email", "in", data.emails)
             .where("teamId", "==", team.id)
             .get();
-        const batch = admin.firestore().batch();
+        const batch = getFirestore().batch();
         deleteSnap.forEach((doc) => {
             batch.update(doc.ref, { teamId: "" });
         });
 
         // delete any invitation sent to the members
-        const invitationSnap = await admin
-            .firestore()
+        const invitationSnap = await getFirestore()
             .collection(INVITATIONS_COLLECTION)
             .where("email", "in", data.emails)
             .where("teamId", "==", team.id)
             .get();
         invitationSnap.forEach((doc) => {
-            functions.logger.info("invitation:", doc.id);
+            logInfo("invitation:", doc.id);
             batch.delete(doc.ref);
         });
 
         await batch.commit();
     } catch (error) {
-        functions.logger.error(
-            "Failed to get team that requesting user owns.",
-            { func }
-        );
+        logError("Failed to get team that requesting user owns.", { func });
         return response(HttpStatus.INTERNAL_SERVER_ERROR, {
             message: "Failed to remove members (1).",
         });
@@ -802,12 +775,13 @@ export const removeMembers = functions.https.onCall(async (data, context) => {
 /**
  * Delete the team the requesting user owns.
  */
-export const deleteTeam = functions.https.onCall(async (_, context) => {
-    if (!context.auth) {
+export const deleteTeam = onCall(async (_, res) => {
+    const context = res as Context;
+    if (!context?.auth) {
         return response(HttpStatus.UNAUTHORIZED, { message: "Unauthorized" });
     }
 
-    if (config.teams.allow.delete_team !== "true") {
+    if (process.env.TEAMS_ALLOW_DELETE_TEAM !== "true") {
         return response(HttpStatus.BAD_REQUEST, {
             message: "Team deletion not available.",
         });
@@ -817,26 +791,24 @@ export const deleteTeam = functions.https.onCall(async (_, context) => {
 
     // delete team if requesting user owns one
     try {
-        functions.logger.info("Deleting team...", { func });
-        const snap = await admin
-            .firestore()
+        logInfo("Deleting team...", { func });
+        const snap = await getFirestore()
             .collection(TEAMS_COLLECTION)
             .where("owner", "==", context.auth.uid)
             .get();
         const team = snap.docs[0]?.data() as Team | undefined;
         if (!team) {
-            functions.logger.info("No team found to delete.", { func });
+            logInfo("No team found to delete.", { func });
             return response(HttpStatus.NOT_FOUND, {
                 message: "Team not found.",
             });
         }
         // make a batch write request to delete team and all team members in the given team
-        const memberSnap = await admin
-            .firestore()
+        const memberSnap = await getFirestore()
             .collection(USER_PROFILES_COLLECTION)
             .where("teamId", "==", team.id)
             .get();
-        const batch = admin.firestore().batch();
+        const batch = getFirestore().batch();
         memberSnap.forEach((m) => {
             // update the user profile to not have the team id
             batch.update(m.ref, { teamId: "" });
@@ -846,7 +818,7 @@ export const deleteTeam = functions.https.onCall(async (_, context) => {
         // commit
         await batch.commit();
     } catch (error) {
-        functions.logger.error("Failed to delete team.", { func, error });
+        logError("Failed to delete team.", { func, error });
         return response(HttpStatus.INTERNAL_SERVER_ERROR, {
             message: "Failed to delete team (1).",
         });
@@ -858,202 +830,177 @@ export const deleteTeam = functions.https.onCall(async (_, context) => {
 /**
  * Validates the invitation and set the status in team-members collection for the given user to "accepted"
  */
-export const validateTeamInvitation = functions.https.onCall(
-    async (data, context) => {
-        if (!context.auth) {
-            return response(HttpStatus.UNAUTHORIZED, {
-                message: "Unathorized",
-            });
-        }
-
-        if (!z.string().uuid().safeParse(data.code).success) {
-            return response(HttpStatus.BAD_REQUEST, {
-                message: "Invalid payload",
-            });
-        }
-
-        const func = "validateTeamInvitation";
-
-        // check if invitation code is for the given user
-        let invitation: Invitation | undefined;
-        try {
-            functions.logger.info(
-                "Checking if invitation is for requesting user",
-                { func }
-            );
-            let snap = await admin
-                .firestore()
-                .collection(INVITATIONS_COLLECTION)
-                .where("invitationId", "==", data.code)
-                .where("userId", "==", context.auth.uid)
-                .where("status", "==", "pending")
-                .get();
-            invitation = snap.docs[0]?.data() as Invitation;
-            if (!invitation) {
-                functions.logger.info(
-                    "Requesting user is not the user the invitation is meant for. Do not add user to team.",
-                    { func }
-                );
-                return response(HttpStatus.BAD_REQUEST, {
-                    message: "Invitation does not exists or expired.",
-                });
-            }
-
-            // make sure we only add someone who is not in a team
-            snap = await admin
-                .firestore()
-                .collection(USER_PROFILES_COLLECTION)
-                .where("uid", "==", context.auth.uid)
-                .where("teamId", "!=", "")
-                .get();
-            if (snap.size > 0) {
-                functions.logger.info(
-                    "Requesting user belongs to a team already.",
-                    { func }
-                );
-                return response(HttpStatus.BAD_REQUEST, {
-                    message: "Invitation does not exists or expired.",
-                });
-            }
-
-            // if we found a member, then it is for the requesting user
-            // now we update the status of the member
-            functions.logger.info("Updating invitation status", { func });
-            await admin
-                .firestore()
-                .collection(INVITATIONS_COLLECTION)
-                .doc(data.code)
-                .update({ status: "accepted" });
-            functions.logger.info("Invitation status updated.", { func });
-        } catch (error) {
-            functions.logger.error(
-                "Failed to check if invitation is for requesting user",
-                { func, error }
-            );
-            return response(HttpStatus.INTERNAL_SERVER_ERROR, {
-                message: "Failed to join team. (2)",
-            });
-        }
-
-        // update user profile
-        try {
-            functions.logger.info(
-                "Checking if requesting user has a profile...",
-                { func }
-            );
-            const snap = await admin
-                .firestore()
-                .collection(USER_PROFILES_COLLECTION)
-                .where("uid", "==", context.auth.uid)
-                .get();
-            if (!snap.docs[0]) {
-                functions.logger.info(
-                    "Requesting user has no profile, creating...",
-                    { func }
-                );
-                await admin
-                    .firestore()
-                    .collection(USER_PROFILES_COLLECTION)
-                    .add({
-                        firstName: invitation.firstName,
-                        lastName: invitation.lastName,
-                        email: invitation.email,
-                        teamId: invitation.teamId,
-                        uid: context.auth.uid,
-                    } as UserProfile);
-            } else {
-                functions.logger.info(
-                    "Found user profile, updating teamId...",
-                    { func }
-                );
-                await admin
-                    .firestore()
-                    .collection(USER_PROFILES_COLLECTION)
-                    .doc(snap.docs[0].id)
-                    .update({ teamId: invitation.teamId });
-            }
-        } catch (error) {
-            functions.logger.error("Failed to update user profile", {
-                func,
-                error,
-            });
-            return response(HttpStatus.INTERNAL_SERVER_ERROR, {
-                message: "Failed to join team.",
-            });
-        }
-
-        return response(HttpStatus.OK, { message: "Joined team." });
+export const validateTeamInvitation = onCall(async (data, res) => {
+    const context = res as Context;
+    if (!context?.auth) {
+        return response(HttpStatus.UNAUTHORIZED, {
+            message: "Unathorized",
+        });
     }
-);
+
+    if (!z.string().uuid().safeParse(data.code).success) {
+        return response(HttpStatus.BAD_REQUEST, {
+            message: "Invalid payload",
+        });
+    }
+
+    const func = "validateTeamInvitation";
+
+    // check if invitation code is for the given user
+    let invitation: Invitation | undefined;
+    try {
+        logInfo("Checking if invitation is for requesting user", { func });
+        let snap = await getFirestore()
+            .collection(INVITATIONS_COLLECTION)
+            .where("invitationId", "==", data.code)
+            .where("userId", "==", context.auth.uid)
+            .where("status", "==", "pending")
+            .get();
+        invitation = snap.docs[0]?.data() as Invitation;
+        if (!invitation) {
+            logInfo(
+                "Requesting user is not the user the invitation is meant for. Do not add user to team.",
+                { func }
+            );
+            return response(HttpStatus.BAD_REQUEST, {
+                message: "Invitation does not exists or expired.",
+            });
+        }
+
+        // make sure we only add someone who is not in a team
+        snap = await getFirestore()
+            .collection(USER_PROFILES_COLLECTION)
+            .where("uid", "==", context.auth.uid)
+            .where("teamId", "!=", "")
+            .get();
+        if (snap.size > 0) {
+            logInfo("Requesting user belongs to a team already.", { func });
+            return response(HttpStatus.BAD_REQUEST, {
+                message: "Invitation does not exists or expired.",
+            });
+        }
+
+        // if we found a member, then it is for the requesting user
+        // now we update the status of the member
+        logInfo("Updating invitation status", { func });
+        await getFirestore()
+            .collection(INVITATIONS_COLLECTION)
+            .doc(data.code)
+            .update({ status: "accepted" });
+        logInfo("Invitation status updated.", { func });
+    } catch (error) {
+        logError("Failed to check if invitation is for requesting user", {
+            func,
+            error,
+        });
+        return response(HttpStatus.INTERNAL_SERVER_ERROR, {
+            message: "Failed to join team. (2)",
+        });
+    }
+
+    // update user profile
+    try {
+        logInfo("Checking if requesting user has a profile...", { func });
+        const snap = await getFirestore()
+            .collection(USER_PROFILES_COLLECTION)
+            .where("uid", "==", context.auth.uid)
+            .get();
+        if (!snap.docs[0]) {
+            logInfo("Requesting user has no profile, creating...", {
+                func,
+            });
+            await getFirestore()
+                .collection(USER_PROFILES_COLLECTION)
+                .add({
+                    firstName: invitation.firstName,
+                    lastName: invitation.lastName,
+                    email: invitation.email,
+                    teamId: invitation.teamId,
+                    uid: context.auth.uid,
+                } as UserProfile);
+        } else {
+            logInfo("Found user profile, updating teamId...", { func });
+            await getFirestore()
+                .collection(USER_PROFILES_COLLECTION)
+                .doc(snap.docs[0].id)
+                .update({ teamId: invitation.teamId });
+        }
+    } catch (error) {
+        logError("Failed to update user profile", {
+            func,
+            error,
+        });
+        return response(HttpStatus.INTERNAL_SERVER_ERROR, {
+            message: "Failed to join team.",
+        });
+    }
+
+    return response(HttpStatus.OK, { message: "Joined team." });
+});
 
 /**
  * Reject an invitation if the invitation is for the requesting user
  */
-export const rejectInvitation = functions.https.onCall(
-    async (data, context) => {
-        if (!context.auth) {
-            return response(HttpStatus.UNAUTHORIZED, {
-                message: "Unathorized",
-            });
-        }
+export const rejectInvitation = onCall(async (data, res) => {
+    const context = res as Context;
+    if (!context?.auth) {
+        return response(HttpStatus.UNAUTHORIZED, {
+            message: "Unathorized",
+        });
+    }
 
-        if (!z.string().uuid().safeParse(data.code).success) {
-            return response(HttpStatus.BAD_REQUEST, {
-                message: "Invalid payload",
-            });
-        }
+    if (!z.string().uuid().safeParse(data.code).success) {
+        return response(HttpStatus.BAD_REQUEST, {
+            message: "Invalid payload",
+        });
+    }
 
-        const func = "rejectInvitation";
+    const func = "rejectInvitation";
 
-        // check if invitation code is for the given user
-        let invitation: Invitation | undefined;
-        try {
-            functions.logger.info(
-                "Checking if invitation is for requesting user",
+    // check if invitation code is for the given user
+    let invitation: Invitation | undefined;
+    try {
+        logInfo("Checking if invitation is for requesting user", { func });
+        const snap = await getFirestore()
+            .collection(INVITATIONS_COLLECTION)
+            .where("invitationId", "==", data.code)
+            .where("userId", "==", context.auth.uid)
+            .where("status", "==", "pending")
+            .get();
+        invitation = snap.docs[0]?.data() as Invitation;
+        if (!invitation) {
+            logInfo(
+                "Requesting user is not the user the invitation is meant for. Do not add user to team.",
                 { func }
             );
-            const snap = await admin
-                .firestore()
-                .collection(INVITATIONS_COLLECTION)
-                .where("invitationId", "==", data.code)
-                .where("userId", "==", context.auth.uid)
-                .where("status", "==", "pending")
-                .get();
-            invitation = snap.docs[0]?.data() as Invitation;
-            if (!invitation) {
-                functions.logger.info(
-                    "Requesting user is not the user the invitation is meant for. Do not add user to team.",
-                    { func }
-                );
-                return response(HttpStatus.BAD_REQUEST, {
-                    message: "Invitation does not exists or expired.",
-                });
-            }
-            // if we found a member, then it is for the requesting user
-            // now we update the status of the member
-            functions.logger.info("Updating invitation status", { func });
-            await admin
-                .firestore()
-                .collection(INVITATIONS_COLLECTION)
-                .doc(data.code)
-                .update({ status: "rejected" });
-            functions.logger.info("Invitation status updated.", { func });
-        } catch (error) {
-            functions.logger.error(
-                "Failed to check if invitation is for requesting user",
-                { func, error }
-            );
-            return response(HttpStatus.INTERNAL_SERVER_ERROR, {
-                message: "Failed to reject invitation. (2)",
+            return response(HttpStatus.BAD_REQUEST, {
+                message: "Invitation does not exists or expired.",
             });
         }
-
-        return response(HttpStatus.OK, { message: "Invitation rejected." });
+        // if we found a member, then it is for the requesting user
+        // now we update the status of the member
+        logInfo("Updating invitation status", { func });
+        await getFirestore()
+            .collection(INVITATIONS_COLLECTION)
+            .doc(data.code)
+            .update({ status: "rejected" });
+        logInfo("Invitation status updated.", { func });
+    } catch (error) {
+        logError("Failed to check if invitation is for requesting user", {
+            func,
+            error,
+        });
+        return response(HttpStatus.INTERNAL_SERVER_ERROR, {
+            message: "Failed to reject invitation. (2)",
+        });
     }
-);
 
-export const checkInvitation = functions.https.onCall(async (data, context) => {
-    if (!context.auth) {
+    return response(HttpStatus.OK, { message: "Invitation rejected." });
+});
+
+export const checkInvitation = onCall(async (data, res) => {
+    const context = res as Context;
+    if (!context?.auth) {
         return response(HttpStatus.UNAUTHORIZED, { message: "Unauthorized" });
     }
 
@@ -1062,8 +1009,7 @@ export const checkInvitation = functions.https.onCall(async (data, context) => {
     }
 
     try {
-        const snap = await admin
-            .firestore()
+        const snap = await getFirestore()
             .collection(INVITATIONS_COLLECTION)
             .where("invitationId", "==", data.code)
             .where("userId", "==", context.auth.uid)
@@ -1076,8 +1022,7 @@ export const checkInvitation = functions.https.onCall(async (data, context) => {
 
         // make sure requesting user is not in a team already
         const profileDoc = (
-            await admin
-                .firestore()
+            await getFirestore()
                 .collection(USER_PROFILES_COLLECTION)
                 .where("uid", "==", context.auth.uid)
                 .where("teamId", "!=", "")
@@ -1087,8 +1032,7 @@ export const checkInvitation = functions.https.onCall(async (data, context) => {
             return response(HttpStatus.NOT_FOUND, { message: "Not Found" });
         }
 
-        const teamDoc = await admin
-            .firestore()
+        const teamDoc = await getFirestore()
             .collection(TEAMS_COLLECTION)
             .doc(doc.data().teamId)
             .get();
@@ -1099,8 +1043,7 @@ export const checkInvitation = functions.https.onCall(async (data, context) => {
         const team = teamDoc.data() as Team;
 
         const ownerDetails = (
-            await admin
-                .firestore()
+            await getFirestore()
                 .collection(USER_PROFILES_COLLECTION)
                 .where("uid", "==", team.owner)
                 .where("teamId", "==", team.id)
@@ -1118,7 +1061,7 @@ export const checkInvitation = functions.https.onCall(async (data, context) => {
             },
         });
     } catch (e) {
-        functions.logger.error("Failed to check invitation.", {
+        logError("Failed to check invitation.", {
             error: e,
             func: "checkInvitation",
         });
@@ -1128,8 +1071,9 @@ export const checkInvitation = functions.https.onCall(async (data, context) => {
     }
 });
 
-export const getUserInvitations = functions.https.onCall(async (_, context) => {
-    if (!context.auth)
+export const getUserInvitations = onCall(async (_, res) => {
+    const context = res as Context;
+    if (!context?.auth)
         return response(HttpStatus.UNAUTHORIZED, { message: "unauthorized" });
 
     const func = "getUserInvitations";
@@ -1138,7 +1082,7 @@ export const getUserInvitations = functions.https.onCall(async (_, context) => {
         const team = await internalGetTeamByUser(context.auth.uid);
         if (team) return response(HttpStatus.OK, { data: [] });
     } catch (error) {
-        functions.logger.error("Failed to get requesting user's team.", {
+        logError("Failed to get requesting user's team.", {
             error,
             func,
         });
@@ -1148,8 +1092,7 @@ export const getUserInvitations = functions.https.onCall(async (_, context) => {
     }
 
     try {
-        const snap = await admin
-            .firestore()
+        const snap = await getFirestore()
             .collection(INVITATIONS_COLLECTION)
             .where("userId", "==", context.auth.uid)
             .where("status", "==", "pending")
@@ -1158,8 +1101,7 @@ export const getUserInvitations = functions.https.onCall(async (_, context) => {
         const docs = snap.docs;
         for (const doc of docs) {
             const data = doc.data() as Invitation;
-            const snap = await admin
-                .firestore()
+            const snap = await getFirestore()
                 .collection(TEAMS_COLLECTION)
                 .doc(data.teamId)
                 .get();
@@ -1171,13 +1113,13 @@ export const getUserInvitations = functions.https.onCall(async (_, context) => {
                     teamName: team.name,
                 });
             } else {
-                functions.logger.info("No team found with id:", data.teamId);
+                logInfo("No team found with id:", data.teamId);
             }
         }
 
         return response(HttpStatus.OK, { data: invitations });
     } catch (error) {
-        functions.logger.error("Failed to get user team invitations", {
+        logError("Failed to get user team invitations", {
             error,
             func,
         });
