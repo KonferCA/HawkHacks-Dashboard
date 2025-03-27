@@ -169,6 +169,18 @@ export const createTicket = onCall(async (_, res) => {
         );
         const ipadHawk = ipadHawkResponse.data;
 
+        if (!signerCert || !signerKey || !wwdr) {
+            logError("Missing required Apple certificates", {
+                signerCert: !!signerCert,
+                signerKey: !!signerKey,
+                wwdr: !!wwdr,
+            });
+            throw new HttpsError(
+                "internal",
+                "Server Configuration Error: Missing required certificates"
+            );
+        }
+
         const pass = new PKPass(
             {
                 "pass.json": passJsonBuffer,
@@ -186,7 +198,7 @@ export const createTicket = onCall(async (_, res) => {
             }
         );
 
-        const buffer = await pass.getAsBuffer();
+        const buffer = pass.getAsBuffer();
 
         const storageRef = getStorage().bucket();
         const fileRef = storageRef.file(`passes/${userId}/pass.pkpass`);

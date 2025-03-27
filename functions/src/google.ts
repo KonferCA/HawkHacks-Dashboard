@@ -368,6 +368,14 @@ export const createPassObject = onCall(async (data: any, res) => {
         },
     };
 
+    if (!credentials.private_key) {
+        logError("Missing private key in Google credentials");
+        throw new HttpsError(
+            "internal",
+            "Server configuration error: Missing private key"
+        );
+    }
+
     const token = jwt.sign(claims, credentials.private_key, {
         algorithm: "RS256",
     });

@@ -20,6 +20,10 @@ async function sendSpotAvailableEmail(name: string, email: string | undefined) {
     if (!email) {
         throw new Error("No email provided");
     }
+    
+    if (!NOREPLY_EMAIL) {
+        throw new Error("NOREPLY_EMAIL environment variable is not set");
+    }
 
     logInfo("Sending new available spot email...", { email });
     await resend.emails.send({
@@ -69,6 +73,10 @@ async function sendJoinedWaitlistEmail(name: string, email: string) {
     if (!email) {
         throw new Error("No email provided");
     }
+    
+    if (!NOREPLY_EMAIL) {
+        throw new Error("NOREPLY_EMAIL environment variable is not set");
+    }
 
     logInfo("Sending new available spot email...", { email });
     await resend.emails.send({
@@ -117,6 +125,10 @@ async function sendJoinedWaitlistEmail(name: string, email: string) {
 async function sendRSVPConfirmedEmail(name: string, email: string) {
     if (!email) {
         throw new Error("No email provided");
+    }
+    
+    if (!NOREPLY_EMAIL) {
+        throw new Error("NOREPLY_EMAIL environment variable is not set");
     }
 
     logInfo("Sending new available spot email...", { email });
