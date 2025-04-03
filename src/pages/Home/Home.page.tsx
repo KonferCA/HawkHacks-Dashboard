@@ -3,7 +3,7 @@ import { Card, Accordion, SocialIcons, Button, Modal } from "@components";
 import { faqs, sponsors, importantDateTimes } from "@data";
 import { useAuth } from "@/providers/auth.provider";
 import { useState } from "react";
-import { useNotification } from "@/providers/notification.provider";
+import { toaster } from "@/components/ui/toaster";
 import { withdrawRSVP } from "@/services/firebase/rsvp";
 
 const ImportantInfoBlocks = importantDateTimes.map((importantDateTime, i) => {
@@ -51,29 +51,28 @@ const HomePage = () => {
     const { currentUser, logout } = useAuth();
     const [disableAllActions, setDisableAllActions] = useState(false);
     const [openDismissRSVPWarning, setOpenWithdrawRSVP] = useState(false);
-    const { showNotification } = useNotification();
 
     const withdraw = async () => {
         setDisableAllActions(true);
         try {
             const res = await withdrawRSVP();
             if (res.status === 200) {
-                showNotification({
+                toaster.success({
                     title: "Your RSVP has been withdrawn",
-                    message: "",
+                    description: "",
                 });
                 // remove lingering claims
                 await logout();
             } else {
-                showNotification({
+                toaster.error({
                     title: "Looks like something went wrong",
-                    message: `Please contact us in our Discord support channel. (${res.message})`,
+                    description: `Please contact us in our Discord support channel. (${res.message})`,
                 });
             }
         } catch (error) {
-            showNotification({
+            toaster.error({
                 title: "Error Withdrawing RSVP",
-                message: (error as Error).message,
+                description: (error as Error).message,
             });
         }
         setDisableAllActions(false);

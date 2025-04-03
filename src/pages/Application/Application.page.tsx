@@ -1,7 +1,8 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
-import { useAuth, useNotification } from "@/providers/hooks";
+import { useAuth } from "@/providers/hooks";
+import { toaster } from "@/components/ui/toaster";
 import { FileBrowser } from "@/components/FileBrowse/FileBrowse";
 import {
     TextInput,
@@ -90,7 +91,6 @@ export const ApplicationPage = () => {
     );
     const [submitted, setSubmitted] = useState(false);
     const [openConfirmPopUp, setOpenConfirmPopUp] = useState(false);
-    const { showNotification } = useNotification();
     const { userApp, refreshUserApp } = useAuth();
     const progressTrackRef = useRef(new Set<string>());
     const loadingTimeoutRef = useRef<number | null>(null);
@@ -166,8 +166,8 @@ export const ApplicationPage = () => {
                 application.participatingAs === "Hacker"
                     ? hackerSpecificValidation
                     : application.participatingAs === "Mentor"
-                    ? mentorSpecificValidation
-                    : volunteerSpecificValidation;
+                      ? mentorSpecificValidation
+                      : volunteerSpecificValidation;
             const results = validateFn.safeParse(application);
             if (!results.success) {
                 setErrors(results.error.issues.map((i) => i.message));
@@ -252,9 +252,9 @@ export const ApplicationPage = () => {
             }
         } catch (e) {
             console.error(e);
-            showNotification({
+            toaster.error({
                 title: "Error uploading mentor resume",
-                message: "Please try again later.",
+                description: "Please try again later.",
             });
             setIsSubmitting(false);
             return;
@@ -269,9 +269,9 @@ export const ApplicationPage = () => {
             }
         } catch (e) {
             console.error(e);
-            showNotification({
+            toaster.error({
                 title: "Error uploading sponsor resume",
-                message: "Please try again later.",
+                description: "Please try again later.",
             });
             setIsSubmitting(false);
             return;
@@ -281,16 +281,16 @@ export const ApplicationPage = () => {
             trackProgress("submit");
             application.email = currentUser.email as string;
             await submitApplication(application, currentUser.uid);
-            showNotification({
+            toaster.success({
                 title: "Application Submitted!",
-                message:
+                description:
                     "Thank you for applying! You'll hear from us via email within one week after applications close on May 3rd.",
             });
             await refreshUserApp();
         } catch (e) {
-            showNotification({
+            toaster.error({
                 title: "Error Submitting Application",
-                message: "Please retry later.",
+                description: "Please retry later.",
             });
             console.error(e);
         } finally {
@@ -330,8 +330,8 @@ export const ApplicationPage = () => {
         application.participatingAs === "Hacker"
             ? hackerSpecificForm
             : application.participatingAs === "Mentor"
-            ? mentorSpecificForm
-            : volunteerSpecificForm;
+              ? mentorSpecificForm
+              : volunteerSpecificForm;
 
     if (isLoading) return <LoadingAnimation />;
 
@@ -767,10 +767,10 @@ export const ApplicationPage = () => {
                             {isSubmitting
                                 ? "Submitting..."
                                 : activeStep === steps.length - 1
-                                ? userApp
-                                    ? "Re-submit"
-                                    : "Submit"
-                                : "Next"}
+                                  ? userApp
+                                      ? "Re-submit"
+                                      : "Submit"
+                                  : "Next"}
                         </Button>
                     </div>
                 </form>

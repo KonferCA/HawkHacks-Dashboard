@@ -1,5 +1,5 @@
 import { Button, LoadingAnimation, Select, TextInput } from "@/components";
-import { useNotification } from "@/providers/notification.provider";
+import { toaster } from "@/components/ui/toaster";
 import { getRedeemableItems } from "@/services/firebase/redeem";
 import { EventItem } from "@/services/firebase/types";
 import { format, isAfter, parseISO } from "date-fns";
@@ -19,7 +19,6 @@ export const AdminManageEventsPage = () => {
     const addEvent = useEventsStore((state) => state.addEvent);
     const removeEvent = useEventsStore((state) => state.removeEvent);
     const [isLoading, setIsLoading] = useState(true);
-    const { showNotification } = useNotification();
     const [newEvent, setNewEvent] = useState<EventItem>({
         title: "",
         description: "",
@@ -54,9 +53,9 @@ export const AdminManageEventsPage = () => {
                 const evts = await getRedeemableItems();
                 setEvents(evts);
             } catch (e) {
-                showNotification({
+                toaster.error({
                     title: "Error Loading Items",
-                    message: (e as Error).message,
+                    description: (e as Error).message,
                 });
             } finally {
                 if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
@@ -86,9 +85,9 @@ export const AdminManageEventsPage = () => {
             })
             .safeParse(newEvent);
         if (!res.success) {
-            showNotification({
+            toaster.error({
                 title: "Missing fields in event input",
-                message: res.error.issues.map((i) => i.path).join("\n"),
+                description: res.error.issues.map((i) => i.path).join("\n"),
             });
             return;
         }
@@ -96,9 +95,9 @@ export const AdminManageEventsPage = () => {
         if (
             !isAfter(parseISO(newEvent.endTime), parseISO(newEvent.startTime))
         ) {
-            showNotification({
+            toaster.error({
                 title: "Invalid date range",
-                message: "End date cannot be before start date.",
+                description: "End date cannot be before start date.",
             });
             return;
         }
@@ -110,9 +109,8 @@ export const AdminManageEventsPage = () => {
         try {
             const docRef = doc(firestore, "events", id);
             await setDoc(docRef, newEvent);
-            showNotification({
+            toaster.success({
                 title: "Event Item Saved",
-                message: "",
             });
 
             if (!isEditingEvent) {
@@ -120,9 +118,9 @@ export const AdminManageEventsPage = () => {
             }
         } catch (e) {
             console.error(e);
-            showNotification({
+            toaster.error({
                 title: "Failed to save event item",
-                message:
+                description:
                     "Please open the console and send a screenshot of the error to Engineering.",
             });
         }
@@ -150,15 +148,15 @@ export const AdminManageEventsPage = () => {
         try {
             await deleteDoc(doc(firestore, "events", id));
             removeEvent(id);
-            showNotification({
+            toaster.success({
                 title: "Event Deleted",
-                message: "",
+                description: "",
             });
         } catch (e) {
             console.error(e);
-            showNotification({
+            toaster.error({
                 title: "Nooooo...it can't delete event :pepecry:",
-                message:
+                description:
                     "Please open the console and send a screenshot of the error to Engineering.",
             });
         }

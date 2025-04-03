@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { EventItem, type ExtendedTicketData } from "@/services/firebase/types";
 import { getExtendedTicketData } from "@/services/firebase/ticket";
-import { useNotification } from "@/providers/notification.provider";
+import { toaster } from "@/components/ui/toaster";
 import { getRedeemableItems, redeemItem } from "@/services/firebase/redeem";
 import { Button, LoadingAnimation, Modal } from "@/components";
 import { getButtonStyles } from "@/components/Button/Button.styles";
@@ -20,7 +20,6 @@ export const AdminViewTicketPage = () => {
     const [ticketData, setTicketData] = useState<ExtendedTicketData | null>(
         null
     );
-    const { showNotification } = useNotification();
     const [events, setEvents] = useState<EventItem[]>([]);
     const [openConfirm, setOpenConfirm] = useState(false);
     const [activeEvent, setActiveEvent] = useState<EventItem | null>(null);
@@ -44,9 +43,9 @@ export const AdminViewTicketPage = () => {
                 setTicketData(res.data);
                 setEvents(e);
             } else {
-                showNotification({
+                toaster.error({
                     title: "Failed to load ticket",
-                    message: res.message,
+                    description: res.message,
                 });
             }
             if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
@@ -64,25 +63,25 @@ export const AdminViewTicketPage = () => {
         try {
             const res = await redeemItem(ticketId, e.id, activeAction);
             if (res.status === 200) {
-                showNotification({
+                toaster.success({
                     title:
                         activeAction === "check"
                             ? "Event Item Checked!"
                             : "Event Item Unchecked!",
-                    message: "",
+                    description: "",
                 });
                 ticketData.events = res.data;
                 setTicketData({ ...ticketData });
             } else {
-                showNotification({
+                toaster.error({
                     title: "Failed to check event item",
-                    message: res.message,
+                    description: res.message,
                 });
             }
         } catch (e) {
-            showNotification({
+            toaster.error({
                 title: "Failed to check event item",
-                message: (e as Error).message,
+                description: (e as Error).message,
             });
         } finally {
             closeModal();

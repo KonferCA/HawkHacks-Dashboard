@@ -1,7 +1,7 @@
 import { Button, LoadingAnimation } from "@/components";
 import { useAuth } from "@/providers/auth.provider";
 import { verifyRSVP } from "@/services/firebase/rsvp";
-import { useNotification } from "@/providers/notification.provider";
+import { toaster } from "@/components/ui/toaster";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { rsvpText } from "@/data";
@@ -38,7 +38,6 @@ export const VerifyRSVP = () => {
     const [agreedToParticipate, setAgreedToParticipate] = useState(false);
     const [willAttend, setWillAttend] = useState(false);
     const [rsvpLimitReached, setRsvpLimitReached] = useState(true);
-    const { showNotification } = useNotification();
     const { currentUser, reloadUser } = useAuth();
     const navigate = useNavigate();
     const [isLoading] = useState(false);
@@ -60,9 +59,9 @@ export const VerifyRSVP = () => {
             if (status === 400 && message === "RSVP limit reached.") {
                 setRsvpLimitReached(true);
             } else {
-                showNotification({
+                toaster.error({
                     title: "Error Verifying RSVP",
-                    message: message ?? "",
+                    description: message ?? "",
                 });
             }
         }

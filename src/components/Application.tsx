@@ -2,7 +2,7 @@ import { FC } from "react";
 import { ApplicationData } from "./forms/types";
 import { Button } from "./Button/Button";
 import { getResume } from "@/services/firebase/files";
-import { useNotification } from "@/providers/notification.provider";
+import { toaster } from "./ui/toaster";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 interface ApplicationProps {
@@ -38,7 +38,6 @@ const Field = ({
 };
 
 export const Application: FC<ApplicationProps> = ({ app }) => {
-    const { showNotification } = useNotification();
     return (
         <div className="divide-y divide-gray-300 w-fit border-t border-gray-300 pb-8">
             <div className="py-2 space-y-2">
@@ -119,9 +118,9 @@ export const Application: FC<ApplicationProps> = ({ app }) => {
                             <Button
                                 onClick={() => {
                                     getResume(app.mentorResumeRef).catch(() =>
-                                        showNotification({
+                                        toaster.error({
                                             title: "Oops!",
-                                            message:
+                                            description:
                                                 "Resume could not be downloaed.",
                                         })
                                     );
@@ -155,9 +154,10 @@ export const Application: FC<ApplicationProps> = ({ app }) => {
                     <Button
                         onClick={() => {
                             getResume(app.generalResumeRef).catch(() =>
-                                showNotification({
+                                toaster.error({
                                     title: "Oops!",
-                                    message: "Resume could not be downloaed.",
+                                    description:
+                                        "Resume could not be downloaed.",
                                 })
                             );
                         }}

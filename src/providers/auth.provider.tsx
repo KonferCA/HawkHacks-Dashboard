@@ -14,12 +14,11 @@ import {
     OAuthProvider,
 } from "firebase/auth";
 import { auth } from "@/services/firebase";
-import { useNotification } from "@/providers/notification.provider";
+import { toaster } from "@/components/ui/toaster";
 import { verifyGitHubEmail } from "@/services/firebase/user";
 import { LoadingAnimation } from "@/components";
 
 import type { User, AuthProvider as FirebaseAuthProvider } from "firebase/auth";
-import type { NotificationOptions } from "@/providers/types";
 import type { ApplicationData } from "@/components/forms/types";
 
 type UserType =
@@ -106,30 +105,30 @@ function getProvider(provider: ProviderName): FirebaseAuthProvider {
     }
 }
 
-function getNotificationByAuthErrCode(code: string): NotificationOptions {
+function getNotificationByAuthErrCode(code: string) {
     switch (code) {
         case "auth/email-already-in-use":
             return {
                 title: "Email In Use",
-                message:
+                description:
                     "If you forgot your password, click on 'forgot password' to recover it!",
             };
         case "auth/invalid-login-credentials":
             return {
                 title: "Invalid Credentials",
-                message:
+                description:
                     "Please make sure you have the correct credentials and try again.",
             };
         case "auth/popup-blocked":
             return {
                 title: "Login Blocked",
-                message:
+                description:
                     "Popup windows are blocked. Please allow them in your browser settings to continue.",
             };
         default:
             return {
                 title: "Oops! Something went wrong",
-                message: "Please try again later.",
+                description: "Please try again later.",
             };
     }
 }
@@ -147,7 +146,6 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
         undefined
     );
     const [isLoading, setIsLoading] = useState(false);
-    const { showNotification } = useNotification();
 
     const completeLoginProcess = async (user: User) => {
         // check if user has a profile in firestore
@@ -170,7 +168,7 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
             await completeLoginProcess(user);
             /* eslint-disable-next-line */
         } catch (error: any) {
-            showNotification(getNotificationByAuthErrCode(error.code));
+            toaster.error(getNotificationByAuthErrCode(error.code));
         }
     };
 
@@ -178,9 +176,9 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
         try {
             await signOut(auth);
         } catch (error) {
-            showNotification({
+            toaster.error({
                 title: "Oh no! Can't log out!",
-                message:
+                description:
                     "Please try again after refreshing the page. If problem continues just don't leave, please T.T",
             });
         }
@@ -197,21 +195,21 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
             await completeLoginProcess(user);
             /* eslint-disable-next-line */
         } catch (error: any) {
-            showNotification(getNotificationByAuthErrCode(error.code));
+            toaster.error(getNotificationByAuthErrCode(error.code));
         }
     };
 
     const resetPassword = async (email: string) => {
         try {
             await sendPasswordResetEmail(auth, email);
-            showNotification({
+            toaster.success({
                 title: "Password reset email sent",
-                message: "Please check your inbox for reset instructions.",
+                description: "Please check your inbox for reset instructions.",
             });
         } catch (error: unknown) {
-            showNotification({
+            toaster.error({
                 title: "Oops! Something went wrong",
-                message: "Password could not be reset.",
+                description: "Password could not be reset.",
             });
             console.error(error);
         }
@@ -262,9 +260,9 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
                             }
                         }, 1000);
                     } else {
-                        showNotification({
+                        toaster.error({
                             title: "Error Verifying Email",
-                            message:
+                            description:
                                 "Please log out and log in again. If problem persists, please contact us in our Discord support channel.",
                         });
                     }
@@ -276,15 +274,15 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
             if (
                 error.code === "auth/account-exists-with-different-credential"
             ) {
-                showNotification({
+                toaster.error({
                     title: "Oops! Something went wrong.",
-                    message:
+                    description:
                         "An account already exists with the same email address but different sign-in credentials. Sign in using a provider associated with this email address.",
                 });
             } else {
-                showNotification({
+                toaster.error({
                     title: "Oops! Something went wrong.",
-                    message: "Please try again later.",
+                    description: "Please try again later.",
                 });
                 console.error(error);
             }

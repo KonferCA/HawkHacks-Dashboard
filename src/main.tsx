@@ -6,7 +6,7 @@ import { Provider } from "@/components/ui/provider";
 
 import { Router } from "@/navigation";
 import { AuthProvider } from "@providers";
-import { NotificationProvider } from "./providers/notification.provider";
+import { Toaster } from "./components/ui/toaster";
 import { RoutesProvider } from "./providers/routes.provider";
 
 // for funsies
@@ -18,13 +18,12 @@ console.log(`App env: ${import.meta.env.MODE}`);
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <Provider>
-            <NotificationProvider>
-                <AuthProvider>
-                    <RoutesProvider>
-                        <Router />
-                    </RoutesProvider>
-                </AuthProvider>
-            </NotificationProvider>
+            <Toaster />
+            <AuthProvider>
+                <RoutesProvider>
+                    <Router />
+                </RoutesProvider>
+            </AuthProvider>
         </Provider>
     </React.StrictMode>
 );

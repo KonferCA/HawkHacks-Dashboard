@@ -2,7 +2,7 @@ import { Button, LoadingAnimation, TextInput } from "@/components";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useAuth } from "@/providers/auth.provider";
-import { useNotification } from "@/providers/notification.provider";
+import { toaster } from "@/components/ui/toaster";
 import {
     createTeam,
     deleteTeam,
@@ -60,7 +60,6 @@ export const MyTeamPage = () => {
         []
     );
     const { currentUser } = useAuth();
-    const { showNotification } = useNotification();
     const debounce = useDebounce<SearchTeamNameFn, string>(
         async (name: string) => {
             if (!name) return;
@@ -83,23 +82,23 @@ export const MyTeamPage = () => {
             try {
                 const res = await createTeam(teamName);
                 if (res.status === 201) {
-                    showNotification({
+                    toaster.success({
                         title: "Team Created!",
-                        message:
+                        description:
                             "Awesome, it looks like your team has been created successfully! Start inviting hackers into your team!",
                     });
                     setTeam(res.data);
                     setTeamName("");
                 } else {
-                    showNotification({
+                    toaster.error({
                         title: "It looks like something went wrong",
-                        message: res.message,
+                        description: res.message,
                     });
                 }
             } catch (e) {
-                showNotification({
+                toaster.error({
                     title: "Oh Uh! Error Creating Team",
-                    message: `Please try again later. (${
+                    description: `Please try again later. (${
                         (e as Error).message
                     })`,
                 });
@@ -136,25 +135,24 @@ export const MyTeamPage = () => {
                 newTeam.members.push(data);
                 setTeam(newTeam);
                 setEmail("");
-                showNotification({
+                toaster.success({
                     title: "Invitation Sent!",
-                    message: "",
                 });
             } else if (status >= 400 && status < 500) {
-                showNotification({
+                toaster.error({
                     title: "Error Sending Invitation",
-                    message,
+                    description: message,
                 });
             } else {
-                showNotification({
+                toaster.error({
                     title: "Error Sending Invitation",
-                    message: "Please try again later.",
+                    description: "Please try again later.",
                 });
             }
         } catch (e) {
-            showNotification({
+            toaster.error({
                 title: "Error Sending Invitation",
-                message: `Please try again later. (${(e as Error).message})`,
+                description: `Please try again later. (${(e as Error).message})`,
             });
         } finally {
             setIsLoading(false);
@@ -169,9 +167,9 @@ export const MyTeamPage = () => {
             setDisableAllActions(true);
             const res = await deleteTeam();
             if (res.status === 200) {
-                showNotification({
+                toaster.success({
                     title: "Team Deleted!",
-                    message: "Feel free to create a new team!",
+                    description: "Feel free to create a new team!",
                 });
                 flushSync(() => {
                     // reset all states
@@ -181,15 +179,15 @@ export const MyTeamPage = () => {
                     setConfirmDelete("");
                 });
             } else {
-                showNotification({
+                toaster.error({
                     title: "Oh no... Something went wrong",
-                    message: res.message,
+                    description: res.message,
                 });
             }
         } catch (e) {
-            showNotification({
+            toaster.error({
                 title: "Error Deleting Team",
-                message: `Please try again later. (${(e as Error).message})`,
+                description: `Please try again later. (${(e as Error).message})`,
             });
         } finally {
             setIsLoading(false);
@@ -206,9 +204,9 @@ export const MyTeamPage = () => {
             try {
                 const res = await updateTeamName(teamName);
                 if (res.status === 200) {
-                    showNotification({
+                    toaster.success({
                         title: "Team Name Updated!",
-                        message:
+                        description:
                             "You have until May 16th to change the team name again.",
                     });
                     // want to set the new team name in the team object
@@ -218,15 +216,15 @@ export const MyTeamPage = () => {
                     setInvalidTeamName(false);
                     setIsTeamNameTaken(false);
                 } else {
-                    showNotification({
+                    toaster.error({
                         title: "Oh no... Something went wrong.",
-                        message: res.message,
+                        description: res.message,
                     });
                 }
             } catch (e) {
-                showNotification({
+                toaster.error({
                     title: "Error Updating Team Name",
-                    message: `Please try again later. (${
+                    description: `Please try again later. (${
                         (e as Error).message
                     })`,
                 });
@@ -250,9 +248,9 @@ export const MyTeamPage = () => {
             setDisableAllActions(true);
             const res = await removeMembers(toBeRemovedTeammates);
             if (res.status === 200) {
-                showNotification({
+                toaster.success({
                     title: "Successfully removed teammate(s)",
-                    message: "",
+                    description: "",
                 });
                 // set new team members list
                 if (team) {
@@ -264,15 +262,15 @@ export const MyTeamPage = () => {
                 }
                 closeTeammatesDialog();
             } else {
-                showNotification({
+                toaster.error({
                     title: "Oh no... Something went wrong",
-                    message: res.message,
+                    description: res.message,
                 });
             }
         } catch (e) {
-            showNotification({
+            toaster.error({
                 title: "Error Removing Teammates",
-                message: (e as Error).message,
+                description: (e as Error).message,
             });
         } finally {
             setDisableAllActions(false);
@@ -288,9 +286,9 @@ export const MyTeamPage = () => {
             const res = teamRes.value;
             setTeam(res.data);
         } else {
-            showNotification({
+            toaster.error({
                 title: "Could not get team",
-                message:
+                description:
                     "Yikes, something went wrong. Try again later; if the error continues, shoot us a message on our Discord tech-support channel.",
             });
         }
@@ -308,21 +306,21 @@ export const MyTeamPage = () => {
         try {
             const res = await validateTeamInvitation(invitationId);
             if (res.status === 200) {
-                showNotification({
+                toaster.success({
                     title: "Joined Team",
-                    message: "Hope you have a blast with your new team!",
+                    description: "Hope you have a blast with your new team!",
                 });
                 await fetchTeam();
             } else {
-                showNotification({
+                toaster.error({
                     title: "Error Joining Team",
-                    message: res.message,
+                    description: res.message,
                 });
             }
         } catch (e) {
-            showNotification({
+            toaster.error({
                 title: "Error Joining Team",
-                message: (e as Error).message,
+                description: (e as Error).message,
             });
         }
         setDisableAllActions(false);
@@ -333,21 +331,20 @@ export const MyTeamPage = () => {
         try {
             const res = await rejectInvitation(invitationId);
             if (res.status === 200) {
-                showNotification({
+                toaster.success({
                     title: "Team Inviation Rejected",
-                    message: "",
                 });
                 await fetchTeam();
             } else {
-                showNotification({
+                toaster.error({
                     title: "Error Rejecting Invitation",
-                    message: res.message,
+                    description: res.message,
                 });
             }
         } catch (e) {
-            showNotification({
+            toaster.error({
                 title: "Error Rejecting Invitation",
-                message: (e as Error).message,
+                description: (e as Error).message,
             });
         }
         setDisableAllActions(false);
@@ -395,8 +392,8 @@ export const MyTeamPage = () => {
                                         invalidTeamName
                                             ? "The entered team name is not valid."
                                             : !isTeamNameTaken
-                                            ? "Enter an awesome team name."
-                                            : "The team name has been taken. Please choose another one."
+                                              ? "Enter an awesome team name."
+                                              : "The team name has been taken. Please choose another one."
                                     }
                                     invalid={invalidTeamName || isTeamNameTaken}
                                     required
@@ -584,8 +581,8 @@ export const MyTeamPage = () => {
                                             invalidTeamName
                                                 ? "The entered team name is not valid."
                                                 : !isTeamNameTaken
-                                                ? ""
-                                                : "The team name has been taken. Please choose another one."
+                                                  ? ""
+                                                  : "The team name has been taken. Please choose another one."
                                         }
                                         invalid={
                                             invalidTeamName || isTeamNameTaken

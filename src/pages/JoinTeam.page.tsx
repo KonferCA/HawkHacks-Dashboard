@@ -1,6 +1,6 @@
 import { Button, LoadingAnimation } from "@/components";
 import { useAuth } from "@/providers/auth.provider";
-import { useNotification } from "@/providers/notification.provider";
+import { toaster } from "@/components/ui/toaster";
 import { useAvailableRoutes } from "@/providers/routes.provider";
 import {
     checkInvitation,
@@ -15,7 +15,6 @@ export const JoinTeamPage = () => {
     const [disableButtons, setDisableButtons] = useState(false);
     const { invitationId } = useParams();
     const navigate = useNavigate();
-    const { showNotification } = useNotification();
     const { paths: routes } = useAvailableRoutes();
     const { currentUser } = useAuth();
     const [invitationData, setInvitationData] = useState<Invitation | null>(
@@ -29,22 +28,22 @@ export const JoinTeamPage = () => {
             setDisableButtons(true);
             const res = await validateTeamInvitation(invitationId);
             if (res.status === 200) {
-                showNotification({
+                toaster.success({
                     title: "Joined Team",
-                    message: "Hope you have a blast with your new team!",
+                    description: "Hope you have a blast with your new team!",
                 });
                 navigate(routes.myTeam);
             } else {
-                showNotification({
+                toaster.error({
                     title: "Error Joining Team",
-                    message: res.message,
+                    description: res.message,
                 });
                 setDisableButtons(false);
             }
         } catch (e) {
-            showNotification({
+            toaster.error({
                 title: "Error Joining Team",
-                message: (e as Error).message,
+                description: (e as Error).message,
             });
             setDisableButtons(false);
         }
@@ -56,22 +55,22 @@ export const JoinTeamPage = () => {
             setDisableButtons(true);
             const res = await rejectInvitation(invitationId);
             if (res.status === 200) {
-                showNotification({
+                toaster.success({
                     title: "Team Inviation Rejected",
-                    message: "",
+                    description: "",
                 });
                 navigate(routes.myTeam);
             } else {
-                showNotification({
+                toaster.error({
                     title: "Error Rejecting Invitation",
-                    message: res.message,
+                    description: res.message,
                 });
                 setDisableButtons(false);
             }
         } catch (e) {
-            showNotification({
+            toaster.error({
                 title: "Error Rejecting Invitation",
-                message: (e as Error).message,
+                description: (e as Error).message,
             });
             setDisableButtons(false);
         }
@@ -87,16 +86,16 @@ export const JoinTeamPage = () => {
                 if (data.status === 200) {
                     setInvitationData(data.data);
                 } else if (data.status !== 404) {
-                    showNotification({
+                    toaster.error({
                         title: "Error",
-                        message:
+                        description:
                             "Please make sure you this link from an invitation or request a new one.",
                     });
                 }
             } catch {
-                showNotification({
+                toaster.error({
                     title: "Error",
-                    message:
+                    description:
                         "Please make sure you this link from an invitation or request a new one.",
                 });
             } finally {

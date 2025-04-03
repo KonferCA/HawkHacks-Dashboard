@@ -13,7 +13,7 @@ import {
     uploadMentorResume,
 } from "@/services/firebase/files";
 import { getSocials, updateSocials } from "@/services/firebase/user";
-import { useNotification } from "@/providers/notification.provider";
+import { toaster } from "@/components/ui/toaster";
 import type { ResumeVisibility, Socials } from "@/services/firebase/types";
 import { Modal, Select } from "@/components";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
@@ -56,7 +56,6 @@ export const NetworkingPage = () => {
     const [editMode, setEditMode] = useState("");
     const timeoutRef = useRef<number | null>(null);
     const gettinSocialsRef = useRef<boolean>(false);
-    const { showNotification } = useNotification();
     const socials = useUserStore((state) => state.socials);
     const setSocials = useUserStore((state) => state.setSocials);
     const [isResumeSettingsOpened, setIsResumeSettingsOpened] = useState(false);
@@ -108,9 +107,9 @@ export const NetworkingPage = () => {
                 setSocials(res.data);
                 setMediaValues(res.data);
             } catch (e) {
-                showNotification({
+                toaster.error({
                     title: "Error Getting Socials",
-                    message: (e as Error).message,
+                    description: (e as Error).message,
                 });
             } finally {
                 if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
@@ -155,9 +154,9 @@ export const NetworkingPage = () => {
             });
             setEditMode("");
         } catch (e) {
-            showNotification({
-                title: "Failed to upload resuem",
-                message: (e as Error).message,
+            toaster.error({
+                title: "Failed to upload resume",
+                description: (e as Error).message,
             });
         }
     };
@@ -174,9 +173,9 @@ export const NetworkingPage = () => {
             setSocials({ ...mediaValues });
             setEditMode("");
         } catch (e) {
-            showNotification({
+            toaster.error({
                 title: "Failed to update socials",
-                message: (e as Error).message,
+                description: (e as Error).message,
             });
         }
     };
@@ -215,15 +214,15 @@ export const NetworkingPage = () => {
                 setFile(null);
                 setIsResumeSettingsOpened(false);
             } catch (error) {
-                showNotification({
+                toaster.error({
                     title: "Error",
-                    message: "Failed to remove resume. Please try again.",
+                    description: "Failed to remove resume. Please try again.",
                 });
             }
         } else {
-            showNotification({
+            toaster.error({
                 title: "Error",
-                message: "No resume found to remove.",
+                description: "No resume found to remove.",
             });
         }
     };
@@ -250,16 +249,17 @@ export const NetworkingPage = () => {
                 ...mediaValues,
                 resumeVisibility: newVisibility,
             });
-            showNotification({
+            toaster.success({
                 title: "Resume Settings Saved",
-                message: "",
+                description: "",
             });
             setIsResumeSettingsOpened(false);
             setEditMode("");
         } catch (error) {
-            showNotification({
+            toaster.error({
                 title: "Error",
-                message: "Failed to save resume settings. Please try again.",
+                description:
+                    "Failed to save resume settings. Please try again.",
             });
         }
     };
@@ -393,16 +393,16 @@ export const NetworkingPage = () => {
                                                         "noopener,noreferrer"
                                                     );
                                                 } catch (error) {
-                                                    showNotification({
+                                                    toaster.error({
                                                         title: "Error",
-                                                        message:
+                                                        description:
                                                             "Failed to open resume. Please try again.",
                                                     });
                                                 }
                                             } else {
-                                                showNotification({
+                                                toaster.error({
                                                     title: "Error",
-                                                    message:
+                                                    description:
                                                         "No resume found to open.",
                                                 });
                                             }

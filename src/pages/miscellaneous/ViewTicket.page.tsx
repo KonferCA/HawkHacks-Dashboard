@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import type { TicketData } from "@/services/firebase/types";
 import { getTicketData } from "@/services/firebase/ticket";
-import { useNotification } from "@/providers/notification.provider";
+import { toaster } from "@/components/ui/toaster";
 import { getResume } from "@/services/firebase/files";
 
 type TicketDataKey = keyof TicketData;
@@ -23,7 +23,6 @@ export const ViewTicketPage = () => {
     const { currentUser } = useAuth();
     const timeoutRef = useRef<number | null>(null);
     const [ticketData, setTicketData] = useState<TicketData | null>(null);
-    const { showNotification } = useNotification();
     const [showResume, setShowResume] = useState(false);
 
     useEffect(() => {
@@ -54,9 +53,9 @@ export const ViewTicketPage = () => {
                                 currentUser.type === "sponsor")
                     );
                 } else {
-                    showNotification({
+                    toaster.error({
                         title: "Failed to load ticket",
-                        message: res.message,
+                        description: res.message,
                     });
                 }
                 setIsLoading(false);
