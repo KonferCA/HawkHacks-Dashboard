@@ -69,5 +69,13 @@
         "vite-bundle-visualizer": "^1.2.1",
         "vite-tsconfig-paths": "^4.3.2",
         "vitest": "^3.0.8"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "@firebase/util",
+            "esbuild",
+            "protobufjs",
+            "re2"
+        ]
     }
 }

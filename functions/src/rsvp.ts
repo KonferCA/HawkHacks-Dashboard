@@ -12,22 +12,31 @@ const WAITLIST_COLLECTION = "waitlist";
 const SPOTS_COLLECTION = "spots";
 const SPOTS_COUNTER_DOCUMENT = "available-spots";
 
-const RESEND_API_KEY = process.env.RESEND_KEY;
-const NOREPLY_EMAIL = process.env.EMAIL_NOREPLY;
-const resend = new Resend(RESEND_API_KEY);
+function getEmailConfiguration() {
+    const RESEND_KEY = process.env.RESEND_KEY;
+    if (!RESEND_KEY) {
+        throw new Error("RESEND_KEY is not set, please check your .env");
+    }
+    const EMAIL_NOREPLY = process.env.EMAIL_NOREPLY;
+    if (!EMAIL_NOREPLY) {
+        throw new Error("EMAIL_NOREPLY is not set, please check your .env");
+    }
+    const resend = new Resend(RESEND_KEY);
+    return {
+        resend,
+        fromEmail: EMAIL_NOREPLY,
+    };
+}
 
 async function sendSpotAvailableEmail(name: string, email: string | undefined) {
+    const { resend, fromEmail } = getEmailConfiguration();
     if (!email) {
         throw new Error("No email provided");
-    }
-    
-    if (!NOREPLY_EMAIL) {
-        throw new Error("NOREPLY_EMAIL environment variable is not set");
     }
 
     logInfo("Sending new available spot email...", { email });
     await resend.emails.send({
-        from: NOREPLY_EMAIL,
+        from: fromEmail,
         to: email,
         subject: "[HawkHacks] RSVP SPOT!",
         html: `
@@ -70,17 +79,14 @@ async function sendSpotAvailableEmail(name: string, email: string | undefined) {
 }
 
 async function sendJoinedWaitlistEmail(name: string, email: string) {
+    const { resend, fromEmail } = getEmailConfiguration();
     if (!email) {
         throw new Error("No email provided");
-    }
-    
-    if (!NOREPLY_EMAIL) {
-        throw new Error("NOREPLY_EMAIL environment variable is not set");
     }
 
     logInfo("Sending new available spot email...", { email });
     await resend.emails.send({
-        from: NOREPLY_EMAIL,
+        from: fromEmail,
         to: email,
         subject: "[HawkHacks] JOINED WAITLIST!",
         html: `
@@ -123,17 +129,14 @@ async function sendJoinedWaitlistEmail(name: string, email: string) {
 }
 
 async function sendRSVPConfirmedEmail(name: string, email: string) {
+    const { resend, fromEmail } = getEmailConfiguration();
     if (!email) {
         throw new Error("No email provided");
-    }
-    
-    if (!NOREPLY_EMAIL) {
-        throw new Error("NOREPLY_EMAIL environment variable is not set");
     }
 
     logInfo("Sending new available spot email...", { email });
     await resend.emails.send({
-        from: NOREPLY_EMAIL,
+        from: fromEmail,
         to: email,
         subject: "[HawkHacks] RSVP CONFIRMED!",
         html: `<!DOCTYPE html><html dir="ltr"xmlns="http://www.w3.org/1999/xhtml"xmlns:o="urn:schemas-microsoft-com:office:office"><meta charset="UTF-8"><meta content="width=device-width,initial-scale=1"name="viewport"><meta name="x-apple-disable-message-reformatting"><meta content="IE=edge"http-equiv="X-UA-Compatible"><meta content="telephone=no"name="format-detection"><title></title><!--[if (mso 16)
