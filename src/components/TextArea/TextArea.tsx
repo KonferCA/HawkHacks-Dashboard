@@ -4,6 +4,7 @@ import {
     getTextInputStyles,
     getTextInputDescriptionStyles,
 } from "@/components/TextInput/TextInput.styles";
+import { Textarea } from "@chakra-ui/react";
 
 export interface TextAreaProps
     extends TextInputStylesProps,
@@ -50,7 +51,7 @@ export const TextArea: React.FC<TextAreaProps> = ({
                 {required ? <span className="text-red-600 ml-1">*</span> : null}
             </label>
             <div className="mt-2">
-                <textarea
+                <Textarea
                     {...textAreaProps}
                     aria-describedby={[
                         textAreaProps["aria-describedby"] ?? "",
