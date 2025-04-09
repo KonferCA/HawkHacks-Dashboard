@@ -2,7 +2,7 @@ import { LoadingAnimation } from "@/components";
 import { Button } from "@chakra-ui/react";
 import { useAuth } from "@/providers/auth.provider";
 import { toaster } from "@/components/ui/toaster";
-import { useAvailableRoutes } from "@/providers/routes.provider";
+import { useRoutes } from "@/providers/routes.provider";
 import {
     checkInvitation,
     rejectInvitation,
@@ -16,7 +16,7 @@ export const JoinTeamPage = () => {
     const [disableButtons, setDisableButtons] = useState(false);
     const { invitationId } = useParams();
     const navigate = useNavigate();
-    const { paths: routes } = useAvailableRoutes();
+    const { paths: routes } = useRoutes();
     const { currentUser } = useAuth();
     const [invitationData, setInvitationData] = useState<Invitation | null>(
         null

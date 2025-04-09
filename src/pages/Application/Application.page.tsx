@@ -46,7 +46,7 @@ import { logEvent } from "firebase/analytics";
 import { analytics } from "@/services/firebase";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { Modal } from "@/components/Modal";
-import { useAvailableRoutes } from "@/providers/routes.provider";
+import { useRoutes } from "@/providers/routes.provider";
 
 const stepValidations = [
     profileFormValidation,
@@ -96,7 +96,7 @@ export const ApplicationPage = () => {
     const loadingTimeoutRef = useRef<number | null>(null);
     const [sp] = useSearchParams();
     const navigate = useNavigate();
-    const { paths: routes } = useAvailableRoutes();
+    const { paths: routes } = useRoutes();
 
     if (!currentUser) return <Navigate to={routes.login} />;
 

@@ -5,12 +5,12 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { GoogleWalletBadge, AppleWalletBadge, LoadingDots } from "@/assets";
 import { useAuth } from "@/providers/hooks";
 import { Navigate } from "react-router-dom";
-import { useAvailableRoutes } from "@/providers/routes.provider";
+import { useRoutes } from "@/providers/routes.provider";
 import { logError } from "@/services/firebase/log";
 
 export const TicketPage = () => {
     const functions = getFunctions();
-    const { paths } = useAvailableRoutes();
+    const { paths } = useRoutes();
     const { currentUser, userApp } = useAuth();
     const email = currentUser?.email ?? "";
     const firstName =
@@ -77,7 +77,7 @@ export const TicketPage = () => {
                 email: email,
                 pronouns: Array.isArray(userApp?.pronouns)
                     ? userApp.pronouns.join(", ")
-                    : userApp?.pronouns ?? "Not specified",
+                    : (userApp?.pronouns ?? "Not specified"),
             });
             const ticketData = ticketResult.data as { url: string };
             if (ticketData.url) {

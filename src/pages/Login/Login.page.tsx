@@ -7,7 +7,7 @@ import { Button } from "@chakra-ui/react";
 import { useAuth } from "@/providers/hooks";
 import type { ProviderName } from "@/providers/types";
 import { GithubLogo, GoogleLogo, AppleLogo } from "@assets";
-import { useAvailableRoutes } from "@/providers/routes.provider";
+import { useRoutes } from "@/providers/routes.provider";
 
 // email validation with zod, double guard just in case someone changes the input type in html
 const emailParser = z.string().email();
@@ -45,7 +45,7 @@ export const LoginPage = () => {
         currentUser,
     } = useAuth();
 
-    const { paths: routes, userRoutes } = useAvailableRoutes();
+    const { paths: routes, userRoutes } = useRoutes();
 
     const [searchParams] = useSearchParams();
 
@@ -156,8 +156,8 @@ export const LoginPage = () => {
                             {showResetPasswordForm
                                 ? "Reset Password"
                                 : isLogin
-                                ? "Log into your account"
-                                : "Create your account"}
+                                  ? "Log into your account"
+                                  : "Create your account"}
                         </h1>
                         {!showResetPasswordForm ? (
                             <p className="text-charcoalBlack mt-2">

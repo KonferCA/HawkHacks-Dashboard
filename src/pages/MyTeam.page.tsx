@@ -31,7 +31,7 @@ import {
     XCircleIcon,
 } from "@heroicons/react/24/solid";
 import { Modal } from "@/components/Modal";
-import { useAvailableRoutes } from "@/providers/routes.provider";
+import { useRoutes } from "@/providers/routes.provider";
 // import { isBefore } from "date-fns";
 import { useUserStore } from "@/stores/user.store";
 
@@ -70,7 +70,7 @@ export const MyTeamPage = () => {
         250
     );
     const loadingTimeoutRef = useRef<number | null>(null);
-    const { paths } = useAvailableRoutes();
+    const { paths } = useRoutes();
 
     const submitNewTeam: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();

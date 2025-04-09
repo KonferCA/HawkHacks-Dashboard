@@ -2,11 +2,11 @@ import { FC } from "react";
 import { useLocation } from "react-router-dom";
 import { Navbar } from "@components";
 import type { ComponentProps } from "@/components/types";
-import { useAvailableRoutes } from "@/providers/routes.provider";
+import { useRoutes } from "@/providers/routes.provider";
 
 export const PageWrapper: FC<ComponentProps> = ({ children }) => {
     const location = useLocation();
-    const { titles } = useAvailableRoutes();
+    const { titles } = useRoutes();
 
     let title = titles[location.pathname] ?? {
         main: "Wow!",

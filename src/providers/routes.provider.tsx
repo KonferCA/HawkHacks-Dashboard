@@ -54,7 +54,7 @@ interface Title {
 }
 
 interface RoutesContextValue {
-    routes: RouteObject[];
+    reactRouterRoutes: RouteObject[];
     userRoutes: RouteObject[];
     paths: PathObject;
     titles: Record<string, Title>;
@@ -131,7 +131,7 @@ const titles: Record<string, Title> = {
 };
 
 const RoutesContext = createContext<RoutesContextValue>({
-    routes: [],
+    reactRouterRoutes: [],
     userRoutes: [],
     paths,
     titles,
@@ -139,7 +139,7 @@ const RoutesContext = createContext<RoutesContextValue>({
     refreshRoutes: () => {},
 });
 
-export function useAvailableRoutes() {
+export function useRoutes() {
     return useContext(RoutesContext);
 }
 
@@ -208,7 +208,7 @@ export const RoutesProvider: FC<ComponentProps> = ({ children }) => {
     return (
         <RoutesContext.Provider
             value={{
-                routes,
+                reactRouterRoutes: routes,
                 userRoutes,
                 paths,
                 titles,
@@ -220,4 +220,3 @@ export const RoutesProvider: FC<ComponentProps> = ({ children }) => {
         </RoutesContext.Provider>
     );
 };
-

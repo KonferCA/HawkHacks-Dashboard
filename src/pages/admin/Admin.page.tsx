@@ -1,15 +1,13 @@
-import { useAvailableRoutes } from "@/providers/routes.provider";
+import { useRoutes } from "@/providers/routes.provider";
 import { Link } from "react-router-dom";
 
 export const AdminPage = () => {
-    const { paths } = useAvailableRoutes();
+    const { paths } = useRoutes();
     return (
         <div className="text-center rounded-xl border-2 border-black px-7 py-32 shadow-lg lg:mt-6 lg:block xl:mt-12">
-            <h1 className="text-3xl font-bold">
-                Time to Admininstrate!
-            </h1>
+            <h1 className="text-3xl font-bold">Time to Admininstrate!</h1>
 
-            <br/>
+            <br />
 
             <ul>
                 <li>
@@ -28,8 +26,10 @@ export const AdminPage = () => {
             <br />
 
             <p className="text-sm mt-4">
-                (If you're unsure on how to use this page, contact Juan or Aidan.)
+                (If you're unsure on how to use this page, contact Juan or
+                Aidan.)
             </p>
         </div>
     );
 };
+
