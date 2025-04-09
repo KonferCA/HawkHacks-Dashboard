@@ -48,16 +48,16 @@ interface PathObject {
     perks: string;
 }
 
-interface Title {
-    main: string;
-    sub: string;
+interface HeaderInfo {
+    title: string;
+    subTitle: string;
 }
 
 interface RoutesContextValue {
     reactRouterRoutes: RouteObject[];
     userRoutes: RouteObject[];
     paths: PathObject;
-    titles: Record<string, Title>;
+    titles: Record<string, HeaderInfo>;
     loadingRoutes: boolean;
     refreshRoutes: () => void;
 }
@@ -83,50 +83,52 @@ const paths: PathObject = {
     perks: "/perks",
 };
 
-const titles: Record<string, Title> = {
+const titles: Record<string, HeaderInfo> = {
     [paths.portal]: {
-        main: "User",
-        sub: "Welcome to your user dashboard.",
+        title: "User",
+        subTitle: "Welcome to your user dashboard.",
     },
     [paths.schedule]: {
-        main: "Schedule",
-        sub: "View the schedule for the weekend!",
+        title: "Schedule",
+        subTitle: "View the schedule for the weekend!",
     },
     [paths.networking]: {
-        main: "Networking",
-        sub: "A quick way to connect with new people at HawkHacks!",
+        title: "Networking",
+        subTitle: "A quick way to connect with new people at HawkHacks!",
     },
     [paths.application]: {
-        main: "Application",
-        sub: "Apply to participate in the hackathon now!",
+        title: "Application",
+        subTitle: "Apply to participate in the hackathon now!",
     },
     [paths.verifyEmail]: {
-        main: "Verify Your Email",
-        sub: "Please check your email inbox.",
+        title: "Verify Your Email",
+        subTitle: "Please check your email inbox.",
     },
     [paths.verifyRSVP]: {
-        main: "Verify Your RSVP",
-        sub: "All checkboxes are required.",
+        title: "Verify Your RSVP",
+        subTitle: "All checkboxes are required.",
     },
     [paths.myTicket]: {
-        main: "Ticket",
-        sub: "This ticket is required for registration at our HawkHacks sign-in desk.\nKeep this ticket safe - download or add it to your wallet for convenience!",
+        title: "Ticket",
+        subTitle:
+            "This ticket is required for registration at our HawkHacks sign-in desk.\nKeep this ticket safe - download or add it to your wallet for convenience!",
     },
     [paths.myTeam]: {
-        main: "My Team",
-        sub: "Create your dream team! Add, manage, and view your teammates.",
+        title: "My Team",
+        subTitle:
+            "Create your dream team! Add, manage, and view your teammates.",
     },
     [paths.joinTeam]: {
-        main: "Join Team",
-        sub: "Awesome, it looks like you have found teammates!",
+        title: "Join Team",
+        subTitle: "Awesome, it looks like you have found teammates!",
     },
     [paths.ticket]: {
-        main: "View Ticket",
-        sub: "Some good thing here",
+        title: "View Ticket",
+        subTitle: "Some good thing here",
     },
     [paths.perks]: {
-        main: "Perks",
-        sub: "Explore the amazing perks available at HawkHacks!",
+        title: "Perks",
+        subTitle: "Explore the amazing perks available at HawkHacks!",
     },
 };
 

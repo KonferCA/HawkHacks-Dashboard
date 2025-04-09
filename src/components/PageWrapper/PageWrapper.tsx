@@ -9,13 +9,13 @@ export const PageWrapper: FC<ComponentProps> = ({ children }) => {
     const { titles } = useRoutes();
 
     let title = titles[location.pathname] ?? {
-        main: "Wow!",
-        sub: "How did you end up here?",
+        title: "Wow!",
+        subTitle: "How did you end up here?",
     };
     if (location.pathname.startsWith("/ticket")) {
         title = {
-            main: "Networking",
-            sub: "A quick way to connect with new people at HawkHacks!",
+            title: "Networking",
+            subTitle: "A quick way to connect with new people at HawkHacks!",
         };
     }
 
@@ -27,10 +27,10 @@ export const PageWrapper: FC<ComponentProps> = ({ children }) => {
             <div className="md:pl-72">
                 <div className="md:sticky top-0 z-10 shrink-0 px-6 md:py-8 py-2 border-b-2 border-b-gray-300 bg-white">
                     <h1 className="text-xl md:text-4xl text-gray-800 font-bold font-sans">
-                        {title.main}
+                        {title.title}
                     </h1>
                     <p className="text-md md:text-xl text-gray-500 md:mt-4 font-sans whitespace-pre-line">
-                        {title.sub}
+                        {title.subTitle}
                     </p>
                     <p className="text-gray-800 mt-2">
                         Having trouble? Get help in our{" "}
