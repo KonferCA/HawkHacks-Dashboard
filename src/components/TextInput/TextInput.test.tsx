@@ -39,6 +39,7 @@ describe("TextInput Component", () => {
         expect(screen.getByText("desc")).toBeInTheDocument();
     });
 
+
     it("should render invalid visuals", () => {
         render(<TextInput invalid description="desc" label="test" id="test" />);
         expect(getTextInputDescriptionStyles).toHaveBeenCalledWith({
@@ -56,5 +57,17 @@ describe("TextInput Component", () => {
         await user.type(input, "Test");
 
         expect(mockOnChange).toHaveBeenCalled();
+    });
+
+    it("should apply the correct size to the underlying input", () => {
+        // Test specific size 'sm'
+        const { rerender } = render(<TextInput label="test-size" id="test-size" size="sm" />);
+        let input = screen.getByLabelText("test-size");
+        expect(input).toHaveClass("chakra-input--sm");
+
+        // Test default size 'md'
+        rerender(<TextInput label="test-size" id="test-size" />); // No size prop, should default
+        input = screen.getByLabelText("test-size"); // Re-query after rerender
+        expect(input).toHaveClass("chakra-input--md");
     });
 });

@@ -5,10 +5,12 @@ import {
     getTextInputDescriptionStyles,
 } from "./TextInput.styles";
 import React, { useState } from 'react';
+import { Input, Field, Box, } from "@chakra-ui/react";
 
 export interface TextInputProps
     extends TextInputStylesProps,
-        React.InputHTMLAttributes<HTMLInputElement> {
+    // Omit default Size property in HTMLInputElement as it expects a number not a value of either "sm" | "md" | "lg" | "xl" | "2xl" | "2xs" 
+        Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> { 
     /**
      * Label text of the input. For accessibility reasons, all inputs should have a label.
      */
@@ -18,12 +20,19 @@ export interface TextInputProps
      * Make input label screen-reader only. Default false.
      */
     srLabel?: boolean;
-
+    
     /**
      * Force the usage of id to match label to input.
      * This avoids dynamically generating a new id in runtime.
      */
     id: string;
+    
+    /**
+     * Size of the input field as required by ChakaraUI
+     * Defaults to md if no input is given
+     */
+
+    size?: "sm" | "md" | "lg" | "xl" | "2xl" | "2xs";
 
     /**
      * Description of the input field.
@@ -41,6 +50,7 @@ export const TextInput: React.FC<TextInputProps> = ({
     className,
     invalid,
     description,
+    size = "md",
     srLabel = false,
     required,
     validate,
@@ -58,17 +68,18 @@ export const TextInput: React.FC<TextInputProps> = ({
     };
 
     return (
-        <div>
-            <label
+        <Field.Root unstyled >
+            <Field.Label
                 htmlFor={inputProps.id}
                 className={getTextInputLabelStyles({ srLabel })}
             >
                 {label}
                 {required ? <span className="text-red-600 ml-1">*</span> : null}
-            </label>
-            <div className="mt-2">
-                <input
+            </Field.Label>
+            <Box className="mt-2">
+                <Input
                     {...inputProps}
+                    size={size}  
                     aria-describedby={[
                         inputProps["aria-describedby"] ?? "",
                         describedby,
@@ -76,18 +87,19 @@ export const TextInput: React.FC<TextInputProps> = ({
                     className={getTextInputStyles({ invalid, className })}
                     onBlur={handleBlur}
                 />
-            </div>
+            </Box>
             {error && (
-                <p className="text-red-500 text-sm mt-1">{error}</p>
+                <Field.ErrorText className="text-red-500 text-sm mt-1">{error}</Field.ErrorText>
             )}
             {description && (
-                <p
+                <Field.HelperText
                     className={getTextInputDescriptionStyles({ invalid })}
                     id={describedby}
                 >
                     {description}
-                </p>
+                </Field.HelperText>
             )}
-        </div>
+        </Field.Root>
+        
     );
 };
