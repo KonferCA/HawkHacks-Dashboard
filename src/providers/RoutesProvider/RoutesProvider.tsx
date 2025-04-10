@@ -4,7 +4,7 @@ import { BrowserRouter, type RouteObject, useRoutes } from "react-router-dom";
 
 import { AccessControl } from "@/navigation/AccessControl/AccessControl";
 import { LoadingAnimation } from "@/components";
-import { useAuth } from "@/providers";
+import { useAuth, useApplications } from "@/providers";
 
 // Pages
 import {
@@ -114,7 +114,8 @@ export const RoutesProvider: FC<ComponentProps> = () => {
     // Ref for timeout to manage loading state
     const timeoutRef = useRef<number | null>(null);
     // Get current user and application data
-    const { currentUser, userApp } = useAuth();
+    const { currentUser } = useAuth();
+    const { applications } = useApplications();
 
     // State for storing generated routes
     const routes = useMemo(() => {
@@ -276,7 +277,7 @@ export const RoutesProvider: FC<ComponentProps> = () => {
         );
 
         return cleanUp;
-    }, [refresh, currentUser, userApp]);
+    }, [refresh, currentUser, applications]);
 
     // Function to trigger route refresh
     const refreshRoutes = () => setRefresh((r) => !r);

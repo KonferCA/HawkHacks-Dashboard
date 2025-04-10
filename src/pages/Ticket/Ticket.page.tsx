@@ -3,7 +3,7 @@ import { FiDownload } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { GoogleWalletBadge, AppleWalletBadge, LoadingDots } from "@/assets";
-import { useAuth } from "@/providers";
+import { useAuth, useApplications } from "@/providers";
 import { Navigate } from "react-router-dom";
 import { useRouter } from "@/providers";
 import { logError } from "@/services/firebase/log";
@@ -11,7 +11,9 @@ import { logError } from "@/services/firebase/log";
 export const TicketPage = () => {
     const functions = getFunctions();
     const { paths } = useRouter();
-    const { currentUser, userApp } = useAuth();
+    const { currentUser } = useAuth();
+    const { applications } = useApplications();
+    const userApp = applications[0] || null;
     const email = currentUser?.email ?? "";
     const firstName =
         (userApp?.firstName || currentUser?.displayName?.split(" ")[0]) ??

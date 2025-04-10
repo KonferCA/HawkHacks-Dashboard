@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
-import { useAuth, useRouter } from "@/providers";
+import { useAuth, useRouter, useApplications } from "@/providers";
 import { toaster } from "@/components/ui/toaster";
 import { FileBrowser } from "@/components/FileBrowse/FileBrowse";
 import { Button } from "@chakra-ui/react";
@@ -90,7 +90,8 @@ export const ApplicationPage = () => {
     );
     const [submitted, setSubmitted] = useState(false);
     const [openConfirmPopUp, setOpenConfirmPopUp] = useState(false);
-    const { userApp, refreshUserApp } = useAuth();
+    const { applications, refreshApplications } = useApplications();
+    const userApp = applications[0] || null;
     const progressTrackRef = useRef(new Set<string>());
     const loadingTimeoutRef = useRef<number | null>(null);
     const [sp] = useSearchParams();
@@ -285,7 +286,7 @@ export const ApplicationPage = () => {
                 description:
                     "Thank you for applying! You'll hear from us via email within one week after applications close on May 3rd.",
             });
-            await refreshUserApp();
+            await refreshApplications();
         } catch (e) {
             toaster.error({
                 title: "Error Submitting Application",

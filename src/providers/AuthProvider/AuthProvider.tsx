@@ -15,7 +15,6 @@ import { auth } from "@/services/firebase";
 import { toaster } from "@/components/ui/toaster";
 import { verifyGitHubEmail } from "@/services/firebase/user";
 import { LoadingAnimation } from "@/components";
-import { ApplicationData } from "@/components/forms/types";
 
 // Local imports
 import { AuthContext } from "./context";
@@ -29,20 +28,14 @@ import type { ProviderName, UserWithClaims } from "./types";
 
 export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
     const [currentUser, setCurrentUser] = useState<UserWithClaims | null>(null);
-    // use undefined to know its at initial state (just mounted) and null if there is no application
-    const [userApp, setUserApp] = useState<ApplicationData | null | undefined>(
-        undefined
-    );
     const [isLoading, setIsLoading] = useState(false);
 
     const completeLoginProcess = async (user: User) => {
         // check if user has a profile in firestore
         const userWithRole = await validateUser(user);
-        // const app = (await getUserApplications(user.uid))[0] ?? null;
         // make one ui update instead of two due to async function
         flushSync(() => {
             setCurrentUser(userWithRole);
-            // setUserApp(app);
         });
     };
 
@@ -185,11 +178,10 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
         }
     };
 
+    // This method is kept for backward compatibility
+    // but now it's just a no-op as we use ApplicationsProvider
     const refreshUserApp = async () => {
-        if (!currentUser) return;
-
-        // const app = (await getUserApplications(currentUser.uid))[0] ?? null;
-        // setUserApp(app);
+        // No-op - ApplicationsProvider now handles this
     };
 
     useEffect(() => {
@@ -198,7 +190,6 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
                 await completeLoginProcess(user);
             } else {
                 setCurrentUser(null);
-                setUserApp(null);
             }
         });
 
@@ -221,7 +212,6 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
         <AuthContext.Provider
             value={{
                 currentUser,
-                userApp,
                 login,
                 logout,
                 createAccount,

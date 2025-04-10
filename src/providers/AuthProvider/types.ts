@@ -1,5 +1,4 @@
 import type { User } from "firebase/auth";
-import type { ApplicationData } from "@/components/forms/types";
 
 export type UserType =
     | "hacker"
@@ -22,7 +21,6 @@ export type AuthMethod = "none" | "credentials" | ProviderName;
 
 export type AuthContextValue = {
     currentUser: UserWithClaims | null;
-    userApp: ApplicationData | null | undefined;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
     createAccount: (email: string, password: string) => Promise<void>;

@@ -1,9 +1,10 @@
-import { useAuth } from "@/providers";
+import { useApplications } from "@/providers";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { Application } from "@/components/Application";
 
 const UserPage = () => {
-    const { userApp } = useAuth();
+    const { applications } = useApplications();
+    const userApp = applications[0] || null;
 
     return (
         <>
