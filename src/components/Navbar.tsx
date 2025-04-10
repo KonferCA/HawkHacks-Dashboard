@@ -16,6 +16,7 @@ import {
     UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import { useApplications } from "@/providers/applications.provider";
+import { useUser } from "@/providers/auth.provider";
 
 export const Navbar = () => {
     const { logout } = useAuth();
@@ -23,17 +24,25 @@ export const Navbar = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { paths } = useRouter();
-    const { currentUser, userApp } = useAuth();
+    const { userApp } = useAuth();
+    const user = useUser();
     const applications = useApplications();
     const routes = useRouteDefinitions();
 
     const availableRoutes = useMemo(() => {
-        return routes.filter(
-            (route) =>
-                !route.accessCheck ||
-                route.accessCheck({ user: currentUser, applications })
-        );
-    }, [routes, currentUser, applications]);
+        return routes.filter((route) => {
+            // Default to include in navbar if no access check defined
+            if (typeof route.accessCheck === "undefined") return true;
+            if (typeof route.accessCheck === "function")
+                return route.accessCheck({ user, applications });
+            if (Array.isArray(route.accessCheck))
+                return route.accessCheck.every((check) =>
+                    check({ user, applications })
+                );
+            // Default to exclude if access check type is not recognized
+            return false;
+        });
+    }, [routes, user, applications]);
 
     const navItems = {
         [paths.home]: {
@@ -73,9 +82,7 @@ export const Navbar = () => {
     };
 
     const firstName =
-        userApp?.firstName ||
-        currentUser?.displayName?.split(" ")[0] ||
-        "Unknown";
+        userApp?.firstName || user?.displayName?.split(" ")[0] || "Unknown";
 
     useEffect(() => {
         window.addEventListener("resize", updateNavbarState);
@@ -205,11 +212,11 @@ export const Navbar = () => {
                             />
                         </div>
                         <ul className="flex flex-col items-start justify-start divide-y divide-charcoalBlack">
-                            {currentUser &&
-                                (currentUser.type === "mentor" ||
-                                    currentUser.type === "volunteer" ||
-                                    (currentUser.type === "hacker" &&
-                                        currentUser.rsvpVerified))}
+                            {user &&
+                                (user.type === "mentor" ||
+                                    user.type === "volunteer" ||
+                                    (user.type === "hacker" &&
+                                        user.rsvpVerified))}
 
                             <a
                                 href="https://maps.app.goo.gl/Fxic5XJBzZjHP4Yt5"
@@ -221,7 +228,7 @@ export const Navbar = () => {
                                     Location
                                 </li>
                             </a>
-                            {currentUser && renderNavItems(true)}
+                            {user && renderNavItems(true)}
                             <a
                                 href="https://discord.com/invite/GxwvFEn9TB"
                                 target="_blank"
@@ -234,7 +241,7 @@ export const Navbar = () => {
                             </a>
                         </ul>
 
-                        {currentUser && (
+                        {user && (
                             <button
                                 className="p-4 hover:bg-slate-100 duration-300 transition-colors rounded-md w-full flex items-center justify-start gap-2 hover:text-black"
                                 type="button"
@@ -274,11 +281,11 @@ export const Navbar = () => {
 
                     <aside className="flex flex-col items-start justify-between h-[83%] overflow-y-auto">
                         <ul className="flex flex-col items-start justify-start gap-4 w-full">
-                            {currentUser &&
-                                (currentUser.type === "mentor" ||
-                                    currentUser.type === "volunteer" ||
-                                    (currentUser.type === "hacker" &&
-                                        currentUser.rsvpVerified))}
+                            {user &&
+                                (user.type === "mentor" ||
+                                    user.type === "volunteer" ||
+                                    (user.type === "hacker" &&
+                                        user.rsvpVerified))}
                             <a
                                 href="https://maps.app.goo.gl/Fxic5XJBzZjHP4Yt5"
                                 target="_blank"
@@ -290,7 +297,7 @@ export const Navbar = () => {
                                     Location
                                 </li>
                             </a>
-                            {currentUser && renderNavItems(false)}
+                            {user && renderNavItems(false)}
                             <a
                                 href="https://discord.com/invite/GxwvFEn9TB"
                                 target="_blank"
@@ -303,7 +310,7 @@ export const Navbar = () => {
                                 </li>
                             </a>
                         </ul>
-                        {currentUser && (
+                        {user && (
                             <button
                                 className="p-4 hover:bg-slate-100 duration-300 transition-colors rounded-md w-full flex items-center justify-start gap-2 hover:text-black"
                                 type="button"
