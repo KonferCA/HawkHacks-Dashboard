@@ -1,11 +1,12 @@
-import { createContext, useState, useContext, useEffect } from "react";
-import { useAuth } from "./auth.provider";
+import { createContext, useContext, useCallback } from "react";
+import { useUser } from "./auth.provider";
 import { getUserApplications } from "@/services/firebase/application";
 import type { ApplicationData } from "@/components/forms/types";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface ApplicationsContextValue {
     applications: ApplicationData[];
-    refreshApplications: () => Promise<void>;
+    refreshApplications: () => void;
     isLoading: boolean;
 }
 
@@ -20,33 +21,21 @@ export const ApplicationsProvider = ({
 }: {
     children: React.ReactNode;
 }) => {
-    const [applications, setApplications] = useState<ApplicationData[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const { currentUser } = useAuth();
+    const user = useUser();
+    const queryClient = useQueryClient();
+    const { data: applications, isLoading } = useQuery({
+        queryKey: ["applications"],
+        queryFn: async () => {
+            if (!user) return [];
+            return await getUserApplications(user.uid);
+        },
+        initialData: [],
+        enabled: !!user,
+    });
 
-    const refreshApplications = async () => {
-        if (!currentUser) {
-            setApplications([]);
-            setIsLoading(false);
-            return;
-        }
-
-        setIsLoading(true);
-        try {
-            const userApplications = await getUserApplications(currentUser.uid);
-
-            setApplications(userApplications);
-        } catch (error) {
-            console.error("Error fetching user applications:", error);
-            setApplications([]);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        refreshApplications();
-    }, [currentUser]);
+    const refreshApplications = useCallback(() => {
+        queryClient.invalidateQueries({ queryKey: ["applications"] });
+    }, [user, queryClient]);
 
     return (
         <ApplicationsContext.Provider
@@ -62,6 +51,5 @@ export const ApplicationsProvider = ({
 };
 
 export const useApplications = () => {
-    const ctx = useContext(ApplicationsContext);
-    return ctx.applications;
+    return useContext(ApplicationsContext);
 };

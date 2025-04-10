@@ -22,7 +22,7 @@ export const AccessControl: FC<AccessControlProps> = ({
 }) => {
     // Get current user and application data from context
     const user = useUser();
-    const applications = useApplications();
+    const { applications } = useApplications();
     const canAccess = useMemo(() => {
         // If no access check is provided, allow access
         if (typeof accessCheck === "undefined") {

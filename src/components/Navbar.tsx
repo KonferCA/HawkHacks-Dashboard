@@ -26,7 +26,7 @@ export const Navbar = () => {
     const { paths } = useRouter();
     const { userApp } = useAuth();
     const user = useUser();
-    const applications = useApplications();
+    const { applications } = useApplications();
     const routes = useRouteDefinitions();
 
     const availableRoutes = useMemo(() => {
