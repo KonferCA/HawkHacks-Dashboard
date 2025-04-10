@@ -27,7 +27,7 @@ export const Navbar = () => {
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { paths } = useRouter();
-    const user = useUser();
+    const { user } = useUser();
     const { applications } = useApplications();
     const routes = useRouteDefinitions();
 
@@ -84,7 +84,9 @@ export const Navbar = () => {
     };
 
     const firstName =
-        applications[0]?.firstName || user?.displayName?.split(" ")[0] || "Unknown";
+        applications[0]?.firstName ||
+        user?.displayName?.split(" ")[0] ||
+        "Unknown";
 
     useEffect(() => {
         window.addEventListener("resize", updateNavbarState);

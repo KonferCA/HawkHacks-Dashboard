@@ -12,7 +12,7 @@ export const ApplicationsProvider = ({
 }: {
     children: React.ReactNode;
 }) => {
-    const user = useUser();
+    const { user } = useUser();
     const queryClient = useQueryClient();
     const { data: applications, isLoading } = useQuery({
         queryKey: ["applications"],
