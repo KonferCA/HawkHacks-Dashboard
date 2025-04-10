@@ -22,6 +22,7 @@ export const ApplicationsProvider = ({
         },
         initialData: [],
         enabled: !!user,
+        refetchOnWindowFocus: false,
     });
 
     /**
