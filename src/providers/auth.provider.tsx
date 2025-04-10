@@ -166,7 +166,6 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
                 password
             );
             await completeLoginProcess(user);
-            /* eslint-disable-next-line */
         } catch (error: any) {
             toaster.error(getNotificationByAuthErrCode(error.code));
         }
@@ -193,7 +192,6 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
             );
             await sendEmailVerification(user);
             await completeLoginProcess(user);
-            /* eslint-disable-next-line */
         } catch (error: any) {
             toaster.error(getNotificationByAuthErrCode(error.code));
         }
@@ -268,7 +266,6 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
                     }
                 }
             }
-            /* eslint-disable-next-line */
         } catch (error: any) {
             console.error(error);
             if (
