@@ -1,5 +1,5 @@
-import { ApplicationData } from "@/components/forms/types";
-import { UserWithClaims } from "@/providers/auth.provider";
+import type { ApplicationData } from "@/components/forms/types";
+import type { UserWithClaims } from "@/providers";
 
 /**
  * Context object provided to access control functions

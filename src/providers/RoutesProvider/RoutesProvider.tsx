@@ -1,13 +1,12 @@
-import {
-    createContext,
-    useContext,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-    type FC,
-} from "react";
+import { useEffect, useMemo, useRef, useState, type FC } from "react";
 import type { ComponentProps } from "@/components/types";
+import { BrowserRouter, type RouteObject, useRoutes } from "react-router-dom";
+
+import { AccessControl } from "@/navigation/AccessControl/AccessControl";
+import { LoadingAnimation } from "@/components";
+import { useAuth } from "@/providers";
+
+// Pages
 import {
     AdminPage,
     LoginPage,
@@ -19,16 +18,6 @@ import {
     PerksPage,
     SchedulePage,
 } from "@/pages";
-import {
-    BrowserRouter,
-    type RouteObject,
-    useLocation,
-    useRoutes,
-} from "react-router-dom";
-import { useAuth } from "./auth.provider";
-import { AccessControl } from "@/navigation/AccessControl/AccessControl";
-import { AccessControlFn } from "@/navigation/AccessControl/AccessControl.types";
-import { LoadingAnimation } from "@/components";
 import { PostSubmissionPage } from "@/pages/miscellaneous/PostSubmission.page";
 import { VerifyRSVP } from "@/pages/miscellaneous/VerifyRSVP.page";
 import { MyTeamPage } from "@/pages/MyTeam.page";
@@ -38,163 +27,12 @@ import { AdminViewTicketPage } from "@/pages/admin/ViewTicket.page";
 import { AdminManageEventsPage } from "@/pages/admin/ManageEvents.page";
 import { ApplicationPage } from "@/pages/Application/Application.page";
 
-/**
- * Defines all application routes as URL paths
- * Used for consistent route references throughout the application
- */
-interface PathObject {
-    admin: string;
-    adminViewTicket: string;
-    adminManageEvents: string;
-    notFound: string;
-    login: string;
-    home: string;
-    verifyEmail: string;
-    schedule: string;
-    networking: string;
-    myTicket: string;
-    application: string;
-    submitted: string;
-    verifyRSVP: string;
-    myTeam: string;
-    joinTeam: string;
-    myApp: string;
-    ticket: string;
-    perks: string;
-}
-
-/**
- * Defines the page header information for each route
- */
-interface HeaderInfo {
-    title: string;
-    subTitle: string;
-}
-
-/**
- * Context value interface for the RoutesContext
- */
-interface RoutesContextValue {
-    routes: RouteConfig[]; // Routes configured for React Router
-    paths: PathObject; // All application paths
-    titles: Record<string, HeaderInfo>; // Header info for each path
-    loadingRoutes: boolean; // Whether routes are currently loading
-    refreshRoutes: () => void; // Function to trigger route refresh
-}
-
-/**
- * Extended RouteObject that includes access control and page wrapper configuration
- */
-export type RouteConfig = RouteObject & {
-    withPageWrapper?: boolean; // Whether to wrap route with PageWrapper
-    redirectTo?: string; // Where to redirect if access denied
-    accessCheck?: AccessControlFn | AccessControlFn[]; // Function or array of functions to check access permission
-    children?: RouteConfig[]; // Nested routes
-};
-
-/**
- * Centralized definition of all application paths
- */
-const paths: PathObject = {
-    admin: "/admin",
-    adminViewTicket: "/admin/ticket/:ticketId",
-    adminManageEvents: "/admin/manage",
-    notFound: "*",
-    login: "/login",
-    home: "/",
-    verifyEmail: "/verify-email",
-    schedule: "/schedule",
-    networking: "/networking",
-    myTicket: "/my-ticket",
-    application: "/application",
-    submitted: "/submitted",
-    verifyRSVP: "/verify-rsvp",
-    myTeam: "/my-team",
-    joinTeam: "/join-team",
-    myApp: "/my-application",
-    ticket: "/ticket/:ticketId",
-    perks: "/perks",
-};
-
-/**
- * Page titles and subtitles for each route
- * Used for displaying consistent header information
- */
-const titles: Record<string, HeaderInfo> = {
-    [paths.home]: {
-        title: "Home",
-        subTitle: "Welcome to the home page",
-    },
-    [paths.schedule]: {
-        title: "Schedule",
-        subTitle: "View the schedule for the weekend!",
-    },
-    [paths.networking]: {
-        title: "Networking",
-        subTitle: "A quick way to connect with new people at HawkHacks!",
-    },
-    [paths.application]: {
-        title: "Application",
-        subTitle: "Apply to participate in the hackathon now!",
-    },
-    [paths.verifyEmail]: {
-        title: "Verify Your Email",
-        subTitle: "Please check your email inbox.",
-    },
-    [paths.verifyRSVP]: {
-        title: "Verify Your RSVP",
-        subTitle: "All checkboxes are required.",
-    },
-    [paths.myTicket]: {
-        title: "Ticket",
-        subTitle:
-            "This ticket is required for registration at our HawkHacks sign-in desk.\nKeep this ticket safe - download or add it to your wallet for convenience!",
-    },
-    [paths.myTeam]: {
-        title: "My Team",
-        subTitle:
-            "Create your dream team! Add, manage, and view your teammates.",
-    },
-    [paths.joinTeam]: {
-        title: "Join Team",
-        subTitle: "Awesome, it looks like you have found teammates!",
-    },
-    [paths.ticket]: {
-        title: "View Ticket",
-        subTitle: "Some good thing here",
-    },
-    [paths.perks]: {
-        title: "Perks",
-        subTitle: "Explore the amazing perks available at HawkHacks!",
-    },
-};
-
-/**
- * Create context for routes with default values
- */
-const RoutesContext = createContext<RoutesContextValue>({
-    routes: [],
-    paths,
-    titles,
-    loadingRoutes: true,
-    refreshRoutes: () => {},
-});
-
-/**
- * Checks if user is authenticated (logged in)
- */
-const isAuthenticated: AccessControlFn = ({ user }) => !!user;
-
-/**
- * Checks if user has verified their email
- */
-const hasVerifiedEmail: AccessControlFn = ({ user }) =>
-    !!user && user.emailVerified;
-
-/**
- * Checks if user is an admin
- */
-const isAdmin: AccessControlFn = ({ user }) => !!user && user.hawkAdmin;
+// Local imports
+import { isAdmin, isAuthenticated, hasVerifiedEmail } from "./accessChecks";
+import type { RouteConfig } from "./types";
+import { useRouter } from "./hooks";
+import { paths, titles } from "./data";
+import { RoutesContext } from "./context";
 
 /**
  * Converts RouteConfig to React Router's RouteObject with AccessControl wrapper
@@ -391,21 +229,21 @@ export const RoutesProvider: FC<ComponentProps> = () => {
                 withPageWrapper: true,
                 element: <AdminPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail, isAdmin],
-                redirectTo: paths.notFound,
+                redirectTo: paths.home,
             },
             {
                 path: paths.adminViewTicket,
                 withPageWrapper: true,
                 element: <AdminViewTicketPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail, isAdmin],
-                redirectTo: paths.notFound,
+                redirectTo: paths.home,
             },
             {
                 path: paths.adminManageEvents,
                 withPageWrapper: true,
                 element: <AdminManageEventsPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail, isAdmin],
-                redirectTo: paths.notFound,
+                redirectTo: paths.home,
             },
         ];
 
@@ -457,32 +295,3 @@ export const RoutesProvider: FC<ComponentProps> = () => {
         </RoutesContext.Provider>
     );
 };
-
-/**
- * Hook to access the routes context
- * Provides access to routes, paths, titles and route control functions
- */
-export function useRouter() {
-    return useContext(RoutesContext);
-}
-
-/**
- * Hook to get header information for current route
- * Uses current location to determine the appropriate header info
- */
-export function useHeaderInfo() {
-    const location = useLocation();
-    const info: HeaderInfo | undefined = useMemo(
-        () => titles[location.pathname],
-        [titles, location.pathname]
-    );
-    return info;
-}
-
-/**
- * Hook to get all the route definitions
- */
-export function useRouteDefinitions() {
-    const router = useRouter();
-    return router.routes;
-}

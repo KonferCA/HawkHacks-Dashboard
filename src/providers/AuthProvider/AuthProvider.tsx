@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { flushSync } from "react-dom";
 import {
     signOut,
@@ -9,135 +9,23 @@ import {
     sendEmailVerification,
     sendPasswordResetEmail,
     getRedirectResult,
-    GithubAuthProvider,
-    GoogleAuthProvider,
-    OAuthProvider,
+    type User,
 } from "firebase/auth";
 import { auth } from "@/services/firebase";
 import { toaster } from "@/components/ui/toaster";
 import { verifyGitHubEmail } from "@/services/firebase/user";
 import { LoadingAnimation } from "@/components";
+import { ApplicationData } from "@/components/forms/types";
 
-import type { User, AuthProvider as FirebaseAuthProvider } from "firebase/auth";
-import type { ApplicationData } from "@/components/forms/types";
-
-type UserType =
-    | "hacker"
-    | "mentor"
-    | "volunteer"
-    | "speaker"
-    | "sponsor"
-    | "guest";
-
-export interface UserWithClaims extends User {
-    hawkAdmin: boolean;
-    phoneVerified: boolean;
-    rsvpVerified: boolean;
-    type: UserType;
-}
-
-export type ProviderName = "github" | "google" | "apple";
-
-export type AuthMethod = "none" | "credentials" | ProviderName;
-
-export type AuthContextValue = {
-    currentUser: UserWithClaims | null;
-    userApp: ApplicationData | null | undefined;
-    login: (email: string, password: string) => Promise<void>;
-    logout: () => Promise<void>;
-    createAccount: (email: string, password: string) => Promise<void>;
-    resetPassword: (email: string) => Promise<void>;
-    loginWithProvider: (name: ProviderName) => Promise<void>;
-    reloadUser: () => Promise<void>;
-    refreshUserApp: () => Promise<void>;
-};
-
-const AuthContext = createContext<AuthContextValue>({
-    currentUser: null,
-    userApp: null,
-    login: async () => {},
-    logout: async () => {},
-    createAccount: async () => {},
-    resetPassword: async () => {},
-    loginWithProvider: async () => {},
-    reloadUser: async () => {},
-    refreshUserApp: async () => {},
-});
-
-/**
- * Validates given user for admin authorization.
- * Return object adds `hawkAdmin` boolean field.
- */
-async function validateUser(user: User): Promise<UserWithClaims> {
-    const { claims } = await user.getIdTokenResult(true);
-    return {
-        ...user,
-        hawkAdmin: Boolean(claims.admin),
-        phoneVerified: Boolean(claims.phoneVerified),
-        rsvpVerified: Boolean(claims.rsvpVerified),
-        type: (claims?.type as UserType) ?? "hacker",
-    };
-}
-
-const githubProvider = new GithubAuthProvider();
-// scope for user profile data and email
-githubProvider.addScope("read:user");
-githubProvider.addScope("user:email");
-
-const googleProvider = new GoogleAuthProvider();
-googleProvider.addScope("profile");
-googleProvider.addScope("email");
-
-const appleProvider = new OAuthProvider("apple.com");
-appleProvider.addScope("email");
-appleProvider.addScope("name");
-
-function getProvider(provider: ProviderName): FirebaseAuthProvider {
-    switch (provider) {
-        case "google":
-            return new GoogleAuthProvider();
-        case "github":
-            return new GithubAuthProvider();
-        case "apple":
-            return new OAuthProvider("apple.com");
-        default:
-            throw new Error("Unsupported provider");
-    }
-}
-
-function getNotificationByAuthErrCode(code: string) {
-    switch (code) {
-        case "auth/email-already-in-use":
-            return {
-                title: "Email In Use",
-                description:
-                    "If you forgot your password, click on 'forgot password' to recover it!",
-            };
-        case "auth/invalid-login-credentials":
-            return {
-                title: "Invalid Credentials",
-                description:
-                    "Please make sure you have the correct credentials and try again.",
-            };
-        case "auth/popup-blocked":
-            return {
-                title: "Login Blocked",
-                description:
-                    "Popup windows are blocked. Please allow them in your browser settings to continue.",
-            };
-        default:
-            return {
-                title: "Oops! Something went wrong",
-                description: "Please try again later.",
-            };
-    }
-}
-
-function isMobile() {
-    const regex =
-        /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
-    return regex.test(navigator.userAgent);
-}
+// Local imports
+import { AuthContext } from "./context";
+import {
+    validateUser,
+    getNotificationByAuthErrCode,
+    getProvider,
+    isMobile,
+} from "./utils";
+import type { ProviderName, UserWithClaims } from "./types";
 
 export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
     const [currentUser, setCurrentUser] = useState<UserWithClaims | null>(null);
@@ -346,10 +234,4 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
             {isLoading ? <LoadingAnimation /> : children}
         </AuthContext.Provider>
     );
-};
-
-export const useAuth = () => useContext(AuthContext);
-export const useUser = () => {
-    const ctx = useContext(AuthContext);
-    return ctx.currentUser;
 };

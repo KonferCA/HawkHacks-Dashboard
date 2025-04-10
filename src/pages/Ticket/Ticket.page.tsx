@@ -3,9 +3,9 @@ import { FiDownload } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { GoogleWalletBadge, AppleWalletBadge, LoadingDots } from "@/assets";
-import { useAuth } from "@/providers/hooks";
+import { useAuth } from "@/providers";
 import { Navigate } from "react-router-dom";
-import { useRouter } from "@/providers/routes.provider";
+import { useRouter } from "@/providers";
 import { logError } from "@/services/firebase/log";
 
 export const TicketPage = () => {

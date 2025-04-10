@@ -2,7 +2,7 @@ import { LoadingAnimation, TextInput } from "@/components";
 import { Button } from "@chakra-ui/react";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth, useRouter } from "@/providers";
 import { toaster } from "@/components/ui/toaster";
 import {
     createTeam,
@@ -31,7 +31,6 @@ import {
     XCircleIcon,
 } from "@heroicons/react/24/solid";
 import { Modal } from "@/components/Modal";
-import { useRouter } from "@/providers/routes.provider";
 // import { isBefore } from "date-fns";
 import { useUserStore } from "@/stores/user.store";
 

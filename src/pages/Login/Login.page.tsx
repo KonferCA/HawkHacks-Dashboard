@@ -4,10 +4,9 @@ import { z } from "zod";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { TextInput } from "@components";
 import { Button } from "@chakra-ui/react";
-import { useAuth } from "@/providers/hooks";
-import type { ProviderName } from "@/providers/types";
+import { useAuth, useRouteDefinitions, useRouter } from "@/providers";
+import type { ProviderName } from "@/providers";
 import { GithubLogo, GoogleLogo, AppleLogo } from "@assets";
-import { useRouteDefinitions, useRouter } from "@/providers/routes.provider";
 
 // email validation with zod, double guard just in case someone changes the input type in html
 const emailParser = z.string().email();

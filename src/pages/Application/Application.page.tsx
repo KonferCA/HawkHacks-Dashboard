@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
-import { useAuth } from "@/providers/hooks";
+import { useAuth, useRouter } from "@/providers";
 import { toaster } from "@/components/ui/toaster";
 import { FileBrowser } from "@/components/FileBrowse/FileBrowse";
 import { Button } from "@chakra-ui/react";
@@ -46,7 +46,6 @@ import { logEvent } from "firebase/analytics";
 import { analytics } from "@/services/firebase";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { Modal } from "@/components/Modal";
-import { useRouter } from "@/providers/routes.provider";
 
 const stepValidations = [
     profileFormValidation,

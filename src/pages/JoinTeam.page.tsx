@@ -1,8 +1,7 @@
 import { LoadingAnimation } from "@/components";
 import { Button } from "@chakra-ui/react";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth, useRouter } from "@/providers";
 import { toaster } from "@/components/ui/toaster";
-import { useRouter } from "@/providers/routes.provider";
 import {
     checkInvitation,
     rejectInvitation,

@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Navbar } from "@components";
 import type { ComponentProps } from "@/components/types";
-import { useHeaderInfo } from "@/providers/routes.provider";
+import { useHeaderInfo } from "@/providers";
 
 export const PageWrapper: FC<ComponentProps> = ({ children }) => {
     let headerInfo = useHeaderInfo() ?? {

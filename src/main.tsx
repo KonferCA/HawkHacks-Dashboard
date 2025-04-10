@@ -1,13 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { Router } from "@/navigation";
 import { Toaster } from "@/components/ui/toaster";
 
 import { Provider } from "@/components/ui/provider";
-import { AuthProvider } from "@/providers/auth.provider";
-import { RoutesProvider } from "@/providers/routes.provider";
-import { ApplicationsProvider } from "./providers/applications.provider";
+import { RoutesProvider } from "@/providers";
+import { ApplicationsProvider, AuthProvider } from "@/providers";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import "./index.css";
@@ -27,9 +25,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 <Toaster />
                 <AuthProvider>
                     <ApplicationsProvider>
-                        <RoutesProvider>
-                            <Router />
-                        </RoutesProvider>
+                        <RoutesProvider />
                     </ApplicationsProvider>
                 </AuthProvider>
             </QueryClientProvider>

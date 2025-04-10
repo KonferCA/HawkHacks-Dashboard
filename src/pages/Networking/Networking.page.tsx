@@ -1,4 +1,4 @@
-import { useAuth as useAuthProvider } from "@/providers/auth.provider";
+import { useAuth } from "@/providers";
 import { FormEventHandler, useEffect, useRef, useState } from "react";
 import {
     MdOutlineEdit,
@@ -51,7 +51,7 @@ const visibilityDescription = {
 };
 
 export const NetworkingPage = () => {
-    const { currentUser, userApp } = useAuthProvider();
+    const { currentUser, userApp } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [editMode, setEditMode] = useState("");
     const timeoutRef = useRef<number | null>(null);

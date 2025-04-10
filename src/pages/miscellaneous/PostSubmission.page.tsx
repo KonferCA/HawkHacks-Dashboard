@@ -1,8 +1,7 @@
 import { Link, Navigate } from "react-router-dom";
 import { AirBalloon, CloudLL, CloudRR, Logo } from "@/assets";
 import { getButtonStyles } from "@/components/Button/Button.styles";
-import { useAuth } from "@/providers/auth.provider";
-import { useRouter } from "@/providers/routes.provider";
+import { useAuth, useRouter } from "@/providers";
 
 export const PostSubmissionPage = () => {
     const { userApp } = useAuth();

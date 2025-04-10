@@ -1,5 +1,5 @@
 import { Tab } from "@headlessui/react";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/providers";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { EventItem, type ExtendedTicketData } from "@/services/firebase/types";

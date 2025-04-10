@@ -1,4 +1,4 @@
-import { useRouter } from "@/providers/routes.provider";
+import { useRouter } from "@/providers";
 import { Link } from "react-router-dom";
 
 export const AdminPage = () => {

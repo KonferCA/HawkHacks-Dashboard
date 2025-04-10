@@ -1,4 +1,4 @@
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/providers";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { Application } from "@/components/Application";
 

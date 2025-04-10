@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { PerksData, perksData } from "../../data/perks";
 import { Modal } from "@/components";
 import { getButtonStyles } from "@/components/Button/Button.styles";
-import { useRouter } from "@/providers/routes.provider";
+import { useRouter } from "@/providers";
 
 const PerksPage = () => {
     const foodItemsRef = useRef([]);
