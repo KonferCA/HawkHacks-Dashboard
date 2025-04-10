@@ -6,7 +6,12 @@ import { useAuth } from "@/providers";
 import Hamburger from "hamburger-react";
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "@/assets";
-import { useUser, useRouteDefinitions, useRouter } from "@/providers";
+import {
+    useUser,
+    useRouteDefinitions,
+    useRouter,
+    useApplications,
+} from "@/providers";
 import {
     CalendarDaysIcon,
     CodeBracketIcon,
@@ -15,7 +20,6 @@ import {
     TicketIcon,
     UserGroupIcon,
 } from "@heroicons/react/24/outline";
-import { useApplications } from "@/providers/ApplicationsProvider";
 
 export const Navbar = () => {
     const { logout } = useAuth();
