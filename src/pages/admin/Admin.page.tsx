@@ -1,8 +1,8 @@
-import { useRoutes } from "@/providers/routes.provider";
+import { useRouter } from "@/providers/routes.provider";
 import { Link } from "react-router-dom";
 
 export const AdminPage = () => {
-    const { paths } = useRoutes();
+    const { paths } = useRouter();
     return (
         <div className="text-center rounded-xl border-2 border-black px-7 py-32 shadow-lg lg:mt-6 lg:block xl:mt-12">
             <h1 className="text-3xl font-bold">Time to Admininstrate!</h1>
@@ -32,4 +32,3 @@ export const AdminPage = () => {
         </div>
     );
 };
-

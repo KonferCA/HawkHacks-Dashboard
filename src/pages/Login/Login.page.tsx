@@ -7,7 +7,7 @@ import { Button } from "@chakra-ui/react";
 import { useAuth } from "@/providers/hooks";
 import type { ProviderName } from "@/providers/types";
 import { GithubLogo, GoogleLogo, AppleLogo } from "@assets";
-import { useRoutes } from "@/providers/routes.provider";
+import { useRouteDefinitions, useRouter } from "@/providers/routes.provider";
 
 // email validation with zod, double guard just in case someone changes the input type in html
 const emailParser = z.string().email();
@@ -45,7 +45,8 @@ export const LoginPage = () => {
         currentUser,
     } = useAuth();
 
-    const { paths: routes, userRoutes } = useRoutes();
+    const { paths } = useRouter();
+    const routes = useRouteDefinitions();
 
     const [searchParams] = useSearchParams();
 
@@ -127,10 +128,10 @@ export const LoginPage = () => {
     // leverage access to current user to decide whether we need to proceed rendering page
     if (currentUser !== null) {
         if (currentUser.hawkAdmin) {
-            return <Navigate to={routes.admin} />;
+            return <Navigate to={paths.admin} />;
         }
         const from = searchParams.get("from");
-        const available = userRoutes.some((r) => {
+        const available = routes.some((r) => {
             // join team is globally available
             if (r.path && r.path.startsWith("/join-team")) return true;
             return r.path === from;
@@ -142,7 +143,7 @@ export const LoginPage = () => {
 
         return (
             <Navigate
-                to={from && from !== "/" && available ? from : routes.portal}
+                to={from && from !== "/" && available ? from : paths.home}
             />
         );
     }

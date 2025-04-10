@@ -5,12 +5,12 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { GoogleWalletBadge, AppleWalletBadge, LoadingDots } from "@/assets";
 import { useAuth } from "@/providers/hooks";
 import { Navigate } from "react-router-dom";
-import { useRoutes } from "@/providers/routes.provider";
+import { useRouter } from "@/providers/routes.provider";
 import { logError } from "@/services/firebase/log";
 
 export const TicketPage = () => {
     const functions = getFunctions();
-    const { paths } = useRoutes();
+    const { paths } = useRouter();
     const { currentUser, userApp } = useAuth();
     const email = currentUser?.email ?? "";
     const firstName =

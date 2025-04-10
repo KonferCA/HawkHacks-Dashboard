@@ -46,7 +46,7 @@ import { logEvent } from "firebase/analytics";
 import { analytics } from "@/services/firebase";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { Modal } from "@/components/Modal";
-import { useRoutes } from "@/providers/routes.provider";
+import { useRouter } from "@/providers/routes.provider";
 
 const stepValidations = [
     profileFormValidation,
@@ -96,9 +96,9 @@ export const ApplicationPage = () => {
     const loadingTimeoutRef = useRef<number | null>(null);
     const [sp] = useSearchParams();
     const navigate = useNavigate();
-    const { paths: routes } = useRoutes();
+    const { paths } = useRouter();
 
-    if (!currentUser) return <Navigate to={routes.login} />;
+    if (!currentUser) return <Navigate to={paths.login} />;
 
     // we start with the default user profile
     const [application, setApplication] = useState<ApplicationData>(() => {
@@ -335,7 +335,7 @@ export const ApplicationPage = () => {
 
     if (isLoading) return <LoadingAnimation />;
 
-    if (submitted) return <Navigate to={routes.submitted} />;
+    if (submitted) return <Navigate to={paths.submitted} />;
 
     return (
         <>

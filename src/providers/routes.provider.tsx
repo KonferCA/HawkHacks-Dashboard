@@ -2,38 +2,53 @@ import {
     createContext,
     useContext,
     useEffect,
+    useMemo,
     useRef,
     useState,
     type FC,
 } from "react";
 import type { ComponentProps } from "@/components/types";
 import {
-    // AdminPage,
+    AdminPage,
     LoginPage,
-    // NetworkingPage,
+    NetworkingPage,
     NotFoundPage,
-    // TicketPage,
+    TicketPage,
     VerifyEmailPage,
-    UserPage,
+    HomePage,
+    PerksPage,
+    SchedulePage,
 } from "@/pages";
-import { type RouteObject } from "react-router-dom";
+import {
+    BrowserRouter,
+    type RouteObject,
+    useLocation,
+    useRoutes,
+} from "react-router-dom";
 import { useAuth } from "./auth.provider";
-import { ProtectedRoutes } from "@/navigation";
-// import { PostSubmissionPage } from "@/pages/miscellaneous/PostSubmission.page";
-// import { VerifyRSVP } from "@/pages/miscellaneous/VerifyRSVP.page";
-// import { MyTeamPage } from "@/pages/MyTeam.page";
-// import { ViewTicketPage } from "@/pages/miscellaneous/ViewTicket.page";
-// import { JoinTeamPage } from "@/pages/JoinTeam.page";
-// import { AdminViewTicketPage } from "@/pages/admin/ViewTicket.page";
-// import { AdminManageEventsPage } from "@/pages/admin/ManageEvents.page";
+import { AccessControl } from "@/navigation/AccessControl/AccessControl";
+import { AccessControlFn } from "@/navigation/AccessControl/AccessControl.types";
+import { LoadingAnimation } from "@/components";
+import { PostSubmissionPage } from "@/pages/miscellaneous/PostSubmission.page";
+import { VerifyRSVP } from "@/pages/miscellaneous/VerifyRSVP.page";
+import { MyTeamPage } from "@/pages/MyTeam.page";
+import { ViewTicketPage } from "@/pages/miscellaneous/ViewTicket.page";
+import { JoinTeamPage } from "@/pages/JoinTeam.page";
+import { AdminViewTicketPage } from "@/pages/admin/ViewTicket.page";
+import { AdminManageEventsPage } from "@/pages/admin/ManageEvents.page";
+import { ApplicationPage } from "@/pages/Application/Application.page";
 
+/**
+ * Defines all application routes as URL paths
+ * Used for consistent route references throughout the application
+ */
 interface PathObject {
     admin: string;
     adminViewTicket: string;
     adminManageEvents: string;
     notFound: string;
     login: string;
-    portal: string;
+    home: string;
     verifyEmail: string;
     schedule: string;
     networking: string;
@@ -48,27 +63,45 @@ interface PathObject {
     perks: string;
 }
 
+/**
+ * Defines the page header information for each route
+ */
 interface HeaderInfo {
     title: string;
     subTitle: string;
 }
 
+/**
+ * Context value interface for the RoutesContext
+ */
 interface RoutesContextValue {
-    reactRouterRoutes: RouteObject[];
-    userRoutes: RouteObject[];
-    paths: PathObject;
-    titles: Record<string, HeaderInfo>;
-    loadingRoutes: boolean;
-    refreshRoutes: () => void;
+    routes: RouteConfig[]; // Routes configured for React Router
+    paths: PathObject; // All application paths
+    titles: Record<string, HeaderInfo>; // Header info for each path
+    loadingRoutes: boolean; // Whether routes are currently loading
+    refreshRoutes: () => void; // Function to trigger route refresh
 }
 
+/**
+ * Extended RouteObject that includes access control and page wrapper configuration
+ */
+export type RouteConfig = RouteObject & {
+    withPageWrapper?: boolean; // Whether to wrap route with PageWrapper
+    redirectTo?: string; // Where to redirect if access denied
+    accessCheck?: AccessControlFn; // Function to check access permission
+    children?: RouteConfig[]; // Nested routes
+};
+
+/**
+ * Centralized definition of all application paths
+ */
 const paths: PathObject = {
     admin: "/admin",
     adminViewTicket: "/admin/ticket/:ticketId",
     adminManageEvents: "/admin/manage",
     notFound: "*",
     login: "/login",
-    portal: "/",
+    home: "/",
     verifyEmail: "/verify-email",
     schedule: "/schedule",
     networking: "/networking",
@@ -83,10 +116,14 @@ const paths: PathObject = {
     perks: "/perks",
 };
 
+/**
+ * Page titles and subtitles for each route
+ * Used for displaying consistent header information
+ */
 const titles: Record<string, HeaderInfo> = {
-    [paths.portal]: {
-        title: "User",
-        subTitle: "Welcome to your user dashboard.",
+    [paths.home]: {
+        title: "Home",
+        subTitle: "Welcome to the home page",
     },
     [paths.schedule]: {
         title: "Schedule",
@@ -132,62 +169,119 @@ const titles: Record<string, HeaderInfo> = {
     },
 };
 
+/**
+ * Create context for routes with default values
+ */
 const RoutesContext = createContext<RoutesContextValue>({
-    reactRouterRoutes: [],
-    userRoutes: [],
+    routes: [],
     paths,
     titles,
     loadingRoutes: true,
     refreshRoutes: () => {},
 });
 
-export function useRoutes() {
-    return useContext(RoutesContext);
-}
+/**
+ * Checks if user is authenticated (logged in)
+ */
+const isAuthenticated: AccessControlFn = ({ user }) => !!user;
 
 /**
- * Routes provider that controls what routes are available and should be rendered by the React Router Dom and the Navbar
+ * Checks if user is an admin
  */
-export const RoutesProvider: FC<ComponentProps> = ({ children }) => {
-    // all routes the router needs to render
-    const [routes, setRoutes] = useState<RouteObject[]>([]);
-    // all routes that navbar needs to render
-    const [userRoutes, setUserRoutes] = useState<RouteObject[]>([]);
+const isAdmin: AccessControlFn = ({ user }) => !!user && user.hawkAdmin;
+
+/**
+ * Checks if user has verified their email
+ */
+const hasVerifiedEmail: AccessControlFn = ({ user }) =>
+    !!user && user.emailVerified;
+
+/**
+ * Converts RouteConfig to React Router's RouteObject with AccessControl wrapper
+ * This handles applying access control to routes that require it
+ */
+const convertToRouteObjects = (routeConfigs: RouteConfig[]): RouteObject[] => {
+    return routeConfigs.map((config) => {
+        // If there's an access check, wrap the element with AccessControl
+        if (config.accessCheck || config.redirectTo) {
+            return {
+                path: config.path,
+                element: (
+                    <AccessControl
+                        accessCheck={config.accessCheck}
+                        redirectTo={config.redirectTo}
+                        withPageWrapper={config.withPageWrapper}
+                    />
+                ),
+                children: [
+                    {
+                        path: "",
+                        element: config.element,
+                        children: config.children
+                            ? convertToRouteObjects(config.children)
+                            : undefined,
+                    },
+                ],
+            };
+        }
+
+        // No access check, return the route object directly
+        return {
+            path: config.path,
+            element: config.element,
+            children: config.children
+                ? convertToRouteObjects(config.children)
+                : undefined,
+        };
+    });
+};
+
+/**
+ * Inner router component that uses React Router's useRoutes hook
+ * Handles loading state while routes are being prepared
+ */
+const InnerRouter = () => {
+    const { routes, loadingRoutes } = useRouter();
+    const routeObjs = useMemo(() => {
+        // Convert to React Router compatible objects
+        return convertToRouteObjects(routes);
+    }, [routes]);
+    const availableRoutes = useRoutes(routeObjs);
+
+    if (loadingRoutes) return <LoadingAnimation />;
+
+    return availableRoutes;
+};
+
+/**
+ * Router component that wraps InnerRouter with BrowserRouter
+ */
+const Router = () => {
+    return (
+        <BrowserRouter>
+            <InnerRouter />
+        </BrowserRouter>
+    );
+};
+
+/**
+ * Routes provider that controls what routes are available and should be rendered
+ * Manages route generation, access control, and loading states
+ */
+export const RoutesProvider: FC<ComponentProps> = () => {
+    // State for triggering route refresh
     const [refresh, setRefresh] = useState(false);
+    // State for tracking loading state
     const [loadingRoutes, setLoadingRoutes] = useState(true);
+    // Ref for timeout to manage loading state
     const timeoutRef = useRef<number | null>(null);
+    // Get current user and application data
     const { currentUser, userApp } = useAuth();
 
-    useEffect(() => {
-        setLoadingRoutes(true);
-        const cleanUp = () => {
-            if (timeoutRef.current !== null)
-                window.clearTimeout(timeoutRef.current);
-        };
-
-        if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-        timeoutRef.current = window.setTimeout(
-            () => setLoadingRoutes(false),
-            1500
-        );
-
-        const userRoutes = {
-            path: paths.portal,
-            element: <ProtectedRoutes />,
-            children: [
-                {
-                    index: true,
-                    path: paths.portal,
-                    element: <UserPage />,
-                },
-                {
-                    path: paths.verifyEmail,
-                    element: <VerifyEmailPage />,
-                },
-            ],
-        };
-
-        const availableRoutes: RouteObject[] = [
+    // State for storing generated routes
+    const routes = useMemo(() => {
+        // Public routes that don't require authentication
+        const publicRoutes: RouteConfig[] = [
             {
                 path: paths.login,
                 element: <LoginPage />,
@@ -196,29 +290,199 @@ export const RoutesProvider: FC<ComponentProps> = ({ children }) => {
                 path: paths.notFound,
                 element: <NotFoundPage />,
             },
-            userRoutes,
         ];
 
-        setUserRoutes(userRoutes.children);
-        setRoutes(availableRoutes);
+        // Routes requiring basic authentication
+        const authenticatedRoutes: RouteConfig[] = [
+            {
+                path: paths.home,
+                withPageWrapper: true,
+                element: <HomePage />,
+                accessCheck: isAuthenticated,
+                redirectTo: paths.login,
+            },
+            {
+                path: paths.verifyEmail,
+                withPageWrapper: true,
+                element: <VerifyEmailPage />,
+                accessCheck: isAuthenticated,
+                redirectTo: paths.login,
+            },
+        ];
+
+        // Routes requiring email verification
+        const verifiedEmailRoutes: RouteConfig[] = [
+            {
+                path: paths.schedule,
+                withPageWrapper: true,
+                element: <SchedulePage />,
+                accessCheck: hasVerifiedEmail,
+                redirectTo: paths.verifyEmail,
+            },
+            {
+                path: paths.networking,
+                withPageWrapper: true,
+                element: <NetworkingPage />,
+                accessCheck: hasVerifiedEmail,
+                redirectTo: paths.verifyEmail,
+            },
+            {
+                path: paths.myTicket,
+                withPageWrapper: true,
+                element: <TicketPage />,
+                accessCheck: hasVerifiedEmail,
+                redirectTo: paths.verifyEmail,
+            },
+            {
+                path: paths.application,
+                withPageWrapper: true,
+                element: <ApplicationPage />,
+                accessCheck: hasVerifiedEmail,
+                redirectTo: paths.verifyEmail,
+            },
+            {
+                path: paths.submitted,
+                withPageWrapper: true,
+                element: <PostSubmissionPage />,
+                accessCheck: hasVerifiedEmail,
+                redirectTo: paths.verifyEmail,
+            },
+            {
+                path: paths.verifyRSVP,
+                withPageWrapper: true,
+                element: <VerifyRSVP />,
+                accessCheck: hasVerifiedEmail,
+                redirectTo: paths.verifyEmail,
+            },
+            {
+                path: paths.myTeam,
+                withPageWrapper: true,
+                element: <MyTeamPage />,
+                accessCheck: hasVerifiedEmail,
+                redirectTo: paths.verifyEmail,
+            },
+            {
+                path: paths.joinTeam,
+                withPageWrapper: true,
+                element: <JoinTeamPage />,
+                accessCheck: hasVerifiedEmail,
+                redirectTo: paths.verifyEmail,
+            },
+            {
+                path: paths.ticket,
+                withPageWrapper: true,
+                element: <ViewTicketPage />,
+                accessCheck: hasVerifiedEmail,
+                redirectTo: paths.verifyEmail,
+            },
+            {
+                path: paths.perks,
+                withPageWrapper: true,
+                element: <PerksPage />,
+                accessCheck: hasVerifiedEmail,
+                redirectTo: paths.verifyEmail,
+            },
+        ];
+
+        // Admin-only routes
+        const adminRoutes: RouteConfig[] = [
+            {
+                path: paths.admin,
+                withPageWrapper: true,
+                element: <AdminPage />,
+                accessCheck: isAdmin,
+                redirectTo: paths.notFound,
+            },
+            {
+                path: paths.adminViewTicket,
+                withPageWrapper: true,
+                element: <AdminViewTicketPage />,
+                accessCheck: isAdmin,
+                redirectTo: paths.notFound,
+            },
+            {
+                path: paths.adminManageEvents,
+                withPageWrapper: true,
+                element: <AdminManageEventsPage />,
+                accessCheck: isAdmin,
+                redirectTo: paths.notFound,
+            },
+        ];
+
+        // Combine all route groups
+        return [
+            ...publicRoutes,
+            ...authenticatedRoutes,
+            ...verifiedEmailRoutes,
+            ...adminRoutes,
+        ];
+    }, []);
+
+    // Manage loading state with delay to prevent flashing
+    useEffect(() => {
+        setLoadingRoutes(true);
+
+        // Cleanup function to clear timeout
+        const cleanUp = () => {
+            if (timeoutRef.current !== null)
+                window.clearTimeout(timeoutRef.current);
+        };
+
+        // Clear any existing timeout
+        if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+
+        // Set timeout to turn off loading state after delay
+        timeoutRef.current = window.setTimeout(
+            () => setLoadingRoutes(false),
+            1500
+        );
 
         return cleanUp;
     }, [refresh, currentUser, userApp]);
 
+    // Function to trigger route refresh
     const refreshRoutes = () => setRefresh((r) => !r);
 
     return (
         <RoutesContext.Provider
             value={{
-                reactRouterRoutes: routes,
-                userRoutes,
+                routes,
                 paths,
                 titles,
                 loadingRoutes,
                 refreshRoutes,
             }}
         >
-            {children}
+            {loadingRoutes ? <LoadingAnimation /> : <Router />}
         </RoutesContext.Provider>
     );
 };
+
+/**
+ * Hook to access the routes context
+ * Provides access to routes, paths, titles and route control functions
+ */
+export function useRouter() {
+    return useContext(RoutesContext);
+}
+
+/**
+ * Hook to get header information for current route
+ * Uses current location to determine the appropriate header info
+ */
+export function useHeaderInfo() {
+    const location = useLocation();
+    const info: HeaderInfo | undefined = useMemo(
+        () => titles[location.pathname],
+        [titles, location.pathname]
+    );
+    return info;
+}
+
+/**
+ * Hook to get all the route definitions
+ */
+export function useRouteDefinitions() {
+    const router = useRouter();
+    return router.routes;
+}

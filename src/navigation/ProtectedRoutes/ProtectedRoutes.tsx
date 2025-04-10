@@ -1,7 +1,7 @@
 import { Outlet, Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/providers/hooks";
 import { PageWrapper } from "@components";
-import { useRoutes } from "@/providers/routes.provider";
+import { useRouter } from "@/providers/routes.provider";
 
 export interface ProtectedRoutesProps {
     /**
@@ -16,7 +16,7 @@ export const ProtectedRoutes: React.FC<ProtectedRoutesProps> = ({
 }) => {
     const location = useLocation();
     const session = useAuth();
-    const { paths: routes } = useRoutes();
+    const { paths: routes } = useRouter();
 
     // console.log(available);
 

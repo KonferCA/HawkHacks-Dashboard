@@ -31,7 +31,7 @@ import {
     XCircleIcon,
 } from "@heroicons/react/24/solid";
 import { Modal } from "@/components/Modal";
-import { useRoutes } from "@/providers/routes.provider";
+import { useRouter } from "@/providers/routes.provider";
 // import { isBefore } from "date-fns";
 import { useUserStore } from "@/stores/user.store";
 
@@ -70,7 +70,7 @@ export const MyTeamPage = () => {
         250
     );
     const loadingTimeoutRef = useRef<number | null>(null);
-    const { paths } = useRoutes();
+    const { paths } = useRouter();
 
     const submitNewTeam: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();
@@ -295,7 +295,7 @@ export const MyTeamPage = () => {
         }
         if (invitationRes.status === "fulfilled") {
             const res = invitationRes.value;
-            setInvitations(res.data);
+            setInvitations(res.data ?? []);
         }
         if (loadingTimeoutRef.current !== null)
             window.clearTimeout(loadingTimeoutRef.current);

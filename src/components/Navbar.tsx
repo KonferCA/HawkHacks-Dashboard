@@ -1,12 +1,12 @@
 import { RiDiscordLine } from "react-icons/ri";
 import { FiLogOut, FiMapPin } from "react-icons/fi";
 import { RxStar } from "react-icons/rx";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/providers/hooks";
 import Hamburger from "hamburger-react";
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "@/assets";
-import { useRoutes } from "@/providers/routes.provider";
+import { useRouteDefinitions, useRouter } from "@/providers/routes.provider";
 import {
     CalendarDaysIcon,
     CodeBracketIcon,
@@ -15,17 +15,28 @@ import {
     TicketIcon,
     UserGroupIcon,
 } from "@heroicons/react/24/outline";
+import { useApplications } from "@/providers/applications.provider";
 
 export const Navbar = () => {
     const { logout } = useAuth();
 
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const { userRoutes, paths } = useRoutes();
+    const { paths } = useRouter();
     const { currentUser, userApp } = useAuth();
+    const applications = useApplications();
+    const routes = useRouteDefinitions();
+
+    const availableRoutes = useMemo(() => {
+        return routes.filter(
+            (route) =>
+                !route.accessCheck ||
+                route.accessCheck({ user: currentUser, applications })
+        );
+    }, [routes, currentUser, applications]);
 
     const navItems = {
-        [paths.portal]: {
+        [paths.home]: {
             label: "Home",
             Icon: HomeIcon,
         },
@@ -77,8 +88,10 @@ export const Navbar = () => {
         setMobileMenuOpen(false);
     }, [location]);
 
+    // TODO: groom routes rendering
+
     const renderNavItems = (isMobile: boolean) => {
-        return userRoutes
+        return availableRoutes
             .filter(({ path }) => !!navItems[path as string])
             .map(({ path }) => {
                 const { label, Icon } = navItems[path as string];
@@ -241,7 +254,7 @@ export const Navbar = () => {
                     <div className="flex items-start justify-start p-4">
                         <Link
                             className="flex gap-4 items-center justify-start"
-                            to={paths.portal}
+                            to={paths.home}
                         >
                             <img
                                 className="h-10 w-10"
