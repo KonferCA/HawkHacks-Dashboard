@@ -1,4 +1,4 @@
-import type { AccessControlFn } from "@/navigation/AccessControl/AccessControl.types";
+import type { AccessControlFn } from "@/navigation/AccessControl/types";
 
 /**
  * Checks if user is authenticated (logged in)

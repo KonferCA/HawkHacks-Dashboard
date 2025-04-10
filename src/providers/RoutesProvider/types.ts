@@ -1,5 +1,5 @@
 import { RouteObject } from "react-router-dom";
-import { AccessControlFn } from "@/navigation/AccessControl/AccessControl.types";
+import { AccessControlFn } from "@/navigation/AccessControl/types";
 
 /**
  * Defines all application routes as URL paths

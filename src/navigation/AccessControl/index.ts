@@ -3,4 +3,4 @@ export type {
     AccessControlFn,
     AccessControlProps,
     AccessControlContext,
-} from "./AccessControl.types";
+} from "./types";
