@@ -8,6 +8,7 @@ import { Router } from "@/navigation";
 import { AuthProvider } from "@providers";
 import { Toaster } from "./components/ui/toaster";
 import { RoutesProvider } from "./providers/routes.provider";
+import { ApplicationsProvider } from "./providers/applications.provider";
 
 // for funsies
 console.log("If you found this, you are a curious one! 😄");
@@ -20,9 +21,11 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Provider>
             <Toaster />
             <AuthProvider>
-                <RoutesProvider>
-                    <Router />
-                </RoutesProvider>
+                <ApplicationsProvider>
+                    <RoutesProvider>
+                        <Router />
+                    </RoutesProvider>
+                </ApplicationsProvider>
             </AuthProvider>
         </Provider>
     </React.StrictMode>
