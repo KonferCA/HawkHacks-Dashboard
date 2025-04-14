@@ -1,12 +1,12 @@
-import { FC, Fragment, useRef, useState, useCallback } from "react";
+import { type FC, Fragment, useRef, useState, useCallback } from "react";
 import { Combobox, Transition } from "@headlessui/react";
 import {
     CheckIcon,
     ChevronDownIcon,
     XMarkIcon,
 } from "@heroicons/react/20/solid";
-import { VariantProps, cva } from "class-variance-authority";
-import { ClassProp } from "class-variance-authority/types";
+import { type VariantProps, cva } from "class-variance-authority";
+import type { ClassProp } from "class-variance-authority/types";
 import { twMerge } from "tailwind-merge";
 import { getTextInputDescriptionStyles } from "../TextInput/TextInput.styles";
 import { useDebounce } from "@/hooks/use-debounce";

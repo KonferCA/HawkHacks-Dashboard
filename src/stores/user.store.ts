@@ -1,4 +1,4 @@
-import { Socials, TeamData } from "@/services/firebase/types";
+import type { Socials, TeamData } from "@/services/firebase/types";
 import { create } from "zustand";
 
 export interface UserStore {

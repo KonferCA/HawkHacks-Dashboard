@@ -1,6 +1,6 @@
 import { collection, addDoc } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
-import {
+import type {
     CloudFunctionResponse,
     ExtendedTicketData,
     TicketData,

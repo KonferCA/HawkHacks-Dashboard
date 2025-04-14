@@ -1,8 +1,8 @@
-import { FC, Fragment } from "react";
+import { type FC, Fragment } from "react";
 import { SlidingHawkBody, SlidingHawkBodyParts } from "@/assets";
 import { Dialog, Transition } from "@headlessui/react";
 import { XCircleIcon } from "@heroicons/react/24/outline";
-import { ComponentProps } from "./types";
+import type { ComponentProps } from "./types";
 
 export interface ModalProps extends ComponentProps {
     title: string;

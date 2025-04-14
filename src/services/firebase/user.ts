@@ -1,6 +1,6 @@
 import { httpsCallable } from "firebase/functions";
 import { functions } from "@/services/firebase";
-import { CloudFunctionResponse, Socials } from "@/services/firebase/types";
+import type { CloudFunctionResponse, Socials } from "@/services/firebase/types";
 import { logError } from "@/services/firebase/log";
 
 export async function verifyGitHubEmail(token: string, email: string) {

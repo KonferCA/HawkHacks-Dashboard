@@ -2,7 +2,7 @@ import { Tab } from "@headlessui/react";
 import { useAuth } from "@/providers";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { EventItem, type ExtendedTicketData } from "@/services/firebase/types";
+import type { EventItem, ExtendedTicketData } from "@/services/firebase/types";
 import { getExtendedTicketData } from "@/services/firebase/ticket";
 import { toaster } from "@/components/ui/toaster";
 import { getRedeemableItems, redeemItem } from "@/services/firebase/redeem";

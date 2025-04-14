@@ -1,5 +1,6 @@
-import { FC } from "react";
 import { ApplicationData } from "./forms/types";
+import type { FC } from "react";
+import type { ApplicationData } from "./forms/types";
 import { Button } from "@chakra-ui/react";
 import { getResume } from "@/services/firebase/files";
 import { toaster } from "./ui/toaster";

@@ -1,4 +1,4 @@
-import { FormEventHandler, useState } from "react";
+import { type FormEventHandler, useState } from "react";
 import { flushSync } from "react-dom";
 import { z } from "zod";
 import { Navigate, useSearchParams } from "react-router-dom";

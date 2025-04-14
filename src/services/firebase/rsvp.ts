@@ -1,7 +1,7 @@
 import { httpsCallable } from "firebase/functions";
 import { functions } from "@/services/firebase";
 import { logError, logEvent } from "@/services/firebase/log";
-import { CloudFunctionResponse } from "./types";
+import type { CloudFunctionResponse } from "./types";
 
 export async function verifyRSVP() {
     const verifyFn = httpsCallable(functions, "verifyRSVP");

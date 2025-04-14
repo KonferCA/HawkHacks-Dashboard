@@ -3,8 +3,8 @@ import type {
     SelectProps,
     MultiSelectProps,
 } from "@/components/types";
-import { TextAreaProps } from "../TextArea/TextArea";
-import { Timestamp } from "firebase/firestore";
+import type { TextAreaProps } from "../TextArea/TextArea";
+import type { Timestamp } from "firebase/firestore";
 
 export interface HackerApplicationData {
     firstName: string;

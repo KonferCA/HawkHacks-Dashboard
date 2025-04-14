@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState, Fragment } from "react";
+import { type FC, useEffect, useRef, useState, Fragment } from "react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Combobox, Transition } from "@headlessui/react";
 import { getOptionStyles } from "../MultiSelect/MultiSelect";

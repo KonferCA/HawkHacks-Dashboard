@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 
 export type StepStatus = "complete" | "current" | "upcoming" | "inprogress";
 

@@ -8,7 +8,7 @@ import {
     rejectInvitation,
     validateTeamInvitation,
 } from "@/services/firebase/teams";
-import { Invitation } from "@/services/firebase/types";
+import type { Invitation } from "@/services/firebase/types";
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 

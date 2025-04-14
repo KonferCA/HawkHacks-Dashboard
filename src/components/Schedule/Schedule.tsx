@@ -1,15 +1,15 @@
 import { EventNameString } from "firebase/analytics";
-import { FC, ReactNode, useEffect, useState } from "react";
+import { type FC, type ReactNode, useEffect, useState } from "react";
 
 // EventType represents the different types of events available.
 // These are used to decide the colour of each event that is rendered on screen.
 export enum EventType {
-    WORKSHOP,
-    EVENT,
-    FOOD,
-    IMPORTANT,
-    GAME_CHILL,
-    NETWORKING,
+    WORKSHOP = 0,
+    EVENT = 1,
+    FOOD = 2,
+    IMPORTANT = 3,
+    GAME_CHILL = 4,
+    NETWORKING = 5,
 }
 
 // EventItem represents an event that is going to be rendered

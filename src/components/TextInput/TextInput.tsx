@@ -4,7 +4,8 @@ import {
     getTextInputStyles,
     getTextInputDescriptionStyles,
 } from "./TextInput.styles";
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 
 export interface TextInputProps
     extends TextInputStylesProps,

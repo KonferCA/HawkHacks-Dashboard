@@ -17,7 +17,7 @@ import {
     validateTeamInvitation,
     rejectInvitation,
 } from "@/services/firebase/teams";
-import { Invitation } from "@/services/firebase/types";
+import type { Invitation } from "@/services/firebase/types";
 import { type FormEventHandler, useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import {
