@@ -1,9 +1,3 @@
-/*
- *
- * @component Button
- *
- */
-export { Button } from "./Button/Button";
 
 /*
  *
