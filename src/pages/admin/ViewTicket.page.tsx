@@ -6,7 +6,8 @@ import { EventItem, type ExtendedTicketData } from "@/services/firebase/types";
 import { getExtendedTicketData } from "@/services/firebase/ticket";
 import { toaster } from "@/components/ui/toaster";
 import { getRedeemableItems, redeemItem } from "@/services/firebase/redeem";
-import { Button, LoadingAnimation, Modal } from "@/components";
+import { LoadingAnimation, Modal } from "@/components";
+import { Button } from "@chakra-ui/react";
 import { getButtonStyles } from "@/components/Button/Button.styles";
 
 const categories = ["Important", "Workshop", "Game/Chill", "Food"];

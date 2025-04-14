@@ -1,5 +1,6 @@
 import { GoldenHawk, IpadKidHawks } from "@/assets";
-import { Card, Accordion, SocialIcons, Button, Modal } from "@components";
+import { Card, Accordion, SocialIcons, Modal } from "@components";
+import { Button } from "@chakra-ui/react";
 import { faqs, sponsors, importantDateTimes } from "@data";
 import { useAuth } from "@/providers/auth.provider";
 import { useState } from "react";

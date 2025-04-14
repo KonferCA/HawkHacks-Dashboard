@@ -1,4 +1,5 @@
-import { Button, LoadingAnimation, PageWrapper } from "@/components";
+import { LoadingAnimation, PageWrapper } from "@/components";
+import { Button } from "@chakra-ui/react";
 import { useAuth } from "@/providers/auth.provider";
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";

@@ -1,4 +1,5 @@
-import { Button, LoadingAnimation } from "@/components";
+import { LoadingAnimation } from "@/components";
+import { Button } from "@chakra-ui/react";
 import { useAuth } from "@/providers/auth.provider";
 import { verifyRSVP } from "@/services/firebase/rsvp";
 import { toaster } from "@/components/ui/toaster";

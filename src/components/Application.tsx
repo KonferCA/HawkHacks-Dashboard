@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { ApplicationData } from "./forms/types";
-import { Button } from "./Button/Button";
+import { Button } from "@chakra-ui/react";
 import { getResume } from "@/services/firebase/files";
 import { toaster } from "./ui/toaster";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";

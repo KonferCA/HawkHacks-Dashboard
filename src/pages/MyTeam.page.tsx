@@ -1,4 +1,5 @@
-import { Button, LoadingAnimation, TextInput } from "@/components";
+import { LoadingAnimation, TextInput } from "@/components";
+import { Button } from "@chakra-ui/react";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useAuth } from "@/providers/auth.provider";

@@ -4,10 +4,10 @@ import { z } from "zod";
 import { useAuth } from "@/providers/hooks";
 import { toaster } from "@/components/ui/toaster";
 import { FileBrowser } from "@/components/FileBrowse/FileBrowse";
+import { Button } from "@chakra-ui/react";
 import {
     TextInput,
     Select,
-    Button,
     ErrorAlert,
     MultiSelect,
     Steps,

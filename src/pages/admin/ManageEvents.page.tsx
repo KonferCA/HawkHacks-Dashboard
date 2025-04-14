@@ -1,4 +1,5 @@
-import { Button, LoadingAnimation, Select, TextInput } from "@/components";
+import { LoadingAnimation, Select, TextInput } from "@/components";
+import { Button } from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
 import { getRedeemableItems } from "@/services/firebase/redeem";
 import { EventItem } from "@/services/firebase/types";
