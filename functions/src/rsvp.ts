@@ -298,7 +298,7 @@ export const verifyRSVP = onCall(async (_, res) => {
             verified: true,
             message: "RSVP already verified.",
         };
-    } else {
+    }
         try {
             logInfo("Checking user in spots...", {
                 email: user.email,
@@ -342,7 +342,7 @@ export const verifyRSVP = onCall(async (_, res) => {
                     message:
                         "Your chance to RSVP has expired. You can try again by entering the waitlist.",
                 };
-            } else {
+            }
                 logInfo("Verifying RSVP...");
                 const app = (
                     await getFirestore()
@@ -374,7 +374,6 @@ export const verifyRSVP = onCall(async (_, res) => {
                 ).catch((error) =>
                     logError("Failed to send rsvp confirmed email.", { error })
                 );
-            }
         } catch (e) {
             logError("Error verifying RSVP.", {
                 uid: context.auth.uid,
@@ -387,7 +386,6 @@ export const verifyRSVP = onCall(async (_, res) => {
             status: 200,
             verified: true,
         };
-    }
 });
 
 export const joinWaitlist = onCall(async (_, res) => {

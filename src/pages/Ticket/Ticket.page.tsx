@@ -124,7 +124,7 @@ export const TicketPage = () => {
                             {email}
                         </h2>
                     </div>
-                    <div className="bg-gray-200 rounded-xl h-[2px]"></div>
+                    <div className="bg-gray-200 rounded-xl h-[2px]" />
                     <div className="flex flex-col items-center">
                         <img src={qrCode} alt="QR Code" className="w-full" />
                         <button

@@ -39,7 +39,7 @@ export const ViewTicketPage = () => {
                         currentUser.rsvpVerified))
             ) {
                 if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
-                navigate("/admin/ticket/" + ticketId);
+                navigate(`/admin/ticket/${ticketId}`);
             } else {
                 if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
                 // fetch user ticket data

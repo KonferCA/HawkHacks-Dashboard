@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Navbar } from "@components";
 import type { ComponentProps } from "@/components/types";
 import { useHeaderInfo } from "@/providers";

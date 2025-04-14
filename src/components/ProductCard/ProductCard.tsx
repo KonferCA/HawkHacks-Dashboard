@@ -10,7 +10,7 @@ interface Product {
 const ProductCard: FC<Product> = ({ image, title, description, link }) => {
     return (
         <article className="product" aria-label={title}>
-            <header className="product__images" role="banner">
+            <header className="product__images" >
                 <img src={image} alt={title} />
             </header>
             <div className="product__infos">

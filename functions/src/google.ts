@@ -146,10 +146,9 @@ export const createPassClass = onCall(async (_, res) => {
                 result: "Class created",
                 details: createResponse.data,
             };
-        } else {
+        }
             logInfo(error);
             throw new HttpsError("unknown", "Failed to handle request", error);
-        }
     }
 });
 

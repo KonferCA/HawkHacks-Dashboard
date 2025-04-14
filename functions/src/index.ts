@@ -323,9 +323,8 @@ export const verifyGitHubEmail = onCall(async (data: any, res) => {
                 emailVerified: payloadEmail.verified,
             });
             return payloadEmail.verified;
-        } else {
-            return new HttpsError("unavailable", "Service unavailable");
         }
+            return new HttpsError("unavailable", "Service unavailable");
     } catch {
         return new HttpsError("internal", "Failed to verify email");
     }

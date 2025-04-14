@@ -2,10 +2,10 @@ import {
     GithubAuthProvider,
     GoogleAuthProvider,
     OAuthProvider,
-    User,
+    type User,
     type AuthProvider as FirebaseAuthProvider,
 } from "firebase/auth";
-import { ProviderName, UserType, UserWithClaims } from "./types";
+import type { ProviderName, UserType, UserWithClaims } from "./types";
 
 /**
  * Validates given user for admin authorization.

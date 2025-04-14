@@ -1,6 +1,6 @@
 import { useAuth } from "@/providers";
 import { useApplications } from "@/hooks/use-applications";
-import { FormEventHandler, useEffect, useRef, useState } from "react";
+import { type FormEventHandler, useEffect, useRef, useState } from "react";
 import {
     MdOutlineEdit,
     MdOpenInNew,
@@ -348,7 +348,7 @@ export const NetworkingPage = () => {
                             <span className="flex-1 gap-2">
                                 <p className="">Resume</p>
                             </span>
-                            {socials && socials.resumeRef ? (
+                            {socials?.resumeRef ? (
                                 <p className="bg-green-300 rounded-full px-4 py-1">
                                     Resume Uploaded
                                 </p>

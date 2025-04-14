@@ -21,7 +21,7 @@ export const useApplications = () => {
         initialData: [],
         enabled: !!user,
         refetchOnWindowFocus: false,
-        staleTime: Infinity, // application data only really changes after a submission so there is no need to refetch
+        staleTime: Number.POSITIVE_INFINITY, // application data only really changes after a submission so there is no need to refetch
     });
 
     /**

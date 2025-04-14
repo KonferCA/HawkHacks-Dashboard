@@ -554,7 +554,7 @@ export const inviteMember = onCall<EmailRequest, any, any>(
                     message:
                         "This email doesn't match our records of RSVP'd hackers. Make sure you've typed their email correctly, and that they've already RSVP'd.",
                 });
-            } else if (!app) {
+            }if (!app) {
                 logInfo("Invitee did not apply to HawkHacks", {
                     func,
                 });

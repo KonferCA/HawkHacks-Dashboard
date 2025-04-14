@@ -19,15 +19,14 @@ export const VerifyEmailPage = () => {
             setResendSeconds((seconds) => {
                 if (seconds > 0) {
                     return seconds - 1;
-                } else {
+                }
                     window.clearInterval(resendEmailCountdownRef.current);
                     return 0;
-                }
             });
         }, 1000);
     };
 
-    if (currentUser && currentUser.emailVerified)
+    if (currentUser?.emailVerified)
         return <Navigate to={paths.home} />;
 
     return (
@@ -45,7 +44,7 @@ export const VerifyEmailPage = () => {
                     <p className="mt-4 text-xl text-gray-700">
                         Account Email:
                         <span className="ml-2 text-tbrand font-semibold">
-                            {currentUser && currentUser.email
+                            {currentUser?.email
                                 ? currentUser.email
                                 : "N/A"}
                         </span>

@@ -36,11 +36,11 @@ export const AdminViewTicketPage = () => {
         (async () => {
             if (!currentUser) return navigate("/login");
 
-            if (!currentUser.hawkAdmin) return navigate("/ticket/" + ticketId);
+            if (!currentUser.hawkAdmin) return navigate(`/ticket/${ticketId}`);
 
             const res = await getExtendedTicketData(ticketId);
             const e = await getRedeemableItems();
-            if (res.status == 200) {
+            if (res.status === 200) {
                 setTicketData(res.data);
                 setEvents(e);
             } else {

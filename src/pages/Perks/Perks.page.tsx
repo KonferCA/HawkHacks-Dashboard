@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { useEffect, useRef, useState } from "react";
-import { PerksData, perksData } from "../../data/perks";
+import { type PerksData, perksData } from "../../data/perks";
 import { Modal, PageWrapper } from "@/components";
 import { getButtonStyles } from "@/components/Button/Button.styles";
 import { paths } from "@/providers/RoutesProvider/data";
@@ -151,8 +151,7 @@ const PerksPage = () => {
                                 </a>
                             )}
                             <div className="flex gap-4">
-                                {selectedPerk.actions &&
-                                    selectedPerk.actions.map((action, idx) => (
+                                {selectedPerk.actions?.map((action, idx) => (
                                         <a
                                             key={idx}
                                             href={action.link}

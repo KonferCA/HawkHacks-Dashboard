@@ -15,7 +15,7 @@ export interface StepProps {
 
 export const Steps: FC<StepProps> = ({ steps, onClick }) => {
     return (
-        <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
+        <ol className="space-y-4 md:flex md:space-x-8 md:space-y-0">
             {steps.map((step) => (
                 <li key={step.position} className="md:flex-1">
                     {step.status === "complete" ||

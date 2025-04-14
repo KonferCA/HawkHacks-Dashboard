@@ -126,7 +126,7 @@ export const MyTeamPage = () => {
     const sendInvitation = async () => {
         setIsLoading(true);
         // do not allow to send another invitation to someone who is already in the team
-        if (team && team.members.some((m) => m.email === email)) return;
+        if (team?.members.some((m) => m.email === email)) return;
         setDisableAllActions(true);
         try {
             const { status, data, message } = await inviteMember(email);
@@ -255,7 +255,7 @@ export const MyTeamPage = () => {
                 // set new team members list
                 if (team) {
                     const newTeam = { ...team };
-                    newTeam.members = team!.members.filter(
+                    newTeam.members = team?.members.filter(
                         (m) => !toBeRemovedTeammates.includes(m.email)
                     );
                     setTeam(newTeam);
@@ -419,8 +419,8 @@ export const MyTeamPage = () => {
                                 View Invitations
                                 {invitations.length ? (
                                     <span className="absolute flex h-2 w-2 top-0 right-0 -translate-y-full translate-x-full">
-                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500" />
                                     </span>
                                 ) : null}
                             </Button>
@@ -525,7 +525,7 @@ export const MyTeamPage = () => {
                                     </li>
                                 ))}
                         </ul>
-                        {team && team.isOwner && (
+                        {team?.isOwner && (
                             <div className="mt-8 flex items-center justify-end">
                                 <Button
                                     onClick={() => setOpenTeammatesDialog(true)}
@@ -556,7 +556,7 @@ export const MyTeamPage = () => {
                             )}
                         </div>
                         {/* separator */}
-                        <div className="h-[1px] bg-gray-200 my-4"></div>
+                        <div className="h-[1px] bg-gray-200 my-4" />
                         <div className="relative">
                             {!isEditingTeamName && team && (
                                 <p>{team.teamName}</p>
@@ -599,7 +599,7 @@ export const MyTeamPage = () => {
                         </div>
                     </div>
                 </div>
-                {team && team.isOwner && (
+                {team?.isOwner && (
                     <div className="shadow-basic p-4 max-w-xl rounded-lg mt-8">
                         <div className="space-y-4">
                             <h3 className="font-bold">Delete Team?</h3>
@@ -662,7 +662,7 @@ export const MyTeamPage = () => {
                         }
                     }}
                 />
-                <div className="h-12"></div>
+                <div className="h-12" />
                 <div className="flex items-center justify-center">
                     <Button
                         disabled={

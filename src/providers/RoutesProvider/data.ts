@@ -1,4 +1,4 @@
-import { HeaderInfo, PathObject } from "./types";
+import type { HeaderInfo, PathObject } from "./types";
 
 /**
  * Centralized definition of all application paths

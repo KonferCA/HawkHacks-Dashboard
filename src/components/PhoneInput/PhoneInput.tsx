@@ -55,7 +55,7 @@ export const PhoneInput: FC<PhoneInputProps> = ({ onChange, required }) => {
                                 ref={countryCodeInputRef}
                                 className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 bg-gray-50 focus:ring-0 hover:cursor-pointer"
                                 displayValue={(opt: string) =>
-                                    (opt && "+" + opt.replace(/\D/g, "")) || ""
+                                    (opt && `+${opt.replace(/\D/g, "")}`) || ""
                                 }
                                 onChange={(event) =>
                                     setQuery(event.target.value)

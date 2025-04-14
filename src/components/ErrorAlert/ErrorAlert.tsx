@@ -22,7 +22,7 @@ export const ErrorAlert: React.FC<ErrorAlertProps> = ({ errors }) => {
                         } error${multiple ? "s" : ""} with your submission`}
                     </h3>
                     <div className="mt-2 text-sm text-red-700">
-                        <ul role="list" className="list-disc space-y-1 pl-5">
+                        <ul className="list-disc space-y-1 pl-5">
                             {errors.map((err) => (
                                 <li key={err}>{err}</li>
                             ))}

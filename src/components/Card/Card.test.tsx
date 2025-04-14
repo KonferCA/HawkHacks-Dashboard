@@ -3,7 +3,7 @@ import { Card } from "@components";
 
 describe("Card Component", () => {
     it("should render a card article without content", () => {
-        render(<Card title={"What is hawkhacks"}></Card>);
+        render(<Card title={"What is hawkhacks"} />);
 
         expect(screen.getByRole("article")).toBeInTheDocument();
     });

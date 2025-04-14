@@ -59,7 +59,7 @@ export const LoginPage = () => {
         if (!emailResult.success) {
             setIsInvalidEmail(true);
             return;
-        } else if (isInvalidEmail) {
+        }if (isInvalidEmail) {
             // upon revalidation, if success, reset to normal styles
             setIsInvalidEmail(false);
         }
@@ -132,7 +132,7 @@ export const LoginPage = () => {
         const from = searchParams.get("from");
         const available = routes.some((r) => {
             // join team is globally available
-            if (r.path && r.path.startsWith("/join-team")) return true;
+            if (r.path?.startsWith("/join-team")) return true;
             return r.path === from;
         });
 
@@ -241,7 +241,7 @@ export const LoginPage = () => {
                                             </div>
                                         )}
                                         {/* just a separator line */}
-                                        <div className="bg-transparent"></div>
+                                        <div className="bg-transparent" />
                                         <Button
                                             type="submit"
                                             className="rounded-lg w-full bg-gradient-to-b from-tbrand to-tbrand-hover"
@@ -264,7 +264,7 @@ export const LoginPage = () => {
                                     </p>
                                 </div>
                                 {/* just a separator line */}
-                                <div className="h-0.5 bg-transparent my-6"></div>
+                                <div className="h-0.5 bg-transparent my-6" />
                                 <div>
                                     <div className="w-full space-y-4">
                                         {authProviders.map((provider) => (

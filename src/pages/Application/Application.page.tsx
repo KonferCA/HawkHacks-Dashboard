@@ -621,7 +621,7 @@ export const ApplicationPage = () => {
                             {/*     </p> */}
                             {/* </div> */}
                             {/* create some empty space between inputs and checkboxes */}
-                            <div className="sm:col-span-full h-12"></div>
+                            <div className="sm:col-span-full h-12" />
                             <div className="sm:col-span-full flex items-start gap-x-2">
                                 <input
                                     type="checkbox"
@@ -726,9 +726,9 @@ export const ApplicationPage = () => {
                         </div>
                     </div>
                     {/* adding some more white space between the last input field and the buttons */}
-                    <div className="h-12 md:h-28"></div>
+                    <div className="h-12 md:h-28" />
                     {/* just a separator line */}
-                    <div className="h-0.5 bg-gray-300 my-6"></div>
+                    <div className="h-0.5 bg-gray-300 my-6" />
                     <div>
                         {errors.length > 0 ? (
                             <p className="text-center text-red-600">

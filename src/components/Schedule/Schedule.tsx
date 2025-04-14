@@ -60,7 +60,7 @@ const Schedule: FC<ScheduleProps> = ({ events }) => {
     // sort the events
     useEffect(() => {}, [events]);
 
-    return <div></div>;
+    return <div />;
 };
 
 export { Schedule };
