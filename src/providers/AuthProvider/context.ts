@@ -9,5 +9,4 @@ export const AuthContext = createContext<AuthContextValue>({
     resetPassword: async () => {},
     loginWithProvider: async () => {},
     reloadUser: async () => {},
-    refreshUserApp: async () => {},
 });

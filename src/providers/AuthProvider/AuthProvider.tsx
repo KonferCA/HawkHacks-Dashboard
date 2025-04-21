@@ -178,12 +178,6 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
         }
     };
 
-    // This method is kept for backward compatibility
-    // but now it's just a no-op as we use ApplicationsProvider
-    const refreshUserApp = async () => {
-        // No-op - ApplicationsProvider now handles this
-    };
-
     useEffect(() => {
         const unsub = auth.onAuthStateChanged(async (user) => {
             if (user) {
@@ -218,7 +212,6 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
                 resetPassword,
                 loginWithProvider,
                 reloadUser,
-                refreshUserApp,
             }}
         >
             {isLoading ? <LoadingAnimation /> : children}

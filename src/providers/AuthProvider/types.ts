@@ -27,5 +27,4 @@ export type AuthContextValue = {
     resetPassword: (email: string) => Promise<void>;
     loginWithProvider: (name: ProviderName) => Promise<void>;
     reloadUser: () => Promise<void>;
-    refreshUserApp: () => Promise<void>;
 };
