@@ -1,5 +1,4 @@
 import { createContext } from "react";
-import { titles } from "./data";
 import type { RoutesContextValue } from "./types";
 
 /**
@@ -7,7 +6,6 @@ import type { RoutesContextValue } from "./types";
  */
 export const RoutesContext = createContext<RoutesContextValue>({
     routes: [],
-    titles,
     loadingRoutes: true,
     refreshRoutes: () => {},
 });
