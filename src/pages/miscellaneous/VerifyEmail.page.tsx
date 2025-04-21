@@ -3,7 +3,8 @@ import { sendEmailVerification } from "firebase/auth";
 import { Navigate } from "react-router-dom";
 import { auth } from "@/services/firebase";
 import { Button } from "@chakra-ui/react";
-import { useAuth, useRouter } from "@/providers";
+import { useAuth } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
 
 export const VerifyEmailPage = () => {
     // 60 seconds timeout before the user can send the next email verification
@@ -11,7 +12,6 @@ export const VerifyEmailPage = () => {
     // -9999 random number to init the ref, this will hold the id for the time interval
     const resendEmailCountdownRef = useRef<number>(-9999);
     const { logout, reloadUser, currentUser } = useAuth();
-    const { paths: routes } = useRouter();
 
     const startCountdown = () => {
         resendEmailCountdownRef.current = window.setInterval(() => {
@@ -27,7 +27,7 @@ export const VerifyEmailPage = () => {
     };
 
     if (currentUser && currentUser.emailVerified)
-        return <Navigate to={routes.home} />;
+        return <Navigate to={paths.home} />;
 
     return (
         <div className="px-4 sm:px-6 lg:px-8">

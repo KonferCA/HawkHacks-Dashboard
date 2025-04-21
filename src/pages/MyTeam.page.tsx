@@ -2,7 +2,8 @@ import { LoadingAnimation, TextInput } from "@/components";
 import { Button } from "@chakra-ui/react";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { useDebounce } from "@/hooks/use-debounce";
-import { useAuth, useRouter } from "@/providers";
+import { useAuth } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
 import { toaster } from "@/components/ui/toaster";
 import {
     createTeam,
@@ -69,7 +70,6 @@ export const MyTeamPage = () => {
         250
     );
     const loadingTimeoutRef = useRef<number | null>(null);
-    const { paths } = useRouter();
 
     const submitNewTeam: FormEventHandler<HTMLFormElement> = async (e) => {
         e.preventDefault();

@@ -6,11 +6,7 @@ import { useAuth } from "@/providers";
 import Hamburger from "hamburger-react";
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "@/assets";
-import {
-    useUser,
-    useRouteDefinitions,
-    useRouter,
-} from "@/providers";
+import { useUser, useRouteDefinitions } from "@/providers";
 import { useApplications } from "@/hooks/use-applications";
 import {
     CalendarDaysIcon,
@@ -20,13 +16,13 @@ import {
     TicketIcon,
     UserGroupIcon,
 } from "@heroicons/react/24/outline";
+import { paths } from "@/providers/RoutesProvider/data";
 
 export const Navbar = () => {
     const { logout } = useAuth();
 
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
     const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const { paths } = useRouter();
     const { user } = useUser();
     const { applications } = useApplications();
     const routes = useRouteDefinitions();

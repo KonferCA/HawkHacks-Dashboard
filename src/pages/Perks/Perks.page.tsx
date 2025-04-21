@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { PerksData, perksData } from "../../data/perks";
 import { Modal } from "@/components";
 import { getButtonStyles } from "@/components/Button/Button.styles";
-import { useRouter } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
 
 const PerksPage = () => {
     const foodItemsRef = useRef([]);
@@ -11,7 +11,6 @@ const PerksPage = () => {
     const featuredItemsRef = useRef([]);
     const [selectedPerk, setSelectedPerk] = useState<PerksData | null>(null);
     const [isPopup, setIsPopup] = useState(false);
-    const { paths } = useRouter();
     useEffect(() => {
         window.localStorage.setItem(paths.perks, "visited");
     }, []);

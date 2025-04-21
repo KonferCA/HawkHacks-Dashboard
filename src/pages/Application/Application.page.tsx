@@ -1,7 +1,8 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
-import { useAuth, useRouter } from "@/providers";
+import { useAuth } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
 import { useApplications } from "@/hooks/use-applications";
 import { toaster } from "@/components/ui/toaster";
 import { FileBrowser } from "@/components/FileBrowse/FileBrowse";
@@ -97,7 +98,6 @@ export const ApplicationPage = () => {
     const loadingTimeoutRef = useRef<number | null>(null);
     const [sp] = useSearchParams();
     const navigate = useNavigate();
-    const { paths } = useRouter();
 
     if (!currentUser) return <Navigate to={paths.login} />;
 
@@ -751,7 +751,6 @@ export const ApplicationPage = () => {
                                 Back
                             </Button>
                             <Button
-                                intent="secondary"
                                 className="text-charcoalBlack"
                                 onClick={() => navigate("/")}
                                 type="button"
@@ -788,10 +787,7 @@ export const ApplicationPage = () => {
                     <p>Are you sure you want to continue?</p>
                 </div>
                 <div className="flex gap-12 justify-center items-center mt-12">
-                    <Button
-                        intent="secondary"
-                        onClick={() => setOpenConfirmPopUp(false)}
-                    >
+                    <Button onClick={() => setOpenConfirmPopUp(false)}>
                         Cancel
                     </Button>
                     <Button

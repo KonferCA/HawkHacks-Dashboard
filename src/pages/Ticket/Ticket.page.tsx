@@ -6,12 +6,11 @@ import { GoogleWalletBadge, AppleWalletBadge, LoadingDots } from "@/assets";
 import { useAuth } from "@/providers";
 import { useApplications } from "@/hooks/use-applications";
 import { Navigate } from "react-router-dom";
-import { useRouter } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
 import { logError } from "@/services/firebase/log";
 
 export const TicketPage = () => {
     const functions = getFunctions();
-    const { paths } = useRouter();
     const { currentUser } = useAuth();
     const { applications } = useApplications();
     const userApp = applications[0] || null;

@@ -39,7 +39,6 @@ export interface HeaderInfo {
  */
 export interface RoutesContextValue {
     routes: RouteConfig[]; // Routes configured for React Router
-    paths: PathObject; // All application paths
     titles: Record<string, HeaderInfo>; // Header info for each path
     loadingRoutes: boolean; // Whether routes are currently loading
     refreshRoutes: () => void; // Function to trigger route refresh

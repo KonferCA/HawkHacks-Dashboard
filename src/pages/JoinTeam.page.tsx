@@ -1,6 +1,7 @@
 import { LoadingAnimation } from "@/components";
 import { Button } from "@chakra-ui/react";
-import { useAuth, useRouter } from "@/providers";
+import { useAuth } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
 import { toaster } from "@/components/ui/toaster";
 import {
     checkInvitation,
@@ -15,7 +16,6 @@ export const JoinTeamPage = () => {
     const [disableButtons, setDisableButtons] = useState(false);
     const { invitationId } = useParams();
     const navigate = useNavigate();
-    const { paths: routes } = useRouter();
     const { currentUser } = useAuth();
     const [invitationData, setInvitationData] = useState<Invitation | null>(
         null
@@ -32,7 +32,7 @@ export const JoinTeamPage = () => {
                     title: "Joined Team",
                     description: "Hope you have a blast with your new team!",
                 });
-                navigate(routes.myTeam);
+                navigate(paths.myTeam);
             } else {
                 toaster.error({
                     title: "Error Joining Team",
@@ -59,7 +59,7 @@ export const JoinTeamPage = () => {
                     title: "Team Inviation Rejected",
                     description: "",
                 });
-                navigate(routes.myTeam);
+                navigate(paths.myTeam);
             } else {
                 toaster.error({
                     title: "Error Rejecting Invitation",
@@ -107,7 +107,7 @@ export const JoinTeamPage = () => {
     if (isLoading) return <LoadingAnimation />;
 
     // return to home page
-    if (!invitationId) return <Navigate to={routes.home} />;
+    if (!invitationId) return <Navigate to={paths.home} />;
 
     if (!invitationData) return <Navigate to="/not-found" />;
 

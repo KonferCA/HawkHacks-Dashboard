@@ -1,14 +1,13 @@
 import { Link, Navigate } from "react-router-dom";
 import { AirBalloon, CloudLL, CloudRR, Logo } from "@/assets";
 import { getButtonStyles } from "@/components/Button/Button.styles";
-import { useRouter } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
 import { useApplications } from "@/hooks/use-applications";
 
 export const PostSubmissionPage = () => {
     const { applications } = useApplications();
-    const { paths: routes } = useRouter();
 
-    if (!applications.length) return <Navigate to={routes.application} />;
+    if (!applications.length) return <Navigate to={paths.application} />;
 
     return (
         <div className="fixed inset-0 bg-radial-gradient-peach overflow-y-auto">

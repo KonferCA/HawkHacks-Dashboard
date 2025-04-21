@@ -287,7 +287,6 @@ export const RoutesProvider: FC<ComponentProps> = () => {
         <RoutesContext.Provider
             value={{
                 routes,
-                paths,
                 titles,
                 loadingRoutes,
                 refreshRoutes,

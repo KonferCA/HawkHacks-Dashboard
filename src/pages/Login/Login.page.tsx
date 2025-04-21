@@ -4,7 +4,8 @@ import { z } from "zod";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { TextInput } from "@components";
 import { Button } from "@chakra-ui/react";
-import { useAuth, useRouteDefinitions, useRouter } from "@/providers";
+import { useAuth, useRouteDefinitions } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
 import type { ProviderName } from "@/providers";
 import { GithubLogo, GoogleLogo, AppleLogo } from "@assets";
 
@@ -44,7 +45,6 @@ export const LoginPage = () => {
         currentUser,
     } = useAuth();
 
-    const { paths } = useRouter();
     const routes = useRouteDefinitions();
 
     const [searchParams] = useSearchParams();
