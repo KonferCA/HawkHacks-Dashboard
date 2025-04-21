@@ -1,7 +1,8 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
-import { useAuth, useRouter, useApplications } from "@/providers";
+import { useAuth, useRouter } from "@/providers";
+import { useApplications } from "@/hooks/use-applications";
 import { toaster } from "@/components/ui/toaster";
 import { FileBrowser } from "@/components/FileBrowse/FileBrowse";
 import { Button } from "@chakra-ui/react";

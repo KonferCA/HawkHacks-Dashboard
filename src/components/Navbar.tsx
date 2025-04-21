@@ -10,8 +10,8 @@ import {
     useUser,
     useRouteDefinitions,
     useRouter,
-    useApplications,
 } from "@/providers";
+import { useApplications } from "@/hooks/use-applications";
 import {
     CalendarDaysIcon,
     CodeBracketIcon,

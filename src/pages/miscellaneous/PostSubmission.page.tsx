@@ -1,7 +1,8 @@
 import { Link, Navigate } from "react-router-dom";
 import { AirBalloon, CloudLL, CloudRR, Logo } from "@/assets";
 import { getButtonStyles } from "@/components/Button/Button.styles";
-import { useRouter, useApplications } from "@/providers";
+import { useRouter } from "@/providers";
+import { useApplications } from "@/hooks/use-applications";
 
 export const PostSubmissionPage = () => {
     const { applications } = useApplications();

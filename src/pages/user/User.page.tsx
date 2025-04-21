@@ -1,4 +1,4 @@
-import { useApplications } from "@/providers";
+import { useApplications } from "@/hooks/use-applications";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { Application } from "@/components/Application";
 

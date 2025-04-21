@@ -4,7 +4,8 @@ import { BrowserRouter, type RouteObject, useRoutes } from "react-router-dom";
 
 import { AccessControl } from "@/navigation/AccessControl/AccessControl";
 import { LoadingAnimation } from "@/components";
-import { useAuth, useApplications } from "@/providers";
+import { useAuth } from "@/providers";
+import { useApplications } from "@/hooks/use-applications";
 
 // Pages
 import {

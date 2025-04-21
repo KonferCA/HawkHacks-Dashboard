@@ -1,5 +1,3 @@
-export { ApplicationsProvider, useApplications } from "./ApplicationsProvider";
-
 export { AuthProvider, useUser, useAuth } from "./AuthProvider";
 export type {
     UserWithClaims,

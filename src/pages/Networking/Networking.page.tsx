@@ -1,4 +1,5 @@
-import { useAuth, useApplications } from "@/providers";
+import { useAuth } from "@/providers";
+import { useApplications } from "@/hooks/use-applications";
 import { FormEventHandler, useEffect, useRef, useState } from "react";
 import {
     MdOutlineEdit,

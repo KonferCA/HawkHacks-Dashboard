@@ -1,7 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useMemo, type FC } from "react";
 import type { AccessControlProps } from "./types";
-import { useUser, useApplications } from "@/providers";
+import { useUser } from "@/providers";
+import { useApplications } from "@/hooks/use-applications";
 import { PageWrapper } from "@/components";
 
 /**
