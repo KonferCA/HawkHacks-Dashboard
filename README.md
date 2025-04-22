@@ -1,17 +1,7 @@
 <div align="center">
-  <h1 align="center">
-    <a href="https://hawkhacks.ca/">
-        <picture>
-            <source height="175" media="(prefers-color-scheme: dark)" srcset="https://github.com/KonferCA/HawkHacks-Landing/blob/main/src/assets/logo-text.svg">
-            <img height="175" alt="SPUR" src="https://github.com/KonferCA/HawkHacks-Landing/blob/main/src/assets/logo-text.svg">
-        </picture>
-    </a>
-    <br>
-  </h1>
-                                                 
-  ![GitHub](https://img.shields.io/github/license/KonferCA/HawkHacks-Landing?style=flat-square)
   
-  #### The official dashboard page for HawkHacks - see [here](https://portal.hawkhacks.ca).
+  #### The official dashboard page for SpurHacks - see [here](https://spurhacks.com/).
+  
 </div>
 
 ## Quick Setup :hammer:
