@@ -86,17 +86,19 @@ export const ApplicationPage = () => {
     const [errors, setErrors] = useState<string[]>([]);
     const { currentUser } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
     const [mentorResumeFile, setMentorResumeFile] = useState<File | null>(null);
     const [generalResumeFile, setGeneralResumeFile] = useState<File | null>(
         null
     );
     const [submitted, setSubmitted] = useState(false);
     const [openConfirmPopUp, setOpenConfirmPopUp] = useState(false);
-    const { applications, refreshApplications } = useApplications();
+    const {
+        applications,
+        isLoading: loadingApplications,
+        refreshApplications,
+    } = useApplications();
     const userApp = applications[0] || null;
     const progressTrackRef = useRef(new Set<string>());
-    const loadingTimeoutRef = useRef<number | null>(null);
     const [sp] = useSearchParams();
     const navigate = useNavigate();
 
@@ -302,22 +304,10 @@ export const ApplicationPage = () => {
     };
 
     useEffect(() => {
-        if (loadingTimeoutRef.current !== null)
-            window.clearTimeout(loadingTimeoutRef.current as number);
-        loadingTimeoutRef.current = window.setTimeout(
-            () => setIsLoading(false),
-            1000
-        );
-
-        if (!userApp) {
+        if (!loadingApplications && !userApp) {
             trackProgress("open");
         }
-
-        return () => {
-            if (loadingTimeoutRef.current)
-                window.clearTimeout(loadingTimeoutRef.current);
-        };
-    }, [userApp]);
+    }, [userApp, loadingApplications]);
 
     useEffect(() => {
         if (userApp && !sp.get("restart")) {
@@ -335,7 +325,12 @@ export const ApplicationPage = () => {
               ? mentorSpecificForm
               : volunteerSpecificForm;
 
-    if (isLoading) return <LoadingAnimation />;
+    if (loadingApplications)
+        return (
+            <PageWrapper>
+                <LoadingAnimation />
+            </PageWrapper>
+        );
 
     if (submitted) return <Navigate to={paths.submitted} />;
 
