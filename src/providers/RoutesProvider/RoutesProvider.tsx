@@ -275,7 +275,7 @@ export const RoutesProvider: FC<ComponentProps> = () => {
                 refreshRoutes,
             }}
         >
-            {loadingRoutes ? <LoadingAnimation /> : <Router />}
+            <Router />
         </RoutesContext.Provider>
     );
 };
