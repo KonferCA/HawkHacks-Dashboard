@@ -3,7 +3,6 @@ import { useMemo, type FC } from "react";
 import type { AccessControlProps } from "./types";
 import { useUser } from "@/providers";
 import { useApplications } from "@/hooks/use-applications";
-import { PageWrapper } from "@/components";
 
 /**
  * AccessControl component provides route protection based on user authentication and authorization.
@@ -18,7 +17,6 @@ import { PageWrapper } from "@/components";
 export const AccessControl: FC<AccessControlProps> = ({
     accessCheck,
     redirectTo,
-    withPageWrapper,
 }) => {
     // Get current user and application data from context
     const { user } = useUser();
@@ -43,15 +41,5 @@ export const AccessControl: FC<AccessControlProps> = ({
         return <Navigate to={redirectTo ?? "/not-found"} />;
     }
 
-    // Conditionally wrap content in PageWrapper if specified
-    if (withPageWrapper) {
-        return (
-            <PageWrapper>
-                <Outlet />
-            </PageWrapper>
-        );
-    }
-
-    // Otherwise render route content directly
     return <Outlet />;
 };

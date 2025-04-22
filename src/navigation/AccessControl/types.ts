@@ -20,10 +20,8 @@ export type AccessControlFn = (context: AccessControlContext) => boolean;
  * Props for AccessControl component
  * @property redirectTo - Path to redirect to if access check fails
  * @property accessCheck - Single function or array of functions to determine if access should be granted
- * @property withPageWrapper - Whether to wrap content in PageWrapper component
  */
 export interface AccessControlProps {
     redirectTo?: string;
     accessCheck?: AccessControlFn | AccessControlFn[];
-    withPageWrapper?: boolean;
 }

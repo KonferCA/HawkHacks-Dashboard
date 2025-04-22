@@ -14,6 +14,7 @@ import {
     MultiSelect,
     Steps,
     LoadingAnimation,
+    PageWrapper,
 } from "@components";
 import { Profile } from "@/components/forms/Profile";
 import {
@@ -339,7 +340,7 @@ export const ApplicationPage = () => {
     if (submitted) return <Navigate to={paths.submitted} />;
 
     return (
-        <>
+        <PageWrapper>
             <div>
                 <nav aria-label="Application progress">
                     <Steps steps={steps} onClick={jumpTo} />
@@ -799,6 +800,6 @@ export const ApplicationPage = () => {
                     </Button>
                 </div>
             </Modal>
-        </>
+        </PageWrapper>
     );
 };

@@ -8,6 +8,7 @@ import { useApplications } from "@/hooks/use-applications";
 import { Navigate } from "react-router-dom";
 import { paths } from "@/providers/RoutesProvider/data";
 import { logError } from "@/services/firebase/log";
+import { PageWrapper } from "@/components";
 
 export const TicketPage = () => {
     const functions = getFunctions();
@@ -104,7 +105,7 @@ export const TicketPage = () => {
     };
 
     return (
-        <>
+        <PageWrapper>
             <div className="flex justify-start">
                 <div className="bg-white drop-shadow-xl rounded-xl box-border max-w-[400px] w-full p-8 flex flex-col gap-2">
                     <div className="flex items-center font-bold text-2xl md:text-[30px]">
@@ -175,6 +176,6 @@ export const TicketPage = () => {
                     )}
                 </div>
             </div>
-        </>
+        </PageWrapper>
     );
 };

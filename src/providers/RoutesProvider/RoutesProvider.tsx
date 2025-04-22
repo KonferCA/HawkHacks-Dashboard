@@ -49,7 +49,6 @@ const convertToRouteObjects = (routeConfigs: RouteConfig[]): RouteObject[] => {
                     <AccessControl
                         accessCheck={config.accessCheck}
                         redirectTo={config.redirectTo}
-                        withPageWrapper={config.withPageWrapper}
                     />
                 ),
                 children: [
@@ -136,7 +135,6 @@ export const RoutesProvider: FC<ComponentProps> = () => {
         const authenticatedRoutes: RouteConfig[] = [
             {
                 path: paths.verifyEmail,
-                withPageWrapper: true,
                 element: <VerifyEmailPage />,
                 accessCheck: isAuthenticated,
                 redirectTo: paths.login,
@@ -147,77 +145,66 @@ export const RoutesProvider: FC<ComponentProps> = () => {
         const verifiedEmailRoutes: RouteConfig[] = [
             {
                 path: paths.home,
-                withPageWrapper: true,
                 element: <HomePage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail],
                 redirectTo: paths.verifyEmail,
             },
             {
                 path: paths.schedule,
-                withPageWrapper: true,
                 element: <SchedulePage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail],
                 redirectTo: paths.verifyEmail,
             },
             {
                 path: paths.networking,
-                withPageWrapper: true,
                 element: <NetworkingPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail],
                 redirectTo: paths.verifyEmail,
             },
             {
                 path: paths.myTicket,
-                withPageWrapper: true,
                 element: <TicketPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail],
                 redirectTo: paths.verifyEmail,
             },
             {
                 path: paths.application,
-                withPageWrapper: true,
                 element: <ApplicationPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail],
                 redirectTo: paths.verifyEmail,
             },
             {
                 path: paths.submitted,
-                withPageWrapper: true,
                 element: <PostSubmissionPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail],
                 redirectTo: paths.verifyEmail,
             },
             {
                 path: paths.verifyRSVP,
-                withPageWrapper: true,
                 element: <VerifyRSVP />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail],
                 redirectTo: paths.verifyEmail,
             },
             {
                 path: paths.myTeam,
-                withPageWrapper: true,
                 element: <MyTeamPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail],
                 redirectTo: paths.verifyEmail,
             },
             {
                 path: paths.joinTeam,
-                withPageWrapper: true,
                 element: <JoinTeamPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail],
                 redirectTo: paths.verifyEmail,
             },
             {
                 path: paths.ticket,
-                withPageWrapper: true,
                 element: <ViewTicketPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail],
                 redirectTo: paths.verifyEmail,
             },
             {
                 path: paths.perks,
-                withPageWrapper: true,
                 element: <PerksPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail],
                 redirectTo: paths.verifyEmail,
@@ -228,21 +215,18 @@ export const RoutesProvider: FC<ComponentProps> = () => {
         const adminRoutes: RouteConfig[] = [
             {
                 path: paths.admin,
-                withPageWrapper: true,
                 element: <AdminPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail, isAdmin],
                 redirectTo: paths.home,
             },
             {
                 path: paths.adminViewTicket,
-                withPageWrapper: true,
                 element: <AdminViewTicketPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail, isAdmin],
                 redirectTo: paths.home,
             },
             {
                 path: paths.adminManageEvents,
-                withPageWrapper: true,
                 element: <AdminManageEventsPage />,
                 accessCheck: [isAuthenticated, hasVerifiedEmail, isAdmin],
                 redirectTo: paths.home,

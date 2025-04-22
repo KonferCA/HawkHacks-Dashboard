@@ -1,4 +1,4 @@
-import { LoadingAnimation } from "@/components";
+import { LoadingAnimation, PageWrapper } from "@/components";
 import { Button } from "@chakra-ui/react";
 import { useAuth } from "@/providers";
 import { paths } from "@/providers/RoutesProvider/data";
@@ -112,26 +112,24 @@ export const JoinTeamPage = () => {
     if (!invitationData) return <Navigate to="/not-found" />;
 
     return (
-        <div className="h-screen w-screen flex items-center justify-center">
-            <div className="space-y-6">
-                <h1 className="block text-lg font-bold text-center">
-                    {`${invitationData.owner} invited you to join ${invitationData.teamName}`}
-                </h1>
-                <div>
-                    <div className="mx-auto flex items-center justify-center gap-12 max-w-lg">
-                        <Button disabled={disableButtons} onClick={accept}>
-                            Accept
-                        </Button>
-                        <Button
-                            disabled={disableButtons}
-                            onClick={reject}
-                            intent="secondary"
-                        >
-                            Reject
-                        </Button>
+        <PageWrapper>
+            <div className="h-screen w-screen flex items-center justify-center">
+                <div className="space-y-6">
+                    <h1 className="block text-lg font-bold text-center">
+                        {`${invitationData.owner} invited you to join ${invitationData.teamName}`}
+                    </h1>
+                    <div>
+                        <div className="mx-auto flex items-center justify-center gap-12 max-w-lg">
+                            <Button disabled={disableButtons} onClick={accept}>
+                                Accept
+                            </Button>
+                            <Button disabled={disableButtons} onClick={reject}>
+                                Reject
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </PageWrapper>
     );
 };

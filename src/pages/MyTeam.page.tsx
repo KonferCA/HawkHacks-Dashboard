@@ -1,4 +1,4 @@
-import { LoadingAnimation, TextInput } from "@/components";
+import { LoadingAnimation, PageWrapper, TextInput } from "@/components";
 import { Button } from "@chakra-ui/react";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -374,7 +374,7 @@ export const MyTeamPage = () => {
 
     if (!team)
         return (
-            <>
+            <PageWrapper>
                 <div className="space-y-4">
                     <div className="w-fit text-lg space-y-2">
                         <InfoCallout text="It looks like you are not enrolled in a team. Create one below, or enroll in an existing team by receiving an invitation from the team owner." />
@@ -414,7 +414,6 @@ export const MyTeamPage = () => {
                                     !disableAllActions &&
                                     setOpenInvitations(true)
                                 }
-                                intent="secondary"
                                 className="relative"
                             >
                                 View Invitations
@@ -459,7 +458,6 @@ export const MyTeamPage = () => {
                                     <Button
                                         onClick={() => reject(i.id)}
                                         disabled={disableAllActions}
-                                        intent="secondary"
                                         className="p-2"
                                     >
                                         Reject
@@ -469,11 +467,11 @@ export const MyTeamPage = () => {
                         ))}
                     </ul>
                 </Modal>
-            </>
+            </PageWrapper>
         );
 
     return (
-        <>
+        <PageWrapper>
             <div>
                 <div className="flex gap-4 flex-col sm:flex-row md:flex-col lg:flex-row lg:min-h-[20rem] [&>div]:p-5 [&>div]:rounded-lg [&>div]:shadow-basic lg:[&>div]:flex-auto">
                     <div className="w-full lg:max-w-sm h-fit">
@@ -619,7 +617,6 @@ export const MyTeamPage = () => {
                         <div className="mt-3 flex items-center justify-end">
                             <Button
                                 disabled={confirmDelete !== team?.teamName}
-                                intent="danger"
                                 onClick={handleDeleteTeam}
                             >
                                 Delete
@@ -741,6 +738,6 @@ export const MyTeamPage = () => {
                     </Button>
                 </div>
             </Modal>
-        </>
+        </PageWrapper>
     );
 };

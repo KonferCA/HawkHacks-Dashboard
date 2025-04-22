@@ -16,7 +16,7 @@ import {
 import { getSocials, updateSocials } from "@/services/firebase/user";
 import { toaster } from "@/components/ui/toaster";
 import type { ResumeVisibility, Socials } from "@/services/firebase/types";
-import { Modal, Select } from "@/components";
+import { Modal, PageWrapper, Select } from "@/components";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { useUserStore } from "@/stores/user.store";
 
@@ -270,7 +270,7 @@ export const NetworkingPage = () => {
     if (isLoading) return <LoadingAnimation />;
 
     return (
-        <>
+        <PageWrapper>
             <div>
                 <div className="flex items-center gap-10">
                     <h1 className="font-bold text-2xl">
@@ -517,6 +517,6 @@ export const NetworkingPage = () => {
                     </div>
                 </div>
             </Modal>
-        </>
+        </PageWrapper>
     );
 };

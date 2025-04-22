@@ -1,5 +1,5 @@
 import { GoldenHawk, IpadKidHawks } from "@/assets";
-import { Card, Accordion, SocialIcons, Modal } from "@components";
+import { Card, Accordion, SocialIcons, Modal, PageWrapper } from "@components";
 import { Button } from "@chakra-ui/react";
 import { faqs, sponsors, importantDateTimes } from "@data";
 import { useAuth } from "@/providers";
@@ -80,7 +80,7 @@ const HomePage = () => {
     };
 
     return (
-        <>
+        <PageWrapper>
             <section className="homepage grid gap-4">
                 <div className="grid xl:grid-cols-12 gap-4">
                     <Card
@@ -125,18 +125,6 @@ const HomePage = () => {
                                 </span>
                             </p>
                         </span>
-                        {/* {currentUser && currentUser.type === "hacker" && ( */}
-                        {/*     <Button */}
-                        {/*         onClick={() => */}
-                        {/*             !disableAllActions && */}
-                        {/*             setOpenWithdrawRSVP(true) */}
-                        {/*         } */}
-                        {/*         intent="secondary" */}
-                        {/*         className="rounded-lg mt-4 border-gray-300" */}
-                        {/*     > */}
-                        {/*         Not able to make it? */}
-                        {/*     </Button> */}
-                        {/* )} */}
                     </Card>
 
                     <Card
@@ -213,7 +201,6 @@ const HomePage = () => {
             >
                 <div className="flex gap-4 justify-center">
                     <Button
-                        intent="secondary"
                         disabled={disableAllActions}
                         onClick={() => setOpenWithdrawRSVP(false)}
                     >
@@ -222,13 +209,12 @@ const HomePage = () => {
                     <Button
                         onClick={() => withdraw()}
                         disabled={disableAllActions}
-                        intent="danger"
                     >
                         Withdraw
                     </Button>
                 </div>
             </Modal>
-        </>
+        </PageWrapper>
     );
 };
 

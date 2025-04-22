@@ -6,7 +6,7 @@ import { EventItem, type ExtendedTicketData } from "@/services/firebase/types";
 import { getExtendedTicketData } from "@/services/firebase/ticket";
 import { toaster } from "@/components/ui/toaster";
 import { getRedeemableItems, redeemItem } from "@/services/firebase/redeem";
-import { LoadingAnimation, Modal } from "@/components";
+import { LoadingAnimation, Modal, PageWrapper } from "@/components";
 import { Button } from "@chakra-ui/react";
 import { getButtonStyles } from "@/components/Button/Button.styles";
 
@@ -100,7 +100,7 @@ export const AdminViewTicketPage = () => {
         return <div>Failed to load ticket. Please ping @Juan in Discord.</div>;
 
     return (
-        <>
+        <PageWrapper>
             <div>
                 <div className="flex items-center gap-10">
                     <h1 className="font-bold text-2xl">
@@ -214,6 +214,6 @@ export const AdminViewTicketPage = () => {
                     </Button>
                 </div>
             </Modal>
-        </>
+        </PageWrapper>
     );
 };
