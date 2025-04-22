@@ -32,7 +32,7 @@ import { ApplicationPage } from "@/pages/Application/Application.page";
 import { isAdmin, isAuthenticated, hasVerifiedEmail } from "./accessChecks";
 import type { RouteConfig } from "./types";
 import { useRouter } from "./hooks";
-import { paths, titles } from "./data";
+import { paths } from "./data";
 import { RoutesContext } from "./context";
 
 /**
