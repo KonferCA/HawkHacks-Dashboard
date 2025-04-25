@@ -1,4 +1,4 @@
-import { LoadingAnimation, Select, TextInput } from "@/components";
+import { LoadingAnimation, PageWrapper, Select, TextInput } from "@/components";
 import { Button } from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
 import { getRedeemableItems } from "@/services/firebase/redeem";
@@ -184,187 +184,189 @@ export const AdminManageEventsPage = () => {
     if (isLoading) return <LoadingAnimation />;
 
     return (
-        <div>
-            <div className="grid grid-cols-2 gap-4">
-                <form
-                    ref={eventFormRef}
-                    className="space-y-4 col-span-2 md:col-span-1"
-                    onSubmit={submitNewEvent}
-                >
-                    <h1 className="mb-4 text-xl font-bold">
-                        {isEditingEvent ? "Edit event" : "Add new event"}
-                    </h1>
+        <PageWrapper>
+            <div>
+                <div className="grid grid-cols-2 gap-4">
+                    <form
+                        ref={eventFormRef}
+                        className="space-y-4 col-span-2 md:col-span-1"
+                        onSubmit={submitNewEvent}
+                    >
+                        <h1 className="mb-4 text-xl font-bold">
+                            {isEditingEvent ? "Edit event" : "Add new event"}
+                        </h1>
 
-                    <TextInput
-                        label="Title"
-                        id="new-event-input"
-                        value={newEvent.title}
-                        onChange={(e) =>
-                            handleEventChange("title", e.target.value)
-                        }
-                    />
+                        <TextInput
+                            label="Title"
+                            id="new-event-input"
+                            value={newEvent.title}
+                            onChange={(e) =>
+                                handleEventChange("title", e.target.value)
+                            }
+                        />
 
-                    <TextInput
-                        label="Description"
-                        id="event-description-input"
-                        value={newEvent.description}
-                        onChange={(e) =>
-                            handleEventChange("description", e.target.value)
-                        }
-                    />
+                        <TextInput
+                            label="Description"
+                            id="event-description-input"
+                            value={newEvent.description}
+                            onChange={(e) =>
+                                handleEventChange("description", e.target.value)
+                            }
+                        />
 
-                    <TextInput
-                        label="Location"
-                        id="event-location-input"
-                        value={newEvent.location}
-                        onChange={(e) =>
-                            handleEventChange("location", e.target.value)
-                        }
-                    />
+                        <TextInput
+                            label="Location"
+                            id="event-location-input"
+                            value={newEvent.location}
+                            onChange={(e) =>
+                                handleEventChange("location", e.target.value)
+                            }
+                        />
 
-                    <Select
-                        label="Type"
-                        options={[
-                            "Important",
-                            "Workshop",
-                            "Food",
-                            "Game/Chill",
-                            "Networking",
-                        ]}
-                        initialValue={newEvent.type}
-                        onChange={(v) => {
-                            handleEventChange("type", v);
-                        }}
-                    />
+                        <Select
+                            label="Type"
+                            options={[
+                                "Important",
+                                "Workshop",
+                                "Food",
+                                "Game/Chill",
+                                "Networking",
+                            ]}
+                            initialValue={newEvent.type}
+                            onChange={(v) => {
+                                handleEventChange("type", v);
+                            }}
+                        />
 
-                    <TextInput
-                        label="Start Date (EST)"
-                        placeholder="2024-05-17T19:00:00"
-                        description="Example May 17, 2024 7:PM would be 2024-05-17T19:00:00"
-                        id="start-date-input"
-                        onChange={(e) => {
-                            handleEventChange("startTime", e.target.value);
-                        }}
-                    />
+                        <TextInput
+                            label="Start Date (EST)"
+                            placeholder="2024-05-17T19:00:00"
+                            description="Example May 17, 2024 7:PM would be 2024-05-17T19:00:00"
+                            id="start-date-input"
+                            onChange={(e) => {
+                                handleEventChange("startTime", e.target.value);
+                            }}
+                        />
 
-                    <TextInput
-                        label="End Date (EST)"
-                        placeholder="2024-05-17T19:00:00"
-                        description="Example May 17, 2024 7:PM would be 2024-05-17T19:00:00"
-                        id="end-date-input"
-                        value={newEvent.endTime}
-                        onChange={(e) => {
-                            handleEventChange("endTime", e.target.value);
-                        }}
-                    />
+                        <TextInput
+                            label="End Date (EST)"
+                            placeholder="2024-05-17T19:00:00"
+                            description="Example May 17, 2024 7:PM would be 2024-05-17T19:00:00"
+                            id="end-date-input"
+                            value={newEvent.endTime}
+                            onChange={(e) => {
+                                handleEventChange("endTime", e.target.value);
+                            }}
+                        />
 
-                    <div className="flex space-x-2">
-                        <Button type="submit">
-                            {isEditingEvent ? "Update" : "Save"}
-                        </Button>
-
-                        {isEditingEvent && (
-                            <Button
-                                type="button"
-                                onClick={handleCancelEdit}
-                                className="bg-red-500"
-                            >
-                                {" "}
-                                Cancel{" "}
+                        <div className="flex space-x-2">
+                            <Button type="submit">
+                                {isEditingEvent ? "Update" : "Save"}
                             </Button>
-                        )}
+
+                            {isEditingEvent && (
+                                <Button
+                                    type="button"
+                                    onClick={handleCancelEdit}
+                                    className="bg-red-500"
+                                >
+                                    {" "}
+                                    Cancel{" "}
+                                </Button>
+                            )}
+                        </div>
+                    </form>
+                </div>
+
+                <hr className="my-8" />
+
+                <span className="underline">
+                    {" "}
+                    ⚠️ Please note when updating events or foods, you must
+                    refresh the page to see the changes.{" "}
+                </span>
+
+                <div className="mt-4 text-center lg:hidden">
+                    <Button onClick={scrollToFood}> Go to Food </Button>
+                    <p> (ur welcome) </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mt-12">
+                    <div className="col-span-2 lg:col-span-1">
+                        <h1 className="mb-4 text-xl font-bold">Events</h1>
+                        <ul className="space-y-4">
+                            {events.map((evt) => (
+                                <li
+                                    key={evt.id}
+                                    className="bg-white p-6 shadow-lg rounded-lg"
+                                >
+                                    <div className="mb-4">
+                                        <p className="font-semibold text-lg underline">
+                                            Title:
+                                        </p>
+                                        <p>{evt.title}</p>
+                                    </div>
+                                    <div className="mb-4">
+                                        <p className="font-semibold text-lg underline">
+                                            Description:
+                                        </p>
+                                        <p>{evt.description}</p>
+                                    </div>
+                                    <div className="mb-4">
+                                        <p className="font-semibold text-lg underline">
+                                            Location:
+                                        </p>
+                                        <p>{evt.location}</p>
+                                    </div>
+                                    <div className="mb-4">
+                                        <p className="font-semibold text-lg underline">
+                                            Type:
+                                        </p>
+                                        <p>{evt.type}</p>
+                                    </div>
+                                    <div className="mb-4">
+                                        <p className="font-semibold text-lg underline">
+                                            Start:
+                                        </p>
+                                        <p>
+                                            {format(
+                                                evt.startTime,
+                                                "MMM dd, yyyy (hh:mma)"
+                                            )}
+                                        </p>
+                                    </div>
+                                    <div className="mb-4">
+                                        <p className="font-semibold text-lg underline">
+                                            End:
+                                        </p>
+                                        <p>
+                                            {format(
+                                                evt.endTime,
+                                                "MMM dd, yyyy (hh:mma)"
+                                            )}
+                                        </p>
+                                    </div>
+                                    <div className="flex space-x-4">
+                                        <Button
+                                            onClick={() => handleEditEvent(evt)}
+                                        >
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            onClick={() =>
+                                                handleDeleteEvent(evt.id)
+                                            }
+                                            className="bg-red-500"
+                                        >
+                                            Delete
+                                        </Button>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
-                </form>
-            </div>
-
-            <hr className="my-8" />
-
-            <span className="underline">
-                {" "}
-                ⚠️ Please note when updating events or foods, you must refresh
-                the page to see the changes.{" "}
-            </span>
-
-            <div className="mt-4 text-center lg:hidden">
-                <Button onClick={scrollToFood}> Go to Food </Button>
-                <p> (ur welcome) </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mt-12">
-                <div className="col-span-2 lg:col-span-1">
-                    <h1 className="mb-4 text-xl font-bold">Events</h1>
-                    <ul className="space-y-4">
-                        {events.map((evt) => (
-                            <li
-                                key={evt.id}
-                                className="bg-white p-6 shadow-lg rounded-lg"
-                            >
-                                <div className="mb-4">
-                                    <p className="font-semibold text-lg underline">
-                                        Title:
-                                    </p>
-                                    <p>{evt.title}</p>
-                                </div>
-                                <div className="mb-4">
-                                    <p className="font-semibold text-lg underline">
-                                        Description:
-                                    </p>
-                                    <p>{evt.description}</p>
-                                </div>
-                                <div className="mb-4">
-                                    <p className="font-semibold text-lg underline">
-                                        Location:
-                                    </p>
-                                    <p>{evt.location}</p>
-                                </div>
-                                <div className="mb-4">
-                                    <p className="font-semibold text-lg underline">
-                                        Type:
-                                    </p>
-                                    <p>{evt.type}</p>
-                                </div>
-                                <div className="mb-4">
-                                    <p className="font-semibold text-lg underline">
-                                        Start:
-                                    </p>
-                                    <p>
-                                        {format(
-                                            evt.startTime,
-                                            "MMM dd, yyyy (hh:mma)"
-                                        )}
-                                    </p>
-                                </div>
-                                <div className="mb-4">
-                                    <p className="font-semibold text-lg underline">
-                                        End:
-                                    </p>
-                                    <p>
-                                        {format(
-                                            evt.endTime,
-                                            "MMM dd, yyyy (hh:mma)"
-                                        )}
-                                    </p>
-                                </div>
-                                <div className="flex space-x-4">
-                                    <Button
-                                        onClick={() => handleEditEvent(evt)}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        onClick={() =>
-                                            handleDeleteEvent(evt.id)
-                                        }
-                                        className="bg-red-500"
-                                    >
-                                        Delete
-                                    </Button>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
                 </div>
             </div>
-        </div>
+        </PageWrapper>
     );
 };

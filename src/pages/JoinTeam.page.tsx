@@ -1,8 +1,8 @@
-import { LoadingAnimation } from "@/components";
+import { LoadingAnimation, PageWrapper } from "@/components";
 import { Button } from "@chakra-ui/react";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
 import { toaster } from "@/components/ui/toaster";
-import { useAvailableRoutes } from "@/providers/routes.provider";
 import {
     checkInvitation,
     rejectInvitation,
@@ -16,7 +16,6 @@ export const JoinTeamPage = () => {
     const [disableButtons, setDisableButtons] = useState(false);
     const { invitationId } = useParams();
     const navigate = useNavigate();
-    const { paths: routes } = useAvailableRoutes();
     const { currentUser } = useAuth();
     const [invitationData, setInvitationData] = useState<Invitation | null>(
         null
@@ -33,7 +32,7 @@ export const JoinTeamPage = () => {
                     title: "Joined Team",
                     description: "Hope you have a blast with your new team!",
                 });
-                navigate(routes.myTeam);
+                navigate(paths.myTeam);
             } else {
                 toaster.error({
                     title: "Error Joining Team",
@@ -60,7 +59,7 @@ export const JoinTeamPage = () => {
                     title: "Team Inviation Rejected",
                     description: "",
                 });
-                navigate(routes.myTeam);
+                navigate(paths.myTeam);
             } else {
                 toaster.error({
                     title: "Error Rejecting Invitation",
@@ -108,31 +107,29 @@ export const JoinTeamPage = () => {
     if (isLoading) return <LoadingAnimation />;
 
     // return to home page
-    if (!invitationId) return <Navigate to={routes.portal} />;
+    if (!invitationId) return <Navigate to={paths.home} />;
 
     if (!invitationData) return <Navigate to="/not-found" />;
 
     return (
-        <div className="h-screen w-screen flex items-center justify-center">
-            <div className="space-y-6">
-                <h1 className="block text-lg font-bold text-center">
-                    {`${invitationData.owner} invited you to join ${invitationData.teamName}`}
-                </h1>
-                <div>
-                    <div className="mx-auto flex items-center justify-center gap-12 max-w-lg">
-                        <Button disabled={disableButtons} onClick={accept}>
-                            Accept
-                        </Button>
-                        <Button
-                            disabled={disableButtons}
-                            onClick={reject}
-                            intent="secondary"
-                        >
-                            Reject
-                        </Button>
+        <PageWrapper>
+            <div className="h-screen w-screen flex items-center justify-center">
+                <div className="space-y-6">
+                    <h1 className="block text-lg font-bold text-center">
+                        {`${invitationData.owner} invited you to join ${invitationData.teamName}`}
+                    </h1>
+                    <div>
+                        <div className="mx-auto flex items-center justify-center gap-12 max-w-lg">
+                            <Button disabled={disableButtons} onClick={accept}>
+                                Accept
+                            </Button>
+                            <Button disabled={disableButtons} onClick={reject}>
+                                Reject
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </PageWrapper>
     );
 };

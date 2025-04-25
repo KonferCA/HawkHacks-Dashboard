@@ -1,14 +1,13 @@
 import { Link, Navigate } from "react-router-dom";
 import { AirBalloon, CloudLL, CloudRR, Logo } from "@/assets";
 import { getButtonStyles } from "@/components/Button/Button.styles";
-import { useAuth } from "@/providers/auth.provider";
-import { useAvailableRoutes } from "@/providers/routes.provider";
+import { paths } from "@/providers/RoutesProvider/data";
+import { useApplications } from "@/hooks/use-applications";
 
 export const PostSubmissionPage = () => {
-    const { userApp } = useAuth();
-    const { paths: routes } = useAvailableRoutes();
+    const { applications } = useApplications();
 
-    if (!userApp) return <Navigate to={routes.application} />;
+    if (!applications.length) return <Navigate to={paths.application} />;
 
     return (
         <div className="fixed inset-0 bg-radial-gradient-peach overflow-y-auto">

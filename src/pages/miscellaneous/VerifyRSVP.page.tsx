@@ -1,6 +1,6 @@
-import { LoadingAnimation } from "@/components";
+import { LoadingAnimation, PageWrapper } from "@/components";
 import { Button } from "@chakra-ui/react";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/providers";
 import { verifyRSVP } from "@/services/firebase/rsvp";
 import { toaster } from "@/components/ui/toaster";
 import { useNavigate } from "react-router-dom";
@@ -194,7 +194,7 @@ export const VerifyRSVP = () => {
     if (isLoading) return <LoadingAnimation />;
 
     return (
-        <>
+        <PageWrapper>
             {isVerifying ? (
                 <LoadingAnimation text="Loading . . ." />
             ) : (
@@ -360,6 +360,6 @@ export const VerifyRSVP = () => {
                     )}
                 </div>
             )}
-        </>
+        </PageWrapper>
     );
 };

@@ -1,6 +1,6 @@
 import { LoadingAnimation, PageWrapper } from "@/components";
 import { Button } from "@chakra-ui/react";
-import { useAuth } from "@/providers/auth.provider";
+import { useAuth } from "@/providers";
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import type { TicketData } from "@/services/firebase/types";

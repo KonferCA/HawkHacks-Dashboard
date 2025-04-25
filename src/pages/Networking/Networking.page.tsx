@@ -1,4 +1,5 @@
-import { useAuth as useAuthProvider } from "@/providers/auth.provider";
+import { useAuth } from "@/providers";
+import { useApplications } from "@/hooks/use-applications";
 import { FormEventHandler, useEffect, useRef, useState } from "react";
 import {
     MdOutlineEdit,
@@ -15,7 +16,7 @@ import {
 import { getSocials, updateSocials } from "@/services/firebase/user";
 import { toaster } from "@/components/ui/toaster";
 import type { ResumeVisibility, Socials } from "@/services/firebase/types";
-import { Modal, Select } from "@/components";
+import { Modal, PageWrapper, Select } from "@/components";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import { useUserStore } from "@/stores/user.store";
 
@@ -51,7 +52,9 @@ const visibilityDescription = {
 };
 
 export const NetworkingPage = () => {
-    const { currentUser, userApp } = useAuthProvider();
+    const { currentUser } = useAuth();
+    const { applications } = useApplications();
+    const userApp = applications[0] || null;
     const [isLoading, setIsLoading] = useState(true);
     const [editMode, setEditMode] = useState("");
     const timeoutRef = useRef<number | null>(null);
@@ -267,7 +270,7 @@ export const NetworkingPage = () => {
     if (isLoading) return <LoadingAnimation />;
 
     return (
-        <>
+        <PageWrapper>
             <div>
                 <div className="flex items-center gap-10">
                     <h1 className="font-bold text-2xl">
@@ -514,6 +517,6 @@ export const NetworkingPage = () => {
                     </div>
                 </div>
             </Modal>
-        </>
+        </PageWrapper>
     );
 };

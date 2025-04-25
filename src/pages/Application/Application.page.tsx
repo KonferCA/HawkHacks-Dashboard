@@ -1,7 +1,9 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
-import { useAuth } from "@/providers/hooks";
+import { useAuth } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
+import { useApplications } from "@/hooks/use-applications";
 import { toaster } from "@/components/ui/toaster";
 import { FileBrowser } from "@/components/FileBrowse/FileBrowse";
 import { Button } from "@chakra-ui/react";
@@ -12,6 +14,7 @@ import {
     MultiSelect,
     Steps,
     LoadingAnimation,
+    PageWrapper,
 } from "@components";
 import { Profile } from "@/components/forms/Profile";
 import {
@@ -46,7 +49,6 @@ import { logEvent } from "firebase/analytics";
 import { analytics } from "@/services/firebase";
 import { InfoCallout } from "@/components/InfoCallout/InfoCallout";
 import { Modal } from "@/components/Modal";
-import { useAvailableRoutes } from "@/providers/routes.provider";
 
 const stepValidations = [
     profileFormValidation,
@@ -84,21 +86,23 @@ export const ApplicationPage = () => {
     const [errors, setErrors] = useState<string[]>([]);
     const { currentUser } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
     const [mentorResumeFile, setMentorResumeFile] = useState<File | null>(null);
     const [generalResumeFile, setGeneralResumeFile] = useState<File | null>(
         null
     );
     const [submitted, setSubmitted] = useState(false);
     const [openConfirmPopUp, setOpenConfirmPopUp] = useState(false);
-    const { userApp, refreshUserApp } = useAuth();
+    const {
+        applications,
+        isLoading: loadingApplications,
+        refreshApplications,
+    } = useApplications();
+    const userApp = applications[0] || null;
     const progressTrackRef = useRef(new Set<string>());
-    const loadingTimeoutRef = useRef<number | null>(null);
     const [sp] = useSearchParams();
     const navigate = useNavigate();
-    const { paths: routes } = useAvailableRoutes();
 
-    if (!currentUser) return <Navigate to={routes.login} />;
+    if (!currentUser) return <Navigate to={paths.login} />;
 
     // we start with the default user profile
     const [application, setApplication] = useState<ApplicationData>(() => {
@@ -286,7 +290,7 @@ export const ApplicationPage = () => {
                 description:
                     "Thank you for applying! You'll hear from us via email within one week after applications close on May 3rd.",
             });
-            await refreshUserApp();
+            await refreshApplications();
         } catch (e) {
             toaster.error({
                 title: "Error Submitting Application",
@@ -300,22 +304,10 @@ export const ApplicationPage = () => {
     };
 
     useEffect(() => {
-        if (loadingTimeoutRef.current !== null)
-            window.clearTimeout(loadingTimeoutRef.current as number);
-        loadingTimeoutRef.current = window.setTimeout(
-            () => setIsLoading(false),
-            1000
-        );
-
-        if (!userApp) {
+        if (!loadingApplications && !userApp) {
             trackProgress("open");
         }
-
-        return () => {
-            if (loadingTimeoutRef.current)
-                window.clearTimeout(loadingTimeoutRef.current);
-        };
-    }, [userApp]);
+    }, [userApp, loadingApplications]);
 
     useEffect(() => {
         if (userApp && !sp.get("restart")) {
@@ -333,12 +325,17 @@ export const ApplicationPage = () => {
               ? mentorSpecificForm
               : volunteerSpecificForm;
 
-    if (isLoading) return <LoadingAnimation />;
+    if (loadingApplications)
+        return (
+            <PageWrapper>
+                <LoadingAnimation />
+            </PageWrapper>
+        );
 
-    if (submitted) return <Navigate to={routes.submitted} />;
+    if (submitted) return <Navigate to={paths.submitted} />;
 
     return (
-        <>
+        <PageWrapper>
             <div>
                 <nav aria-label="Application progress">
                     <Steps steps={steps} onClick={jumpTo} />
@@ -750,7 +747,6 @@ export const ApplicationPage = () => {
                                 Back
                             </Button>
                             <Button
-                                intent="secondary"
                                 className="text-charcoalBlack"
                                 onClick={() => navigate("/")}
                                 type="button"
@@ -787,10 +783,7 @@ export const ApplicationPage = () => {
                     <p>Are you sure you want to continue?</p>
                 </div>
                 <div className="flex gap-12 justify-center items-center mt-12">
-                    <Button
-                        intent="secondary"
-                        onClick={() => setOpenConfirmPopUp(false)}
-                    >
+                    <Button onClick={() => setOpenConfirmPopUp(false)}>
                         Cancel
                     </Button>
                     <Button
@@ -802,6 +795,6 @@ export const ApplicationPage = () => {
                     </Button>
                 </div>
             </Modal>
-        </>
+        </PageWrapper>
     );
 };

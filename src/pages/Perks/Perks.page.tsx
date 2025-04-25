@@ -1,9 +1,9 @@
 //@ts-nocheck
 import { useEffect, useRef, useState } from "react";
 import { PerksData, perksData } from "../../data/perks";
-import { Modal } from "@/components";
+import { Modal, PageWrapper } from "@/components";
 import { getButtonStyles } from "@/components/Button/Button.styles";
-import { useAvailableRoutes } from "@/providers/routes.provider";
+import { paths } from "@/providers/RoutesProvider/data";
 
 const PerksPage = () => {
     const foodItemsRef = useRef([]);
@@ -11,7 +11,6 @@ const PerksPage = () => {
     const featuredItemsRef = useRef([]);
     const [selectedPerk, setSelectedPerk] = useState<PerksData | null>(null);
     const [isPopup, setIsPopup] = useState(false);
-    const { paths } = useAvailableRoutes();
     useEffect(() => {
         window.localStorage.setItem(paths.perks, "visited");
     }, []);
@@ -102,75 +101,77 @@ const PerksPage = () => {
     };
 
     return (
-        <div>
-            <div className="mb-8">
-                <h2 className="text-xl font-bold mb-4">Featured</h2>
-                <div className="flex flex-wrap justify-start gap-x-32 gap-y-2">
-                    {perksData.featured.map((perk) =>
-                        renderPerk(perk, featuredItemsRef)
-                    )}
-                </div>
-            </div>
-
-            <div className="flex gap-32">
-                <div className="w-1/3">
-                    <h2 className="text-xl font-bold mb-4">Food</h2>
-                    {perksData.food.map((perk) =>
-                        renderPerk(perk, foodItemsRef)
-                    )}
-                </div>
-                <div className="w-1/3">
-                    <h2 className="text-xl font-bold mb-4">Other</h2>
-                    {perksData.other.map((perk) =>
-                        renderPerk(perk, otherItemsRef)
-                    )}
-                </div>
-            </div>
-
-            <Modal title="" subTitle="" open={isPopup} onClose={closePopup}>
-                {selectedPerk && (
-                    <div className="p-2">
-                        <img
-                            src={selectedPerk.image}
-                            alt={selectedPerk.alt}
-                            className="w-28 mb-4 object-contain"
-                        />
-                        <p className="text-gray-800 mb-6">
-                            {selectedPerk.description}
-                        </p>
-                        {selectedPerk.link && (
-                            <a
-                                href={selectedPerk.link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={getButtonStyles({
-                                    className: "bg-tbrand rounded-lg",
-                                })}
-                            >
-                                {selectedPerk.buttonTitle || "Learn More"}
-                            </a>
+        <PageWrapper>
+            <div>
+                <div className="mb-8">
+                    <h2 className="text-xl font-bold mb-4">Featured</h2>
+                    <div className="flex flex-wrap justify-start gap-x-32 gap-y-2">
+                        {perksData.featured.map((perk) =>
+                            renderPerk(perk, featuredItemsRef)
                         )}
-                        <div className="flex gap-4">
-                            {selectedPerk.actions &&
-                                selectedPerk.actions.map((action, idx) => (
-                                    <a
-                                        key={idx}
-                                        href={action.link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={getButtonStyles({
-                                            className:
-                                                "p-3 bg-tbrand rounded-lg",
-                                        })}
-                                    >
-                                        {action.title}
-                                    </a>
-                                ))}
-                        </div>
                     </div>
-                )}
-            </Modal>
-        </div>
+                </div>
+
+                <div className="flex gap-32">
+                    <div className="w-1/3">
+                        <h2 className="text-xl font-bold mb-4">Food</h2>
+                        {perksData.food.map((perk) =>
+                            renderPerk(perk, foodItemsRef)
+                        )}
+                    </div>
+                    <div className="w-1/3">
+                        <h2 className="text-xl font-bold mb-4">Other</h2>
+                        {perksData.other.map((perk) =>
+                            renderPerk(perk, otherItemsRef)
+                        )}
+                    </div>
+                </div>
+
+                <Modal title="" subTitle="" open={isPopup} onClose={closePopup}>
+                    {selectedPerk && (
+                        <div className="p-2">
+                            <img
+                                src={selectedPerk.image}
+                                alt={selectedPerk.alt}
+                                className="w-28 mb-4 object-contain"
+                            />
+                            <p className="text-gray-800 mb-6">
+                                {selectedPerk.description}
+                            </p>
+                            {selectedPerk.link && (
+                                <a
+                                    href={selectedPerk.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={getButtonStyles({
+                                        className: "bg-tbrand rounded-lg",
+                                    })}
+                                >
+                                    {selectedPerk.buttonTitle || "Learn More"}
+                                </a>
+                            )}
+                            <div className="flex gap-4">
+                                {selectedPerk.actions &&
+                                    selectedPerk.actions.map((action, idx) => (
+                                        <a
+                                            key={idx}
+                                            href={action.link}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={getButtonStyles({
+                                                className:
+                                                    "p-3 bg-tbrand rounded-lg",
+                                            })}
+                                        >
+                                            {action.title}
+                                        </a>
+                                    ))}
+                            </div>
+                        </div>
+                    )}
+                </Modal>
+            </div>
+        </PageWrapper>
     );
 };
 

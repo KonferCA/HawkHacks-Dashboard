@@ -37,3 +37,4 @@ environment
 .firebase
 .runtimeconfig.json
 hawkhacks-googleWallet-key.json
+tsconfig.tsbuildinfo

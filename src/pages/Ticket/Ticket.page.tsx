@@ -3,15 +3,18 @@ import { FiDownload } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { GoogleWalletBadge, AppleWalletBadge, LoadingDots } from "@/assets";
-import { useAuth } from "@/providers/hooks";
+import { useAuth } from "@/providers";
+import { useApplications } from "@/hooks/use-applications";
 import { Navigate } from "react-router-dom";
-import { useAvailableRoutes } from "@/providers/routes.provider";
+import { paths } from "@/providers/RoutesProvider/data";
 import { logError } from "@/services/firebase/log";
+import { PageWrapper } from "@/components";
 
 export const TicketPage = () => {
     const functions = getFunctions();
-    const { paths } = useAvailableRoutes();
-    const { currentUser, userApp } = useAuth();
+    const { currentUser } = useAuth();
+    const { applications } = useApplications();
+    const userApp = applications[0] || null;
     const email = currentUser?.email ?? "";
     const firstName =
         (userApp?.firstName || currentUser?.displayName?.split(" ")[0]) ??
@@ -77,7 +80,7 @@ export const TicketPage = () => {
                 email: email,
                 pronouns: Array.isArray(userApp?.pronouns)
                     ? userApp.pronouns.join(", ")
-                    : userApp?.pronouns ?? "Not specified",
+                    : (userApp?.pronouns ?? "Not specified"),
             });
             const ticketData = ticketResult.data as { url: string };
             if (ticketData.url) {
@@ -102,7 +105,7 @@ export const TicketPage = () => {
     };
 
     return (
-        <>
+        <PageWrapper>
             <div className="flex justify-start">
                 <div className="bg-white drop-shadow-xl rounded-xl box-border max-w-[400px] w-full p-8 flex flex-col gap-2">
                     <div className="flex items-center font-bold text-2xl md:text-[30px]">
@@ -173,6 +176,6 @@ export const TicketPage = () => {
                     )}
                 </div>
             </div>
-        </>
+        </PageWrapper>
     );
 };
