@@ -134,7 +134,11 @@ export const Navbar = () => {
                             <li className="p-4 hover:bg-slate-100 duration-300 transition-colors rounded-md w-full hover:text-black cursor-pointer flex items-center justify-start gap-2">
                                 {isMobile ? (
                                     <>
-                                        <Icon className="w-3 h-3" />
+                                        {isActive ? (
+                                            <ActiveIcon className="w-3 h-3" />
+                                        ) : (
+                                            <Icon className="w-3 h-3" />
+                                        )}
                                         <span className="relative">
                                             {label}
                                             <span className="absolute flex h-2 w-2 top-0 right-0 translate-x-full">
@@ -169,7 +173,11 @@ export const Navbar = () => {
                         <li className="p-4 hover:bg-slate-100 duration-300 transition-colors rounded-md w-full hover:text-black cursor-pointer flex items-center justify-start gap-2">
                             {isMobile ? (
                                 <>
-                                    <Icon className="w-3 h-3" />
+                                    {isActive ? (
+                                        <ActiveIcon className="w-3 h-3" />
+                                    ) : (
+                                        <Icon className="w-3 h-3" />
+                                    )}
                                     <span>{label}</span>
                                 </>
                             ) : (
