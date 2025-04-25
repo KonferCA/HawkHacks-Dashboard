@@ -4,36 +4,36 @@ import { type FC, type ReactNode, useEffect, useState } from "react";
 // EventType represents the different types of events available.
 // These are used to decide the colour of each event that is rendered on screen.
 export enum EventType {
-    WORKSHOP = 0,
-    EVENT = 1,
-    FOOD = 2,
-    IMPORTANT = 3,
-    GAME_CHILL = 4,
-    NETWORKING = 5,
+	WORKSHOP = 0,
+	EVENT = 1,
+	FOOD = 2,
+	IMPORTANT = 3,
+	GAME_CHILL = 4,
+	NETWORKING = 5,
 }
 
 // EventItem represents an event that is going to be rendered
 export interface EventItem {
-    // unique event id
-    id: string;
-    // ISO-8601 format
-    startsAt: string;
-    // ISO-8601 format
-    endsAt: string;
+	// unique event id
+	id: string;
+	// ISO-8601 format
+	startsAt: string;
+	// ISO-8601 format
+	endsAt: string;
 
-    // basic information
-    title: string;
-    description: string;
+	// basic information
+	title: string;
+	description: string;
 
-    // optional icon that appears on the far left of an event card
-    icon?: ReactNode;
+	// optional icon that appears on the far left of an event card
+	icon?: ReactNode;
 
-    // actions
-    onClick?: ((evt: EventItem) => void) | ((evt: EventItem) => Promise<void>);
+	// actions
+	onClick?: ((evt: EventItem) => void) | ((evt: EventItem) => Promise<void>);
 }
 
 export interface ScheduleProps {
-    events: EventItem[];
+	events: EventItem[];
 }
 
 /*
@@ -55,12 +55,12 @@ export interface ScheduleProps {
  *
  */
 const Schedule: FC<ScheduleProps> = ({ events }) => {
-    const [sortedEvents, setSortedEvents] = useState<EventItem[]>([]);
+	const [sortedEvents, setSortedEvents] = useState<EventItem[]>([]);
 
-    // sort the events
-    useEffect(() => {}, [events]);
+	// sort the events
+	useEffect(() => {}, [events]);
 
-    return <div />;
+	return <div />;
 };
 
 export { Schedule };
