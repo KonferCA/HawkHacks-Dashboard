@@ -121,14 +121,17 @@ export const TicketPage = () => {
 					<div className="bg-gray-200 rounded-xl h-[2px]" />
 					<div className="flex flex-col items-center">
 						<img src={qrCode} alt="QR Code" className="w-full" />
-						<button className="text-3xl mb-4" onClick={handleDownload}>
+						<button
+							type="button"
+							className="text-3xl mb-4"
+							onClick={handleDownload}
+						>
 							<FiDownload />
 						</button>
 						<div className="flex w-full justify-evenly items-center">
-							<a
-								href="#"
-								onClick={(e) => {
-									e.preventDefault();
+							<button
+								type="button"
+								onClick={() => {
 									handleCreatePassObject("apple");
 								}}
 								style={{
@@ -141,11 +144,10 @@ export const TicketPage = () => {
 									alt="Add to Apple Wallet"
 									style={{ width: "100%", height: "auto" }}
 								/>
-							</a>
-							<a
-								href="#"
-								onClick={(e) => {
-									e.preventDefault();
+							</button>
+							<button
+								type="button"
+								onClick={() => {
 									handleCreatePassObject("google");
 								}}
 								style={{
@@ -154,7 +156,7 @@ export const TicketPage = () => {
 								}}
 							>
 								<img src={GoogleWalletBadge} alt="Add to Google Wallet" />
-							</a>
+							</button>
 						</div>
 					</div>
 					{loading && (

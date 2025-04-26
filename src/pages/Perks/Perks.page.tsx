@@ -1,14 +1,13 @@
 import { Modal, PageWrapper } from "@/components";
 import { getButtonStyles } from "@/components/Button/Button.styles";
 import { paths } from "@/providers/RoutesProvider/data";
-//@ts-nocheck
 import { useEffect, useRef, useState } from "react";
 import { type PerksData, perksData } from "../../data/perks";
 
 const PerksPage = () => {
 	const foodItemsRef = useRef([]);
 	const otherItemsRef = useRef([]);
-	const featuredItemsRef = useRef([]);
+	const featuredItemsRef = useRef<(HTMLButtonElement | null)[]>([]);
 	const [selectedPerk, setSelectedPerk] = useState<PerksData | null>(null);
 	const [isPopup, setIsPopup] = useState(false);
 	useEffect(() => {
@@ -16,7 +15,10 @@ const PerksPage = () => {
 	}, []);
 
 	useEffect(() => {
-		const fadeInItems = (items, delay) => {
+		const fadeInItems = (
+			items: (HTMLButtonElement | null)[],
+			delay: number,
+		) => {
 			items.forEach((item, index) => {
 				if (item) {
 					setTimeout(
@@ -48,8 +50,10 @@ const PerksPage = () => {
 	const closePopup = () => {
 		setIsPopup(false);
 	};
-	// @ts-ignore
-	const renderPerk = (perk: PerksData, ref) => {
+	const renderPerk = (
+		perk: PerksData,
+		ref: React.MutableRefObject<(HTMLButtonElement | null)[]>,
+	) => {
 		const shortenDescription = (description: string, maxLength: number) => {
 			if (description.length <= maxLength) {
 				return description;
@@ -70,8 +74,11 @@ const PerksPage = () => {
 			: {};
 
 		return (
-			<div
-				ref={(el) => (ref.current[ref.current.length] = el)}
+			<button
+				type="button"
+				ref={(el) => {
+					ref.current[ref.current.length] = el;
+				}}
 				className="bg-white shadow-md p-4 rounded-xl flex items-center mb-4 transition duration-300 ease-in-out transform hover:scale-105 cursor-pointer"
 				onClick={() => openPopup(perk)}
 				style={{ flexBasis: "33%", marginBottom: "16px", ...perkStyle }}
@@ -94,7 +101,7 @@ const PerksPage = () => {
 						{shortenDescription(perk.description, 80)}
 					</p>
 				</div>
-			</div>
+			</button>
 		);
 	};
 

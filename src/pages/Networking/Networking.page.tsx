@@ -315,12 +315,14 @@ export const NetworkingPage = () => {
 							{editMode === key && (
 								<div className="mt-2 flex gap-2">
 									<button
+										type="button"
 										className="bg-gray-300/30 rounded-lg px-4 py-1"
 										onClick={handleCancel}
 									>
 										Cancel
 									</button>
 									<button
+										type="button"
 										className="bg-peachWhite text-black rounded-lg px-4 py-1"
 										onClick={handleSubmit}
 									>
@@ -476,6 +478,7 @@ export const NetworkingPage = () => {
 					</div>
 					<div>
 						<button
+							type="button"
 							className="border-2 rounded-lg border-red-400 w-full flex p-2 gap-4 transition hover:bg-red-600/5 text-red-500 font-medium"
 							onClick={removeResume}
 						>

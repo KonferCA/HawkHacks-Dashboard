@@ -2,6 +2,7 @@ import type React from "react";
 import { useEffect, useState } from "react";
 
 export interface FileBrowserProps {
+	inputId?: string;
 	allowedFileTypes?: string[];
 	description?: string;
 	subdescription?: string;
@@ -9,6 +10,7 @@ export interface FileBrowserProps {
 }
 
 export const FileBrowser: React.FC<FileBrowserProps> = ({
+	inputId,
 	allowedFileTypes = ["image/*", "video/*"],
 	description,
 	subdescription = "PDF is highly recommended, but all image and document file formats are accepted!",
@@ -16,7 +18,6 @@ export const FileBrowser: React.FC<FileBrowserProps> = ({
 }) => {
 	const [file, setFile] = useState<File | null>(null);
 	const [isDragging, setIsDragging] = useState(false);
-	const [randomId] = useState(Math.random().toString(32));
 
 	const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
 		e.preventDefault();
@@ -59,15 +60,15 @@ export const FileBrowser: React.FC<FileBrowserProps> = ({
 				} p-4 my-2 text-center`}
 			>
 				<input
+					id={inputId}
 					type="file"
 					accept={allowedFileTypes.join(", ")}
 					onChange={handleFileInput}
 					className="hidden"
-					id={`file-${randomId}`}
 				/>
-				<label htmlFor={`file-${randomId}`} className="cursor-pointer">
-					<span>Click to browse or drag and drop file here (max 10MB)</span>
-				</label>
+				<span className="cursor-pointer">
+					Click to browse or drag and drop file here (max 10MB)
+				</span>
 				<div>{description}</div>
 				<ul className="italic text-sageGray text-sm">
 					{file && <li>{file.name}</li>}
