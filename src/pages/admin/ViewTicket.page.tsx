@@ -157,6 +157,7 @@ export const AdminViewTicketPage = () => {
 														</p>
 													</div>
 													<button
+														type="button"
 														className={getButtonStyles({
 															className: "p-2",
 															intent: checked ? "secondary" : "primary",

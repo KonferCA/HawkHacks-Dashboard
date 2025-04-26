@@ -242,6 +242,7 @@ export const LoginPage = () => {
 												: "Already have an account? "}
 										</span>
 										<button
+											type="button"
 											className="text-charcoalBlack font-bold underline hover:text-tbrand-hover"
 											onClick={toggleForm}
 										>
@@ -260,6 +261,7 @@ export const LoginPage = () => {
 												className="rounded-lg w-full bg-white capitalize text-gray-900 flex justify-center items-center gap-4 hover:bg-gray-100 active:bg-gray-200"
 											>
 												<img
+													alt={`${provider.name} logo`}
 													src={provider.logo}
 													aria-hidden="true"
 													className="w-8 h-8"
