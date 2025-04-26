@@ -57,7 +57,7 @@ export const Modal: FC<ModalProps> = ({
 										className="absolute top-0 left-[calc(49%)] -translate-x-1/2 -translate-y-[calc(43.2%)] w-[70%]"
 									/>
 									<div className="flex justify-end">
-										<button onClick={onClose}>
+										<button type="button" onClick={onClose}>
 											<XCircleIcon className="w-8 h-8" />
 										</button>
 									</div>

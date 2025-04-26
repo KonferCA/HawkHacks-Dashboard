@@ -468,6 +468,7 @@ export const MyTeamPage = () => {
 							{/* members length has to be less than 3 because the logged in user is not in the list */}
 							{team.isOwner && team.members.length < 3 && (
 								<button
+									type="button"
 									aria-label="add teammates"
 									className="absolute group right-2 top-1/2 -translate-y-1/2"
 									onClick={() => setOpenInviteDialog(true)}
@@ -519,6 +520,7 @@ export const MyTeamPage = () => {
 							<h3 className="font-bold">Team Name</h3>
 							{team.isOwner && (
 								<button
+									type="button"
 									aria-label="edit team name"
 									className="absolute group right-2 top-1/2 -translate-y-1/2"
 									onClick={() => setIsEditingTeamName(!isEditingTeamName)}
@@ -671,6 +673,7 @@ export const MyTeamPage = () => {
 										<p className="text-gray-500">{m.email}</p>
 									</div>
 									<button
+										type="button"
 										onClick={() =>
 											setToBeRemovedTeammates([
 												...toBeRemovedTeammates,

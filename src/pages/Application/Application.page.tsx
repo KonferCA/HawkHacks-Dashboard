@@ -450,11 +450,15 @@ export const ApplicationPage = () => {
 
 							{application.participatingAs === "Mentor" && (
 								<div className="sm:col-span-full">
-									<label className="text-gray-900 font-medium">
+									<label
+										htmlFor="mentor-resume-file-input"
+										className="text-gray-900 font-medium"
+									>
 										Resume
 										<span className="text-red-600">*</span>
 									</label>
 									<FileBrowser
+										inputId="mentor-resume-file-input"
 										allowedFileTypes={["image/*", "application/pdf"]}
 										onChange={(file) => {
 											file && setMentorResumeFile(file);
@@ -507,7 +511,10 @@ export const ApplicationPage = () => {
 							}`}
 						>
 							<div className="sm:col-span-full">
-								<label className="text-gray-900 font-medium">
+								<label
+									htmlFor="sponsors-resume-file-input"
+									className="text-gray-900 font-medium"
+								>
 									If you would like to share your resume with our sponsors,
 									please do so now.
 								</label>
@@ -517,6 +524,7 @@ export const ApplicationPage = () => {
 									opportunities.
 								</p>
 								<FileBrowser
+									inputId="sponsors-resume-file-input"
 									allowedFileTypes={[
 										"image/*", //png, jpg, jpeg, jfif, pjpeg, pjp, gif, webp, bmp, svg
 										"application/pdf", //pdf

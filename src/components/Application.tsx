@@ -2,7 +2,6 @@ import { getResume } from "@/services/firebase/files";
 import { Button } from "@chakra-ui/react";
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import type { FC } from "react";
-import { ApplicationData } from "./forms/types";
 import type { ApplicationData } from "./forms/types";
 import { toaster } from "./ui/toaster";
 
