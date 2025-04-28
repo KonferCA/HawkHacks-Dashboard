@@ -1,13 +1,15 @@
 import {
-    genders,
-    allergies,
-    programmingLanguages,
-    pronouns,
-    diets,
-    sexualityList,
-    races,
-    interests,
-    hackathonExps,
+	allergies,
+	diets,
+	genders,
+	hackathonExps,
+	interests,
+	mentorSpecificOptions,
+	programmingLanguages,
+	pronouns,
+	races,
+	sexualityList,
+	volunteerSpecificOptions,
 } from "@data";
 import * as z from "zod";
 import type { FormInput } from "./types";
@@ -139,4 +141,97 @@ export const hackerSpecificForm: FormInput[] = [
 	},
 ];
 
-// Removed mentor and volunteer specific forms
+export const mentorSpecificForm: FormInput[] = [
+	{
+		type: "select",
+		props: {
+			label: "Have you mentored at previous hackathons before?",
+			options: mentorSpecificOptions,
+			initialValue: "",
+			required: true,
+		},
+		name: "mentorExperience",
+	},
+	{
+		type: "text",
+		props: {
+			label:
+				"Do you have a LinkedIn profile? If so, please provide a link to your profile.",
+			required: false,
+			id: "linkedin-url",
+			placeholder: "https://linkedin.com/in/john-smith",
+			validate: (value: string) => isValidUrl(value) || value === "",
+		},
+		name: "linkedinUrl",
+	},
+	{
+		type: "text",
+		props: {
+			label:
+				"Do you have a GitHub account? If so, please provide a link to your profile.",
+			required: false,
+			id: "github-url",
+			placeholder: "https://github.com/SherRao",
+			validate: (value: string) => isValidUrl(value) || value === "",
+		},
+		name: "githubUrl",
+	},
+	{
+		type: "text",
+		props: {
+			label:
+				"Do you have a personal or other website you'd like to include? If so, please provide a link.",
+			required: false,
+			id: "personal-website-url",
+			placeholder: "https://hawkhacks.ca",
+			validate: (value: string) => isValidUrl(value) || value === "",
+		},
+		name: "personalWebsiteUrl",
+	},
+	{
+		type: "textarea",
+		props: {
+			label: "Why do you want to be a mentor at HawkHacks?",
+			required: true,
+			rows: 4,
+			id: "reason-to-be-mentor",
+		},
+		name: "reasonToBeMentor",
+	},
+
+	// TODO: add resume upload
+];
+
+export const volunteerSpecificForm: FormInput[] = [
+	{
+		type: "select",
+		props: {
+			label: "Have you volunteered at large-scale events before?",
+			options: volunteerSpecificOptions,
+			initialValue: "",
+			required: true,
+		},
+		name: "volunteerExperience",
+	},
+	{
+		type: "textarea",
+		props: {
+			label: "Why do you want to be a volunteer at HawkHacks?",
+			rows: 4,
+			id: "reason-to-be-volunteer",
+			required: true,
+		},
+		name: "reasonToBeVolunteer",
+	},
+	{
+		type: "textarea",
+		props: {
+			label:
+				"In a couple of sentences, what would you be most excited about helping out with at HawkHacks and why?",
+			rows: 4,
+			id: "exicted-to-volunteer-for",
+			required: true,
+		},
+		name: "excitedToVolunteerFor",
+	},
+];

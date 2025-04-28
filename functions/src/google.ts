@@ -284,19 +284,19 @@ export const createPassObject = onCall(async (data: any, res) => {
 			value: `${process.env.FE_URL}/ticket/${ticketId}`,
 		},
 
-        hexBackgroundColor: "#27393F",
-        heroImage: {
-            sourceUri: {
-                uri: "https://storage.googleapis.com/spurhacks-dashboard.appspot.com/uploads%2Fwallet-banner.png",
-            },
-            contentDescription: {
-                defaultValue: {
-                    language: "en-US",
-                    value: "HERO_IMAGE_DESCRIPTION",
-                },
-            },
-        },
-    };
+		hexBackgroundColor: "#27393F",
+		heroImage: {
+			sourceUri: {
+				uri: "https://storage.googleapis.com/hawkhacks-dashboard.appspot.com/uploads%2Fwallet-banner.png",
+			},
+			contentDescription: {
+				defaultValue: {
+					language: "en-US",
+					value: "HERO_IMAGE_DESCRIPTION",
+				},
+			},
+		},
+	};
 
 	try {
 		// Try to fetch the existing object
