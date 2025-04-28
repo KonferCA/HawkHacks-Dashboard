@@ -13,7 +13,7 @@
 		"test": "vitest",
 		"test:ci": "vitest run --coverage",
 		"typecheck": "tsc --noEmit",
-		"emulators": "firebase emulators:start --project spurhacks-dashboard --import ./data",
+		"emulators": "firebase emulators:start --project hawkhacks-dashboard --import ./data",
 		"setup": "firebase init emulators",
 		"firebase": "firebase",
 		"vite": "vite",
