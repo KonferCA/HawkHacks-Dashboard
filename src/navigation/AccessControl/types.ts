@@ -6,8 +6,8 @@ import type { UserWithClaims } from "@/providers";
  * Contains current user and their application data
  */
 export interface AccessControlContext {
-    user: UserWithClaims | null;
-    applications: ApplicationData[];
+	user: UserWithClaims | null;
+	applications: ApplicationData[];
 }
 
 /**
@@ -22,6 +22,6 @@ export type AccessControlFn = (context: AccessControlContext) => boolean;
  * @property accessCheck - Single function or array of functions to determine if access should be granted
  */
 export interface AccessControlProps {
-    redirectTo?: string;
-    accessCheck?: AccessControlFn | AccessControlFn[];
+	redirectTo?: string;
+	accessCheck?: AccessControlFn | AccessControlFn[];
 }
