@@ -20,7 +20,7 @@ export const InfoCallout: FC<InfoCalloutProps> = ({ text }) => {
                     aria-hidden="true"
                 />
             </Alert.Indicator>
-            <Alert.Title color="blue.400">{text}</Alert.Title>
+            <Alert.Title color="blue.600">{text}</Alert.Title>
         </Alert.Root>
     );
 };
