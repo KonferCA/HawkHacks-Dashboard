@@ -38,16 +38,18 @@ interface ScheduleGridProps {
 	children: React.ReactNode;
 }
 
+// The schedule grid is 24 hours long, from 12:00 AM to 12:00 AM the next day
+// Each hour is divided into 60 minutes, so there are 24*60=1440 columns in total
 export function ScheduleGrid(props: ScheduleGridProps) {
 	return (
 		<Box w="100%" overflowX="auto" overflowY="hidden">
 			<Grid
 				width="2800px"
-				templateColumns="repeat(48, 1fr)"
-				gap="4px"
+				templateColumns="repeat(1440, 1fr)"
 				m={4}
 				position="relative"
 			>
+				<ScheduleTimeIndicator>12:00 AM</ScheduleTimeIndicator>
 				<ScheduleTimeIndicator>1:00 AM</ScheduleTimeIndicator>
 				<ScheduleTimeIndicator>2:00 AM</ScheduleTimeIndicator>
 				<ScheduleTimeIndicator>3:00 AM</ScheduleTimeIndicator>
@@ -71,7 +73,6 @@ export function ScheduleGrid(props: ScheduleGridProps) {
 				<ScheduleTimeIndicator>9:00 PM</ScheduleTimeIndicator>
 				<ScheduleTimeIndicator>10:00 PM</ScheduleTimeIndicator>
 				<ScheduleTimeIndicator>11:00 PM</ScheduleTimeIndicator>
-				<ScheduleTimeIndicator>12:00 AM</ScheduleTimeIndicator>
 				<ScheduleGridLineContainer>
 					{Array.from({ length: 24 }, (_, i) => (
 						<ScheduleGridLine key={i} />
@@ -85,7 +86,7 @@ export function ScheduleGrid(props: ScheduleGridProps) {
 
 function ScheduleTimeIndicator({ children }: { children: React.ReactNode }) {
 	return (
-		<GridItem colSpan={2} h="32px">
+		<GridItem h="32px" colSpan={60}>
 			{children}
 		</GridItem>
 	);
@@ -99,7 +100,7 @@ export function ScheduleGridLineContainer(props: React.PropsWithChildren) {
 			top="36px" // time indicator height + grid gap
 			display="flex"
 			flexDir="column"
-			gap="99px" // grid item height + grid gap - grid line border height
+			gap="99px" // grid item height + grid item padding top - grid line border height
 			zIndex={-1}
 			{...props}
 		/>
@@ -114,7 +115,7 @@ export interface ScheduleGridItemProps {
 	scrollIntoViewOnMount?: boolean;
 	startTime: TimeType;
 	endTime: TimeType;
-	color: "blue" | "teal" | "red" | "green" | "purple" | "orange" | "pink";
+	color: string;
 	children: React.ReactNode;
 }
 
@@ -141,6 +142,8 @@ export function ScheduleGridItem({
 			ref={itemRef}
 			colStart={scheduleColumnHelper(startTime)}
 			colEnd={scheduleColumnHelper(endTime)}
+			mt="4px"
+			mr="4px"
 			color={`${color}.contrast`}
 			bg={`${color}.fg`}
 			borderRadius="md"
@@ -159,15 +162,12 @@ export function ScheduleGridItem({
 	);
 }
 
-type HourType =
-	`${0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23}`;
-type MinuteType = "00" | "30";
-type TimeType = `${HourType}:${MinuteType}`;
+type TimeType = `${number}:${number}`;
 
 function scheduleColumnHelper(time: TimeType): number {
 	const [hour, minute] = time.split(":").map(Number);
-	const colStart = hour * 2 - 1 + (minute === 30 ? 1 : 0);
-	return colStart;
+	const col = hour * 60 + minute;
+	return col + 1; // CSS Grid is 1-indexed
 }
 
 export function format12HourTime(time: TimeType): string {
