@@ -8,12 +8,7 @@ interface InfoCalloutProps {
 
 export const InfoCallout: FC<InfoCalloutProps> = ({ text }) => {
     return (
-        <Alert.Root
-            status="info"
-            bg="blue.50"
-            title="This is the alert title"
-            p={4}
-        >
+        <Alert.Root status="info" bg="blue.50" p={4}>
             <Alert.Indicator>
                 <InformationCircleIcon
                     className="h-5 w-5 text-blue-400"
