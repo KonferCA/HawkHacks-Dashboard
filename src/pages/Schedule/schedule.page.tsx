@@ -1,12 +1,12 @@
 import { PageWrapper } from "@/components";
 import {
-	ScheduleTabContent,
-	ScheduleRoot,
-	ScheduleTabList,
-	ScheduleTabTrigger,
 	ScheduleGrid,
 	ScheduleGridItem,
 	type ScheduleGridItemProps,
+	ScheduleRoot,
+	ScheduleTabContent,
+	ScheduleTabList,
+	ScheduleTabTrigger,
 	format12HourTime,
 } from "@/components/Schedule/Schedule";
 
