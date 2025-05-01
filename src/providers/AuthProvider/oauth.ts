@@ -1,7 +1,7 @@
 import {
-    GithubAuthProvider,
-    GoogleAuthProvider,
-    OAuthProvider,
+	GithubAuthProvider,
+	GoogleAuthProvider,
+	OAuthProvider,
 } from "firebase/auth";
 
 const githubProvider = new GithubAuthProvider();
