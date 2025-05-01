@@ -1,5 +1,5 @@
 export interface ComponentProps {
-    children?: React.ReactNode;
+	children?: React.ReactNode;
 }
 export type { TextInputProps } from "./TextInput/TextInput";
 export type { ButtonStylesProps } from "./Button/Button.styles";

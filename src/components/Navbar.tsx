@@ -6,8 +6,10 @@ import { useAuth } from "@/providers";
 import Hamburger from "hamburger-react";
 import { Link, useLocation } from "react-router-dom";
 import { Logo } from "@/assets";
-import { useUser, useRouteDefinitions } from "@/providers";
 import { useApplications } from "@/hooks/use-applications";
+import { useAuth } from "@/providers";
+import { useRouteDefinitions, useUser } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
 import {
     CalendarDaysIcon,
     CodeBracketIcon,
@@ -24,7 +26,12 @@ import {
     CodeBracketIcon as CodeBracketIconSolid,
     UserGroupIcon as UserGroupIconSolid,
 } from "@heroicons/react/24/solid";
-import { paths } from "@/providers/RoutesProvider/data";
+import Hamburger from "hamburger-react";
+import { useEffect, useMemo, useState } from "react";
+import { FiLogOut, FiMapPin } from "react-icons/fi";
+import { RiDiscordLine } from "react-icons/ri";
+import { RxStar } from "react-icons/rx";
+import { Link, useLocation } from "react-router-dom";
 
 export const Navbar = () => {
     const { logout } = useAuth();

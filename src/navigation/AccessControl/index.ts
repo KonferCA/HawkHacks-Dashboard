@@ -1,6 +1,6 @@
 export { AccessControl } from "./AccessControl";
 export type {
-    AccessControlFn,
-    AccessControlProps,
-    AccessControlContext,
+	AccessControlFn,
+	AccessControlProps,
+	AccessControlContext,
 } from "./types";
