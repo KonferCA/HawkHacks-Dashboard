@@ -1,5 +1,5 @@
-import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { FC } from "react";
+import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import { Alert } from "@chakra-ui/react";
 
 interface InfoCalloutProps {
