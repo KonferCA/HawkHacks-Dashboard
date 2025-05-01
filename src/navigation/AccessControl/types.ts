@@ -1,4 +1,4 @@
-import type { ApplicationData } from "@/components/forms/types";
+import type { ApplicationsHookValue } from "@/hooks/use-applications";
 import type { UserWithClaims } from "@/providers";
 
 /**
@@ -7,7 +7,7 @@ import type { UserWithClaims } from "@/providers";
  */
 export interface AccessControlContext {
 	user: UserWithClaims | null;
-	applications: ApplicationData[];
+	applicationsCtx: ApplicationsHookValue;
 }
 
 /**
@@ -18,10 +18,10 @@ export type AccessControlFn = (context: AccessControlContext) => boolean;
 
 /**
  * Props for AccessControl component
- * @property redirectTo - Path to redirect to if access check fails
  * @property accessCheck - Single function or array of functions to determine if access should be granted
+ * @property fallbackRedirect - Path to redirect to if access check fails but doesn't specify a redirect
  */
 export interface AccessControlProps {
-	redirectTo?: string;
 	accessCheck?: AccessControlFn | AccessControlFn[];
+	fallbackRedirect?: string;
 }

@@ -3,6 +3,7 @@ import type { AuthContextValue } from "./types";
 
 export const AuthContext = createContext<AuthContextValue>({
 	currentUser: null,
+	isLoading: true,
 	login: async () => {},
 	logout: async () => {},
 	createAccount: async () => {},

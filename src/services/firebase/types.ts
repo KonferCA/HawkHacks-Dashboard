@@ -80,3 +80,8 @@ export interface WaitlistDoc {
 export interface SpotDoc extends WaitlistDoc {
 	expiresAt: Timestamp;
 }
+
+export interface Deadlines {
+	appStartDate: string; // ISO string UTC
+	appCloseDate: string; // ISO string UTC
+}

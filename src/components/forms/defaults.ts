@@ -36,20 +36,8 @@ export const defaultApplication: ApplicationData = {
 	reasonToBeInHawkHacks: "",
 	revolutionizingTechnology: "",
 
-	// mentor only
-	mentorExperience: "",
-	reasonToBeMentor: "",
-	mentorResumeRef: "",
-
-	// volunteer only
-	volunteerExperience: "",
-	excitedToVolunteerFor: "",
-	reasonToBeVolunteer: "",
-
-	linkedinUrl: "",
-	githubUrl: "",
-	personalWebsiteUrl: "",
-	instagram: "",
-
 	email: "",
+
+	hackathonYear: "2025", // maybe there is a better way to define this
+	rsvp: false,
 };

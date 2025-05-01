@@ -45,6 +45,7 @@ export const TextInput: React.FC<TextInputProps> = ({
 	srLabel = false,
 	required,
 	validate,
+	background,
 	...inputProps
 }) => {
 	const describedby = `text-input-description-${inputProps.id}`;
@@ -74,7 +75,11 @@ export const TextInput: React.FC<TextInputProps> = ({
 						inputProps["aria-describedby"] ?? "",
 						describedby,
 					].join(" ")}
-					className={getTextInputStyles({ invalid, className })}
+					className={getTextInputStyles({
+						invalid,
+						className,
+						background,
+					})}
 					onBlur={handleBlur}
 				/>
 			</div>

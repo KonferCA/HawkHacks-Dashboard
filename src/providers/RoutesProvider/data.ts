@@ -1,28 +1,29 @@
-import type { HeaderInfo, PathObject } from "./types";
-
+import type { HeaderInfo } from "./types";
 /**
- * Centralized definition of all application paths
+ * Defines all application routes as URL paths
+ * Used for consistent route references throughout the application
  */
-export const paths: PathObject = {
+export const paths = {
 	admin: "/admin",
 	adminViewTicket: "/admin/ticket/:ticketId",
 	adminManageEvents: "/admin/manage",
 	notFound: "*",
 	login: "/login",
-	home: "/",
+	root: "/",
+	home: "/home",
 	verifyEmail: "/verify-email",
 	schedule: "/schedule",
 	networking: "/networking",
 	myTicket: "/my-ticket",
+	apply: "/apply",
 	application: "/application",
 	submitted: "/submitted",
 	verifyRSVP: "/verify-rsvp",
 	myTeam: "/my-team",
 	joinTeam: "/join-team",
-	myApp: "/my-application",
 	ticket: "/ticket/:ticketId",
 	perks: "/perks",
-};
+} as const;
 
 /**
  * Page titles and subtitles for each route
@@ -41,7 +42,7 @@ export const titles: Record<string, HeaderInfo> = {
 		title: "Networking",
 		subTitle: "A quick way to connect with new people at HawkHacks!",
 	},
-	[paths.application]: {
+	[paths.apply]: {
 		title: "Application",
 		subTitle: "Apply to participate in the hackathon now!",
 	},

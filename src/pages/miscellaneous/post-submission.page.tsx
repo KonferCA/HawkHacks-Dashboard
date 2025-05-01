@@ -7,7 +7,7 @@ import { Link, Navigate } from "react-router-dom";
 export const PostSubmissionPage = () => {
 	const { applications } = useApplications();
 
-	if (!applications.length) return <Navigate to={paths.application} />;
+	if (!applications.length) return <Navigate to={paths.apply} />;
 
 	return (
 		<div className="fixed inset-0 bg-radial-gradient-peach overflow-y-auto">

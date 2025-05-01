@@ -60,6 +60,15 @@ service cloud.firestore {
     match /applications/{applicationId} {
         // Only grant read access if you are owner/admin
         allow read: if isAuthenticated() && (isAdmin() || isOwner(resource.data.applicantId));
+        // Only allow creating new documents
+        allow create: if isAuthenticated();
+        // Only allow admins to update an existing document
+        allow update: if isAuthenticated() && isAdmin();
+    }
+
+    // Hackathon metadata collection
+    match /hackathon/{documentId} {
+        allow read: if isAuthenticated();
         allow write: if isAuthenticated() && isAdmin();
     }
 

@@ -1,7 +1,7 @@
 export { RoutesProvider } from "./RoutesProvider";
 export { useRouter, useHeaderInfo, useRouteDefinitions } from "./hooks";
 export type {
-	PathObject,
+	Paths,
 	HeaderInfo,
 	RouteConfig,
 	RoutesContextValue,

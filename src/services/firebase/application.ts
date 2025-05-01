@@ -5,11 +5,8 @@ import {
 	Timestamp,
 	addDoc,
 	collection,
-	doc,
 	getDocs,
-	limit,
 	query,
-	setDoc,
 	where,
 } from "firebase/firestore";
 
@@ -23,39 +20,13 @@ export async function submitApplication(data: ApplicationData, uid: string) {
 		...data,
 		applicantId: uid,
 		timestamp: Timestamp.now(),
-		applicationStatus: "In Review",
-	};
-
-	const appsRef = collection(firestore, APPLICATIONS_COLLECTION);
-	let appId = "";
-	try {
-		const q = query(appsRef, where("applicantId", "==", uid), limit(1));
-		const snap = await getDocs(q);
-		appId = snap.docs[0]?.id ?? "";
-		if (snap.size > 0) {
-			// log how many people tried to resubmit, this should not be possible, so this must be 0 or people trying to hack
-			logEvent("log", {
-				event: "app_duplicate_found",
-				count: snap.size,
-			});
-		}
-	} catch (e) {
-		logEvent("error", {
-			event: "app_failed_query",
-			message: (e as Error).message,
-			name: (e as Error).name,
-			stack: (e as Error).stack,
-		});
-	}
+		hackathonYear: "2025",
+		applicationStatus: "pending",
+	} satisfies ApplicationData;
 
 	try {
-		if (appId) {
-			// replace
-			const docRef = doc(firestore, "applications", appId);
-			await setDoc(docRef, payload);
-		} else {
-			await addDoc(appsRef, payload);
-		}
+		const appsRef = collection(firestore, APPLICATIONS_COLLECTION);
+		await addDoc(appsRef, payload);
 	} catch (e) {
 		logEvent("error", {
 			event: "app_submit_error",

@@ -9,7 +9,6 @@ import {
 	pronouns,
 	races,
 	sexualityList,
-	volunteerSpecificOptions,
 } from "@data";
 import * as z from "zod";
 import type { FormInput } from "./types";

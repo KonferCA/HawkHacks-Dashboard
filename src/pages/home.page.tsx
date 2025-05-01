@@ -1,11 +1,14 @@
 import { GoldenHawk, IpadKidHawks } from "@/assets";
 import { toaster } from "@/components/ui/toaster";
+import { useApplications } from "@/hooks/use-applications";
 import { useAuth } from "@/providers";
+import { paths } from "@/providers/RoutesProvider/data";
 import { withdrawRSVP } from "@/services/firebase/rsvp";
 import { Button } from "@chakra-ui/react";
 import { Accordion, Card, Modal, PageWrapper, SocialIcons } from "@components";
 import { faqs, importantDateTimes, sponsors } from "@data";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ImportantInfoBlocks = importantDateTimes.map((importantDateTime, i) => {
 	const entries = Object.entries(importantDateTime.events);
@@ -44,9 +47,11 @@ const Sponsors = sponsors.map((sponsor, i) => {
 });
 
 const HomePage = () => {
-	const { currentUser, logout } = useAuth();
+	const { logout } = useAuth();
 	const [disableAllActions, setDisableAllActions] = useState(false);
 	const [openDismissRSVPWarning, setOpenWithdrawRSVP] = useState(false);
+	const { deadlines } = useApplications();
+	const navigate = useNavigate();
 
 	const withdraw = async () => {
 		setDisableAllActions(true);
@@ -102,16 +107,29 @@ const HomePage = () => {
 						</div>
 					</Card>
 
-					<Card title="RSVP Status" className="xl:col-span-5">
-						<span className="flex flex-col gap-2">
-							<p className="text-lg">
-								RSVP status:{" "}
-								<span className="font-bold">
-									{currentUser?.rsvpVerified ? "RSVP'd" : "Not RSVP'd"}
-									<span className="capitalize">{` (${currentUser?.type})`}</span>
-								</span>
-							</p>
-						</span>
+					<Card title="Applications" className="xl:col-span-5">
+						{deadlines.inRange && (
+							<div>
+								<p>Applications for SpurHacks 2025 are open now!</p>
+								<Button
+									onClick={() => navigate(paths.apply)}
+									size="lg"
+									className="mt-2"
+								>
+									Apply Now
+								</Button>
+							</div>
+						)}
+						{deadlines.beforeStart && (
+							<div>
+								<p>Applications for SpurHacks 2025 open on May 5, 2025.</p>
+							</div>
+						)}
+						{deadlines.afterClose && (
+							<div>
+								<p>Applications have now closed for SpurHacks 2025.</p>
+							</div>
+						)}
 					</Card>
 
 					<Card title="Important Information" className="infos xl:col-span-5">

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
-import { NotFoundPage } from "./NotFound.page";
+import { NotFoundPage } from "@/pages/miscellaneous/not-found.page";
 
 describe("NotFoundPage", () => {
 	// Wrap NotFoundPage in BrowserRouter to ensure the necessary router context for Link

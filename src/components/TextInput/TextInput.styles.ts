@@ -4,13 +4,18 @@ import { twMerge } from "tailwind-merge";
 
 const textInputStyles = cva(
 	[
-		"block w-full py-2 px-3 bg-gray-50 text-gray-900 placeholder:text-sageGray", // base
+		"block w-full py-2 px-3 text-gray-900 placeholder:text-sageGray", // base
 		"focus:ring-2 focus:ring-inset focus:ring-[#00848C]", // focus styles
 	],
 	{
 		variants: {
 			invalid: {
 				true: "text-red-500 ring-red-500 ring-2 placeholder:text-red-300 focus:ring-red-500",
+			},
+			background: {
+				default: "bg-gray-50",
+				transparent: "bg-white/20",
+				none: "",
 			},
 		},
 		defaultVariants: {
@@ -28,7 +33,7 @@ export function getTextInputStyles(
 }
 
 export const getTextInputLabelStyles = cva(
-	"block font-medium leading-5 text-charcoalBlack text-md",
+	"block font-medium leading-5 text-white text-md",
 	{
 		variants: {
 			srLabel: {

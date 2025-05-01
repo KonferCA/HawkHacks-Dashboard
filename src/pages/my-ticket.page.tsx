@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { FiDownload } from "react-icons/fi";
 import { Navigate } from "react-router-dom";
 
-export const TicketPage = () => {
+export const MyTicketPage = () => {
 	const functions = getFunctions();
 	const { currentUser } = useAuth();
 	const { applications } = useApplications();

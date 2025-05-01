@@ -2,7 +2,8 @@ import { useApplications } from "@/hooks/use-applications";
 import { useUser } from "@/providers";
 import { type FC, useMemo } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import type { AccessControlProps } from "./types";
+import type { AccessControlContext, AccessControlProps } from "./types";
+import { Redirect } from "../redirect";
 
 /**
  * AccessControl component provides route protection based on user authentication and authorization.
@@ -11,34 +12,57 @@ import type { AccessControlProps } from "./types";
  *
  * @param accessCheck - Function or array of functions that determine if user has access to the route.
  *                      If an array is provided, all functions must return true for access to be granted.
- * @param redirectTo - Path to redirect to if access check fails
- * @param withPageWrapper - Whether to wrap the route content in a PageWrapper component
+ * @param fallbackRedirect - Path to redirect to if access check fails but doesn't specify a redirect
  */
 export const AccessControl: FC<AccessControlProps> = ({
 	accessCheck,
-	redirectTo,
+	fallbackRedirect = "/not-found",
 }) => {
 	// Get current user and application data from context
 	const { user } = useUser();
-	const { applications } = useApplications();
-	const canAccess = useMemo(() => {
+	const applicationsCtx = useApplications();
+	const accessOpts = useMemo(() => {
 		// If no access check is provided, allow access
 		if (typeof accessCheck === "undefined") {
-			return true;
+			return { allow: true };
 		}
 
-		// If a single function is provided, use it
-		if (typeof accessCheck === "function") {
-			return accessCheck({ user, applications });
-		}
+		const ctx: AccessControlContext = {
+			user,
+			applicationsCtx,
+		};
 
-		// If an array of functions is provided, all must pass
-		return accessCheck.every((check) => check({ user, applications }));
-	}, [user, applications, accessCheck]);
+		try {
+			// If a single function is provided, use it
+			if (typeof accessCheck === "function") {
+				return { allow: accessCheck(ctx) };
+			}
+			if (Array.isArray(accessCheck)) {
+				// If an array of functions is provided, all must pass
+				return {
+					allow: accessCheck.every((check) => check(ctx)),
+				};
+			}
+			throw new Error(
+				"Provided access check is not a function nor an array of functions.",
+			);
+		} catch (e) {
+			if (e instanceof Redirect) {
+				return { allow: false, redirect: { to: e.to, ...e.opts } };
+			}
+			// Throw the error if is not a redirect
+			throw e;
+		}
+	}, [user, applicationsCtx, accessCheck]);
 
 	// Check if user meets access requirements, redirect if they don't
-	if (!canAccess) {
-		return <Navigate to={redirectTo ?? "/not-found"} />;
+	if (!accessOpts.allow) {
+		return (
+			<Navigate
+				to={accessOpts.redirect?.to ?? fallbackRedirect}
+				replace={accessOpts.redirect?.replace}
+			/>
+		);
 	}
 
 	return <Outlet />;

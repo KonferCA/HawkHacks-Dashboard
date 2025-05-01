@@ -53,8 +53,6 @@ export { Steps } from "./Steps/Steps";
  */
 export { LoadingAnimation } from "./LoadingAnimation";
 
-export { PhoneInput } from "./PhoneInput/PhoneInput";
-
 /*
  *
  * @component Card

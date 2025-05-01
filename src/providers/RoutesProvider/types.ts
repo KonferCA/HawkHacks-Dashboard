@@ -1,30 +1,8 @@
 import type { AccessControlFn } from "@/navigation/AccessControl/types";
 import type { RouteObject } from "react-router-dom";
+import type { paths } from "./data";
 
-/**
- * Defines all application routes as URL paths
- * Used for consistent route references throughout the application
- */
-export interface PathObject {
-	admin: string;
-	adminViewTicket: string;
-	adminManageEvents: string;
-	notFound: string;
-	login: string;
-	home: string;
-	verifyEmail: string;
-	schedule: string;
-	networking: string;
-	myTicket: string;
-	application: string;
-	submitted: string;
-	verifyRSVP: string;
-	myTeam: string;
-	joinTeam: string;
-	myApp: string;
-	ticket: string;
-	perks: string;
-}
+export type Paths = typeof paths;
 
 /**
  * Defines the page header information for each route
@@ -40,7 +18,6 @@ export interface HeaderInfo {
 export interface RoutesContextValue {
 	routes: RouteConfig[]; // Routes configured for React Router
 	loadingRoutes: boolean; // Whether routes are currently loading
-	refreshRoutes: () => void; // Function to trigger route refresh
 }
 
 /**
@@ -48,7 +25,7 @@ export interface RoutesContextValue {
  */
 export type RouteConfig = RouteObject & {
 	withPageWrapper?: boolean; // Whether to wrap route with PageWrapper
-	redirectTo?: string; // Where to redirect if access denied
+	fallbackRedirect?: string; // Where to redirect if access denied
 	accessCheck?: AccessControlFn | AccessControlFn[]; // Function or array of functions to check access permission
 	children?: RouteConfig[]; // Nested routes
 };

@@ -7,5 +7,4 @@ import type { RoutesContextValue } from "./types";
 export const RoutesContext = createContext<RoutesContextValue>({
 	routes: [],
 	loadingRoutes: true,
-	refreshRoutes: () => {},
 });

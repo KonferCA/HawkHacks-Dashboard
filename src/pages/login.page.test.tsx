@@ -1,7 +1,7 @@
 import { mockUseAuth } from "@mocks/providers";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { LoginPage } from "./Login.page";
+import { LoginPage } from "@/pages/login.page";
 
 vi.mock("@providers");
 

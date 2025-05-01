@@ -24,7 +24,7 @@ if (!rootElement) {
 
 ReactDOM.createRoot(rootElement).render(
 	<React.StrictMode>
-		<Provider>
+		<Provider forcedTheme="light">
 			<QueryClientProvider client={queryClient}>
 				<Toaster />
 				<AuthProvider>
