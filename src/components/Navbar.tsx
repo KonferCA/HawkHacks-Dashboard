@@ -11,11 +11,19 @@ import {
 	TicketIcon,
 	UserGroupIcon,
 } from "@heroicons/react/24/outline";
+import {
+	CalendarDaysIcon as CalendarDaysIconSolid,
+	CodeBracketIcon as CodeBracketIconSolid,
+	HomeIcon as HomeIconSolid,
+	ShareIcon as ShareIconSolid,
+	TicketIcon as TicketIconSolid,
+	UserGroupIcon as UserGroupIconSolid,
+} from "@heroicons/react/24/solid";
 import Hamburger from "hamburger-react";
 import { useEffect, useMemo, useState } from "react";
 import { FiLogOut, FiMapPin } from "react-icons/fi";
 import { RiDiscordLine } from "react-icons/ri";
-import { RxStar } from "react-icons/rx";
+import { RxStar, RxStarFilled } from "react-icons/rx";
 import { Link, useLocation } from "react-router-dom";
 
 export const Navbar = () => {
@@ -46,30 +54,37 @@ export const Navbar = () => {
 		[paths.home]: {
 			label: "Home",
 			Icon: HomeIcon,
+			ActiveIcon: HomeIconSolid,
 		},
 		[paths.schedule]: {
 			label: "Schedule",
 			Icon: CalendarDaysIcon,
+			ActiveIcon: CalendarDaysIconSolid,
 		},
 		[paths.networking]: {
 			label: "Networking",
 			Icon: ShareIcon,
+			ActiveIcon: ShareIconSolid,
 		},
 		[paths.myTicket]: {
 			label: "My Ticket",
 			Icon: TicketIcon,
+			ActiveIcon: TicketIconSolid,
 		},
 		[paths.application]: {
 			label: "Application",
 			Icon: CodeBracketIcon,
+			ActiveIcon: CodeBracketIconSolid,
 		},
 		[paths.myTeam]: {
 			label: "My Team",
 			Icon: UserGroupIcon,
+			ActiveIcon: UserGroupIconSolid,
 		},
 		[paths.perks]: {
 			label: "Perks",
 			Icon: RxStar,
+			ActiveIcon: RxStarFilled,
 		},
 	};
 
@@ -99,7 +114,8 @@ export const Navbar = () => {
 		return availableRoutes
 			.filter(({ path }) => !!navItems[path as string])
 			.map(({ path }) => {
-				const { label, Icon } = navItems[path as string];
+				const { label, Icon, ActiveIcon } = navItems[path as string];
+				const isActive = location.pathname === path;
 				if (
 					(path === paths.myTeam && !window.localStorage.getItem(path)) ||
 					(path === paths.myTicket && !window.localStorage.getItem(path)) ||
@@ -110,10 +126,13 @@ export const Navbar = () => {
 							<li className="p-4 hover:bg-slate-100 duration-300 transition-colors rounded-md w-full hover:text-black cursor-pointer flex items-center justify-start gap-2">
 								{isMobile ? (
 									<>
-										<Icon className="w-4 h-4" />
+										{isActive ? (
+											<ActiveIcon className="w-3 h-3" />
+										) : (
+											<Icon className="w-3 h-3" />
+										)}
 										<span className="relative">
 											{label}
-
 											<span className="absolute flex h-2 w-2 top-0 right-0 translate-x-full">
 												<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
 												<span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500" />
@@ -122,9 +141,13 @@ export const Navbar = () => {
 									</>
 								) : (
 									<>
-										<Icon className="w-8 h-8" />
+										{isActive ? (
+											<ActiveIcon className="w-5 h-5" />
+										) : (
+											<Icon className="w-5 h-5" />
+										)}
 										<span className="relative hidden md:flex">
-											{label}
+											{label} {/* my team and perks */}
 											<span className="absolute flex h-2 w-2 top-0 right-0 translate-x-full">
 												<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
 												<span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500" />
@@ -142,13 +165,23 @@ export const Navbar = () => {
 						<li className="p-4 hover:bg-slate-100 duration-300 transition-colors rounded-md w-full hover:text-black cursor-pointer flex items-center justify-start gap-2">
 							{isMobile ? (
 								<>
-									<Icon className="w-4 h-4" />
+									{isActive ? (
+										<ActiveIcon className="w-3 h-3" />
+									) : (
+										<Icon className="w-3 h-3" />
+									)}
 									<span>{label}</span>
 								</>
 							) : (
 								<>
-									<Icon className="w-8 h-8" />
-									<span className="hidden md:flex">{label}</span>
+									{isActive ? (
+										<ActiveIcon className="w-5 h-5" />
+									) : (
+										<Icon className="w-5 h-5" />
+									)}
+									<span className="hidden md:flex">
+										{label} {/* everything else */}
+									</span>
 								</>
 							)}
 						</li>
@@ -269,7 +302,7 @@ export const Navbar = () => {
 								className="w-full"
 							>
 								<li className="p-4 hover:bg-slate-100 duration-300 transition-colors rounded-md w-full hover:text-black cursor-pointer flex items-center justify-start gap-2">
-									<FiMapPin size={32} />
+									<FiMapPin className="w-5 h-5" />
 									Location
 								</li>
 							</a>
@@ -281,7 +314,7 @@ export const Navbar = () => {
 								className="w-full"
 							>
 								<li className="p-4 hover:bg-slate-100 duration-300 transition-colors rounded-md w-full hover:text-black cursor-pointer flex items-center justify-start gap-2">
-									<RiDiscordLine size={32} />
+									<RiDiscordLine className="w-5 h-5" />
 									Discord Support
 								</li>
 							</a>
@@ -292,7 +325,7 @@ export const Navbar = () => {
 								type="button"
 								onClick={logout}
 							>
-								<FiLogOut size={32} />
+								<FiLogOut className="w-5 h-5" />
 								<span className="hidden md:flex">Sign out</span>
 							</button>
 						)}
