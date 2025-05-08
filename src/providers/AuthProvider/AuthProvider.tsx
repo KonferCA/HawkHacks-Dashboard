@@ -16,7 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
-// Local imports
+import { FirebaseError } from "firebase/app";
 import { AuthContext } from "./context";
 import type { ProviderName, UserWithClaims } from "./types";
 import {
@@ -43,8 +43,10 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
 		try {
 			const { user } = await signInWithEmailAndPassword(auth, email, password);
 			await completeLoginProcess(user);
-		} catch (error: any) {
-			toaster.error(getNotificationByAuthErrCode(error.code));
+		} catch (error) {
+			if (error instanceof FirebaseError) {
+				toaster.error(getNotificationByAuthErrCode(error.code));
+			}
 		}
 	};
 
@@ -69,8 +71,10 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
 			);
 			await sendEmailVerification(user);
 			await completeLoginProcess(user);
-		} catch (error: any) {
-			toaster.error(getNotificationByAuthErrCode(error.code));
+		} catch (error) {
+			if (error instanceof FirebaseError) {
+				toaster.error(getNotificationByAuthErrCode(error.code));
+			}
 		}
 	};
 
@@ -141,9 +145,12 @@ export const AuthProvider = ({ children }: { children?: React.ReactNode }) => {
 					}
 				}
 			}
-		} catch (error: any) {
+		} catch (error) {
 			console.error(error);
-			if (error.code === "auth/account-exists-with-different-credential") {
+			if (
+				error instanceof FirebaseError &&
+				error.code === "auth/account-exists-with-different-credential"
+			) {
 				toaster.error({
 					title: "Oops! Something went wrong.",
 					description:

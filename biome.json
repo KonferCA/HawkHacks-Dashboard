@@ -21,8 +21,7 @@
 		"rules": {
 			"recommended": true,
 			"suspicious": {
-				"noArrayIndexKey": "off",
-				"noExplicitAny": "off"
+				"noArrayIndexKey": "off"
 			},
 			"correctness": {
 				"useExhaustiveDependencies": "off"
