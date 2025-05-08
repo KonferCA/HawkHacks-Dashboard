@@ -1,3 +1,4 @@
+import { Alert } from "@chakra-ui/react";
 import { InformationCircleIcon } from "@heroicons/react/20/solid";
 import type { FC } from "react";
 
@@ -7,18 +8,14 @@ interface InfoCalloutProps {
 
 export const InfoCallout: FC<InfoCalloutProps> = ({ text }) => {
 	return (
-		<div className="rounded-md bg-blue-50 p-4">
-			<div className="flex">
-				<div className="flex-shrink-0">
-					<InformationCircleIcon
-						className="h-5 w-5 text-blue-400"
-						aria-hidden="true"
-					/>
-				</div>
-				<div className="ml-3 flex-1 md:flex md:justify-between">
-					<p className="text-sm text-blue-700">{text}</p>
-				</div>
-			</div>
-		</div>
+		<Alert.Root status="info" bg="blue.50" p={4}>
+			<Alert.Indicator>
+				<InformationCircleIcon
+					className="h-5 w-5 text-blue-400"
+					aria-hidden="true"
+				/>
+			</Alert.Indicator>
+			<Alert.Title color="blue.600">{text}</Alert.Title>
+		</Alert.Root>
 	);
 };
