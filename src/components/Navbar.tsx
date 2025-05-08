@@ -1,7 +1,6 @@
 import { Logo } from "@/assets";
 import { useApplications } from "@/hooks/use-applications";
-import { useAuth } from "@/providers";
-import { useRouteDefinitions, useUser } from "@/providers";
+import { useAuth, useRouteDefinitions, useUser } from "@/providers";
 import { paths } from "@/providers/RoutesProvider/data";
 import {
 	CalendarDaysIcon,
@@ -93,9 +92,6 @@ export const Navbar = () => {
 	const updateNavbarState = () => {
 		setIsMobile(window.innerWidth <= 768);
 	};
-
-	const firstName =
-		applications[0]?.firstName || user?.displayName?.split(" ")[0] || "Unknown";
 
 	useEffect(() => {
 		window.addEventListener("resize", updateNavbarState);
@@ -283,10 +279,6 @@ export const Navbar = () => {
 								HawkHacks
 							</span>
 						</Link>
-					</div>
-
-					<div className="flex items-left justify-left p-4">
-						Welcome, <span className="ml-1 font-bold"> {firstName} </span> !
 					</div>
 
 					<aside className="flex flex-col items-start justify-between h-[83%] overflow-y-auto">
