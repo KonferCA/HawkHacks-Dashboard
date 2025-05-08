@@ -1,5 +1,6 @@
 import { Logo } from "@/assets";
 import { useApplications } from "@/hooks/use-applications";
+import { useHackathonDates } from "@/hooks/use-hackathon-dates";
 import { useAuth, useRouteDefinitions, useUser } from "@/providers";
 import { paths } from "@/providers/RoutesProvider/data";
 import {
@@ -32,6 +33,8 @@ export const Navbar = () => {
 	const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 	const { user } = useUser();
 	const { applications } = useApplications();
+	const { dates } = useHackathonDates("2025");
+	console.log("dates", dates);
 	const routes = useRouteDefinitions();
 
 	const availableRoutes = useMemo(() => {
