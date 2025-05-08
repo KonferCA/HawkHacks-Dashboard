@@ -93,9 +93,6 @@ export const Navbar = () => {
 		setIsMobile(window.innerWidth <= 768);
 	};
 
-	const firstName =
-		applications[0]?.firstName || user?.displayName?.split(" ")[0] || "Unknown";
-
 	useEffect(() => {
 		window.addEventListener("resize", updateNavbarState);
 		return () => {
