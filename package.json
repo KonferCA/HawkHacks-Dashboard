@@ -11,7 +11,7 @@
 		"format": "biome check --linter-enabled=false --write .",
 		"test": "vitest",
 		"test:ci": "vitest run --coverage",
-		"typecheck": "tsc --noEmit",
+		"typecheck": "tsc -b",
 		"emulators": "firebase emulators:start --project hawkhacks-dashboard --import ./data",
 		"setup": "firebase init emulators",
 		"firebase": "firebase",

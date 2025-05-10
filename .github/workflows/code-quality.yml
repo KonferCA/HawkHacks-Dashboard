@@ -34,4 +34,4 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Run typecheck
-        run: pnpm tsc
+        run: pnpm typecheck
