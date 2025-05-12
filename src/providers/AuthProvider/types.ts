@@ -1,18 +1,22 @@
 import type { User } from "firebase/auth";
 
-export type UserType =
+export type UserRole =
 	| "hacker"
 	| "mentor"
-	| "volunteer"
+	| "volunteer.t1"
+	| "volunteer.t2"
 	| "speaker"
 	| "sponsor"
-	| "guest";
+	| "guest"	
+	| "admin"
+	| "vip";
+
 
 export interface UserWithClaims extends User {
 	hawkAdmin: boolean;
 	phoneVerified: boolean;
 	rsvpVerified: boolean;
-	type: UserType;
+	type: UserRole;
 }
 
 export type ProviderName = "github" | "google" | "apple";

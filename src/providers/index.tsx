@@ -1,7 +1,7 @@
 export { AuthProvider, useUser, useAuth } from "./AuthProvider";
 export type {
 	UserWithClaims,
-	UserType,
+	UserRole,
 	ProviderName,
 	AuthMethod,
 	AuthContextValue,
