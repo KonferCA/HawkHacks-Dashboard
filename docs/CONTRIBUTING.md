@@ -33,7 +33,7 @@
   </tr>
   <tr>
     <td>Node.js</td>
-    <td>v18 or higher</td>
+    <td>v22 or higher</td>
     <td><a href="https://nodejs.org/">Installation Guide</a></td>
   </tr>
   <tr>
@@ -94,15 +94,6 @@ firebase use --add
 pnpm dev # This will start the vite development server + Firebase emulators
 ```
 
-> Run Firebase Functions Locally (in a separate terminal)
-
-```sh
-cd functions
-pnpm i
-pnpm build:watch  # Build TypeScript in watch mode
-pnpm serve        # Start functions emulator
-```
-
 > Build for Production (Optional)
   
 ```sh
@@ -119,7 +110,6 @@ pnpm preview  # To preview the production build
 | `pnpm build` | Build for production |
 | `pnpm preview` | Preview production build |
 | `firebase emulators:start` | Start Firebase emulators (alternative) |
-| `cd functions && pnpm build:watch` | Build Firebase functions in watch mode |
 | `cd functions && pnpm serve` | Start Firebase functions emulator |
 | `firebase deploy` | Deploy to Firebase (requires permissions) |
 | `firebase deploy --only functions` | Deploy only Firebase functions |
