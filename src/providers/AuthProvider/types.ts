@@ -10,8 +10,7 @@ export type UserRole =
 	| "guest"
 	| "admin"
 	| "vip";
-
-
+	
 export interface UserWithClaims extends User {
 	hawkAdmin: boolean;
 	phoneVerified: boolean;
