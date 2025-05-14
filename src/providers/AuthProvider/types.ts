@@ -3,6 +3,7 @@ import type { User } from "firebase/auth";
 export type UserRole =
 	| "hacker"
 	| "mentor"
+	| "volunteer"
 	| "volunteer.t1"
 	| "volunteer.t2"
 	| "speaker"
