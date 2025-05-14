@@ -7,7 +7,7 @@ export type UserRole =
 	| "volunteer.t2"
 	| "speaker"
 	| "sponsor"
-	| "guest"	
+	| "guest"
 	| "admin"
 	| "vip";
 
