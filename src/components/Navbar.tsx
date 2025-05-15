@@ -34,7 +34,6 @@ export const Navbar = () => {
 	const { user } = useUser();
 	const { applications } = useApplications();
 	const { hackathonDates } = useHackathonDates();
-	console.log("dates", hackathonDates);
 	const routes = useRouteDefinitions();
 
 	const availableRoutes = useMemo(() => {
