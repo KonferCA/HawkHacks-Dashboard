@@ -33,8 +33,8 @@ export const Navbar = () => {
 	const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 	const { user } = useUser();
 	const { applications } = useApplications();
-	const { dates } = useHackathonDates("2025");
-	console.log("dates", dates);
+	const { hackathonDates } = useHackathonDates();
+	console.log("dates", hackathonDates);
 	const routes = useRouteDefinitions();
 
 	const availableRoutes = useMemo(() => {
@@ -42,10 +42,10 @@ export const Navbar = () => {
 			// Default to include in navbar if no access check defined
 			if (typeof route.accessCheck === "undefined") return true;
 			if (typeof route.accessCheck === "function")
-				return route.accessCheck({ user, applications });
+				return route.accessCheck({ user, applications, hackathonDates });
 			if (Array.isArray(route.accessCheck))
 				return route.accessCheck.every((check) =>
-					check({ user, applications }),
+					check({ user, applications, hackathonDates }),
 				);
 			// Default to exclude if access check type is not recognized
 			return false;

@@ -1,9 +1,9 @@
 import { useApplications } from "@/hooks/use-applications";
+import { useHackathonDates } from "@/hooks/use-hackathon-dates";
 import { useUser } from "@/providers";
 import { type FC, useMemo } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import type { AccessControlProps } from "./types";
-
 /**
  * AccessControl component provides route protection based on user authentication and authorization.
  * It acts as a wrapper for routes that need access control, managing both authentication checks
@@ -21,6 +21,7 @@ export const AccessControl: FC<AccessControlProps> = ({
 	// Get current user and application data from context
 	const { user } = useUser();
 	const { applications } = useApplications();
+	const { hackathonDates } = useHackathonDates();
 	const canAccess = useMemo(() => {
 		// If no access check is provided, allow access
 		if (typeof accessCheck === "undefined") {
@@ -29,11 +30,11 @@ export const AccessControl: FC<AccessControlProps> = ({
 
 		// If a single function is provided, use it
 		if (typeof accessCheck === "function") {
-			return accessCheck({ user, applications });
+			return accessCheck({ user, applications,hackathonDates });
 		}
 
 		// If an array of functions is provided, all must pass
-		return accessCheck.every((check) => check({ user, applications }));
+		return accessCheck.every((check) => check({ user, applications, hackathonDates }));
 	}, [user, applications, accessCheck]);
 
 	// Check if user meets access requirements, redirect if they don't

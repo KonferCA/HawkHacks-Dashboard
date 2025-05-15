@@ -1,5 +1,6 @@
 import type { ApplicationData } from "@/components/forms/types";
 import type { UserWithClaims } from "@/providers";
+import { HackathonDates } from "@/services/firebase/hackathon";
 
 /**
  * Context object provided to access control functions
@@ -8,6 +9,7 @@ import type { UserWithClaims } from "@/providers";
 export interface AccessControlContext {
 	user: UserWithClaims | null;
 	applications: ApplicationData[];
+	hackathonDates: HackathonDates | null;
 }
 
 /**
