@@ -6,12 +6,10 @@ import {
 } from "firebase-functions/https";
 import { ZodError } from "zod";
 
-type Response = Record<string, unknown>;
-
 type Handler = (
 	req: CallableRequest<unknown>,
 	res: CallableResponse<unknown> | undefined,
-) => Promise<Response> | Response;
+) => void;
 
 /**
  * Wrapper for Firebase's onCall function with safer typing

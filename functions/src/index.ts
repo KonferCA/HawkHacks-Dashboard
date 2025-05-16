@@ -294,7 +294,7 @@ export const updateSocials = onCallCustom(async (req) => {
  */
 export const verifyGitHubEmail = onCallCustom(async (req) => {
 	if (!req.auth) {
-		return new HttpsError("permission-denied", "Not authenticated");
+		throw new HttpsError("permission-denied", "Not authenticated");
 	}
 
 	const data = z
@@ -320,7 +320,7 @@ export const verifyGitHubEmail = onCallCustom(async (req) => {
 		if (res.status === 200) {
 			const payloadEmail = res.data.filter((data) => data.email === email)[0];
 			if (!payloadEmail)
-				return new HttpsError("aborted", "Fail to match email in payload");
+				throw new HttpsError("aborted", "Fail to match email in payload");
 
 			// since we got the email data we need, we check if its verified
 			getAuth().updateUser(req.auth.uid, {
@@ -328,9 +328,9 @@ export const verifyGitHubEmail = onCallCustom(async (req) => {
 			});
 			return payloadEmail.verified;
 		}
-		return new HttpsError("unavailable", "Service unavailable");
+		throw new HttpsError("unavailable", "Service unavailable");
 	} catch {
-		return new HttpsError("internal", "Failed to verify email");
+		throw new HttpsError("internal", "Failed to verify email");
 	}
 });
 
