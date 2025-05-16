@@ -7,7 +7,7 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": ["./functions/lib", "./data"]
+		"ignore": ["./functions/lib", "./data", "./dist"]
 	},
 	"formatter": {
 		"enabled": true,

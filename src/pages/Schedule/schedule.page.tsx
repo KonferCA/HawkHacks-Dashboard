@@ -9,6 +9,7 @@ import {
 	ScheduleTabTrigger,
 	format12HourTime,
 } from "@/components/Schedule/Schedule";
+import { Box, useBreakpointValue } from "@chakra-ui/react";
 
 interface ScheduleEntryProps extends Omit<ScheduleGridItemProps, "children"> {
 	title: string;
@@ -20,14 +21,21 @@ function ScheduleEntry(props: ScheduleEntryProps) {
 		<ScheduleGridItem {...props}>
 			<strong>{props.title}</strong>
 			<span>{props.location}</span>
-			<span>
+			<Box textWrap="wrap">
 				{format12HourTime(props.startTime)} - {format12HourTime(props.endTime)}
-			</span>
+			</Box>
 		</ScheduleGridItem>
 	);
 }
 
 const schedule = [
+	{
+		startDate: new Date("2025-05-16T09:30:00"),
+		endTime: new Date("2025-05-16T11:30:00"),
+		color: "teal",
+		title: "Registration",
+		location: "Location",
+	},
 	{
 		startDate: new Date("2025-07-25T09:30:00"),
 		endTime: new Date("2025-07-25T11:30:00"),
@@ -94,8 +102,8 @@ const schedule = [
 ];
 
 export const SchedulePage: React.FC = () => {
-	const groupedSchedule = schedule
-		.map((event) => ({
+	const groupedSchedule = schedule.reduce((acc, event) => {
+		const entry = {
 			title: event.title,
 			location: event.location,
 			startTime:
@@ -103,35 +111,56 @@ export const SchedulePage: React.FC = () => {
 			endTime:
 				`${event.endTime.getHours()}:${event.endTime.getMinutes()}` as const,
 			color: event.color,
-			day: event.startDate.toLocaleDateString("en-US", {
-				day: "numeric",
-				month: "long",
-				weekday: "long",
-			}),
-		}))
-		.reduce((acc, entry) => {
-			const dayArray = acc.get(entry.day) ?? [];
-			acc.set(entry.day, dayArray);
-			dayArray.push(entry);
-			return acc;
-		}, new Map<string, ScheduleEntryProps[]>());
+		};
+
+		// 'YYYY-MM-DD'
+		const dayKey = event.startDate.toLocaleDateString("en-US", {
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+		});
+
+		const dayMapEntry = acc.get(dayKey) ?? {
+			dayDate: event.startDate,
+			entries: [] as ScheduleEntryProps[],
+		};
+
+		acc.set(dayKey, dayMapEntry);
+		dayMapEntry.entries.push(entry);
+		return acc;
+	}, new Map<string, { dayDate: Date; entries: ScheduleEntryProps[] }>());
 
 	const scheduleEntries = Array.from(groupedSchedule.entries());
 
+	const breakpoint = useBreakpointValue(
+		{ base: "base", md: "md" },
+		{ ssr: false },
+	);
+
 	return (
-		<PageWrapper>
+		<PageWrapper variant={breakpoint === "base" ? "full-height" : "default"}>
 			<ScheduleRoot defaultValue={scheduleEntries[0][0]}>
 				<ScheduleTabList>
-					{scheduleEntries.map(([day]) => (
-						<ScheduleTabTrigger key={day} value={day}>
-							{day}
+					{scheduleEntries.map(([dayKey, { dayDate }]) => (
+						<ScheduleTabTrigger key={dayKey} value={dayKey}>
+							{breakpoint === "base"
+								? // 'Saturday'
+									dayDate.toLocaleDateString("en-US", {
+										weekday: "long",
+									})
+								: // 'Saturday, July 25'
+									dayDate.toLocaleDateString("en-US", {
+										weekday: "long",
+										month: "long",
+										day: "numeric",
+									})}
 						</ScheduleTabTrigger>
 					))}
 				</ScheduleTabList>
 
-				{scheduleEntries.map(([day, entries]) => (
-					<ScheduleTabContent key={day} value={day}>
-						<ScheduleGrid>
+				{scheduleEntries.map(([dayKey, { dayDate, entries }]) => (
+					<ScheduleTabContent key={dayKey} value={dayKey}>
+						<ScheduleGrid dayDate={dayDate}>
 							{entries.map((entry, idx) => (
 								<ScheduleEntry
 									key={entry.title}
