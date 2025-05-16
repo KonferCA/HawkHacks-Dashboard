@@ -189,6 +189,7 @@ function ScheduleCurrentTimeLine({ dayDate }: { dayDate: Date }) {
 	return (
 		<Box
 			position="absolute"
+			// Swaps between horizontal and vertical lines based on the breakpoint
 			top={{ base: `${progressPercentage}%`, md: "0" }}
 			left={{ base: "0", md: `${progressPercentage}%` }}
 			height={{ base: "auto", md: "100%" }}
