@@ -249,6 +249,7 @@ export interface ScheduleGridItemProps {
 	startTime: TimeType;
 	endTime: TimeType;
 	color: string;
+	onClick: () => void;
 	children: React.ReactNode;
 }
 
@@ -257,6 +258,7 @@ export function ScheduleGridItem({
 	startTime,
 	endTime,
 	color = "teal",
+	onClick,
 	children,
 }: ScheduleGridItemProps) {
 	const itemRef = useRef<HTMLDivElement>(null);
@@ -278,6 +280,9 @@ export function ScheduleGridItem({
 
 	return (
 		<GridItem
+			as="button"
+			textAlign="left"
+			onClick={onClick}
 			ref={itemRef}
 			colStart={{ md: scheduleColumnHelper(startTime) }}
 			colEnd={{ md: scheduleColumnHelper(endTime) }}
