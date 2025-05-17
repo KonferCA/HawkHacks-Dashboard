@@ -524,10 +524,6 @@ export const redeemItem = onCall(async (data: any, res) => {
 	return response(HttpStatus.OK, { data: events });
 });
 
-export function getHackathonDates() {
-	
-}
-
 export {
 	checkInvitation, createTeam, deleteTeam, getTeamByUser, getUserInvitations, inviteMember, isTeamNameAvailable, rejectInvitation, removeMembers, updateTeamName, validateTeamInvitation
 } from "./teams";
