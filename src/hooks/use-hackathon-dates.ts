@@ -9,29 +9,13 @@ import { useCallback } from "react";
 const CURRENT_HACKATHON_YEAR = "2025";
 
 export const useHackathonDates = () => {
-	const queryClient = useQueryClient();
-
-	const queryKey = ["hackathons", CURRENT_HACKATHON_YEAR];
 	const { data: hackathonDates = null, isLoading } = useQuery({
-		queryKey,
-		queryFn: async () => {
-			return await getHackathonDates(CURRENT_HACKATHON_YEAR);
-		},
-		enabled: !!CURRENT_HACKATHON_YEAR,
-		refetchOnWindowFocus: false,
-		staleTime: Number.POSITIVE_INFINITY, // application data only really changes after a year so there is no need to refetch 
+		queryKey: ["hackathons", CURRENT_HACKATHON_YEAR],
+		queryFn: () => getHackathonDates(CURRENT_HACKATHON_YEAR),
 	});
 
-	/**
-	 * Invalidates and refreshes the hackathon dates query
-	 */
-	const refreshHackathonDates = useCallback(() => {
-		return queryClient.invalidateQueries({ queryKey });
-	}, [queryClient, queryKey]);
-
 	return {
-		hackathonDates: hackathonDates, 
-		refreshHackathonDates,
+		hackathonDates: hackathonDates,
 		isLoading,
 	};
 };
