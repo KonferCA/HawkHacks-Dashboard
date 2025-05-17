@@ -5,6 +5,7 @@ import type { HeaderInfo, PathObject } from "./types";
  */
 export const paths: PathObject = {
 	admin: "/admin",
+	adminScan: "/admin/scan",
 	adminViewTicket: "/admin/ticket/:ticketId",
 	adminManageEvents: "/admin/manage",
 	notFound: "*",
