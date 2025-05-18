@@ -71,6 +71,12 @@ export function useQRCodeReader(videoDeviceId: string) {
 		return () => abortController.abort();
 	}, [decodedText, isDocumentVisible]);
 
+	useEffect(() => {
+		if (decodedText === null) return;
+		// Note: Vibrate is only supported in Chrome
+		window.navigator.vibrate?.(200);
+	}, [decodedText]);
+
 	function clearDecodedText() {
 		setDecodedText(null);
 	}
