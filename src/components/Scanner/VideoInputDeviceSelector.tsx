@@ -3,7 +3,7 @@ import { BrowserCodeReader } from "@zxing/browser";
 import { useEffect, useState } from "react";
 
 interface VideoInputDeviceSelectorProps {
-	onDeviceSelected: (deviceInfo: MediaDeviceInfo | null) => void;
+	onVideoDeviceIdSelected: (videoDeviceId: string | null) => void;
 }
 
 export function VideoInputDeviceSelector(props: VideoInputDeviceSelectorProps) {
@@ -45,7 +45,7 @@ export function VideoInputDeviceSelector(props: VideoInputDeviceSelectorProps) {
 		if (details.value === null) {
 			setSelectedDevice(null);
 			localStorage.removeItem("scannerDeviceId");
-			props.onDeviceSelected(null);
+			props.onVideoDeviceIdSelected(null);
 			return;
 		}
 
@@ -56,7 +56,7 @@ export function VideoInputDeviceSelector(props: VideoInputDeviceSelectorProps) {
 
 		localStorage.setItem("scannerDeviceId", deviceInfo.deviceId);
 		setSelectedDevice(deviceInfo);
-		props.onDeviceSelected(deviceInfo);
+		props.onVideoDeviceIdSelected(deviceInfo.deviceId);
 	}
 
 	useEffect(() => {
@@ -125,7 +125,7 @@ export function VideoInputDeviceSelector(props: VideoInputDeviceSelectorProps) {
 
 	return (
 		<RadioCard.Root onValueChange={onValueChange}>
-			<RadioCard.Label>Select device</RadioCard.Label>
+			<RadioCard.Label>Select video device</RadioCard.Label>
 			<VStack gap={1} p={1} align="stretch">
 				{videoInputDevices.map((device) => (
 					<RadioCard.Item key={device.deviceId} value={device.deviceId}>

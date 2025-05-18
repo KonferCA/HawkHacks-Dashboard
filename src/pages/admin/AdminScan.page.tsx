@@ -5,17 +5,22 @@ import { Alert, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 
 export const AdminScanPage = () => {
-	const hasMediaDevicesApi = !!navigator.mediaDevices;
-	const [selectedDevice, setSelectedDevice] = useState<MediaDeviceInfo | null>(
-		null,
-	);
+	const hasMediaDevicesApi =
+		"mediaDevices" in navigator && "getUserMedia" in navigator.mediaDevices;
+	const [selectedVideoDeviceId, setSelectedVideoDeviceId] = useState<
+		string | null
+	>(null);
 
 	return (
 		<PageWrapper>
 			{hasMediaDevicesApi ? (
 				<VStack gap="2" align="stretch">
-					<VideoInputDeviceSelector onDeviceSelected={setSelectedDevice} />
-					{selectedDevice && <QRCodeScanner deviceInfo={selectedDevice} />}
+					<VideoInputDeviceSelector
+						onVideoDeviceIdSelected={setSelectedVideoDeviceId}
+					/>
+					{selectedVideoDeviceId && (
+						<QRCodeScanner videoDeviceId={selectedVideoDeviceId} />
+					)}
 				</VStack>
 			) : (
 				<Alert.Root status="error">
