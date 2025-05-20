@@ -7,6 +7,7 @@ import type { RouteObject } from "react-router-dom";
  */
 export interface PathObject {
 	admin: string;
+	adminScan: string;
 	adminViewTicket: string;
 	adminManageEvents: string;
 	notFound: string;

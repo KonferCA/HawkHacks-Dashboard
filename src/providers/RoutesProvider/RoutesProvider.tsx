@@ -7,7 +7,6 @@ import { useApplications } from "@/hooks/use-applications";
 import { AccessControl } from "@/navigation/AccessControl/AccessControl";
 import { useAuth } from "@/providers";
 
-// Pages
 import {
 	AdminPage,
 	HomePage,
@@ -22,13 +21,13 @@ import {
 import { ApplicationPage } from "@/pages/Application/Application.page";
 import { JoinTeamPage } from "@/pages/JoinTeam.page";
 import { MyTeamPage } from "@/pages/MyTeam.page";
+import { AdminScanPage } from "@/pages/admin/AdminScan.page";
 import { AdminManageEventsPage } from "@/pages/admin/ManageEvents.page";
 import { AdminViewTicketPage } from "@/pages/admin/ViewTicket.page";
 import { PostSubmissionPage } from "@/pages/miscellaneous/PostSubmission.page";
 import { VerifyRSVP } from "@/pages/miscellaneous/VerifyRSVP.page";
 import { ViewTicketPage } from "@/pages/miscellaneous/ViewTicket.page";
 
-// Local imports
 import { hasVerifiedEmail, isAdmin, isAuthenticated } from "./accessChecks";
 import { RoutesContext } from "./context";
 import { paths } from "./data";
@@ -216,6 +215,12 @@ export const RoutesProvider: FC<ComponentProps> = () => {
 			{
 				path: paths.admin,
 				element: <AdminPage />,
+				accessCheck: [isAuthenticated, hasVerifiedEmail, isAdmin],
+				redirectTo: paths.home,
+			},
+			{
+				path: paths.adminScan,
+				element: <AdminScanPage />,
 				accessCheck: [isAuthenticated, hasVerifiedEmail, isAdmin],
 				redirectTo: paths.home,
 			},
