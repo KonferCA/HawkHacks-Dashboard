@@ -35,7 +35,6 @@ export interface HackerApplicationData {
 	agreedToMLHToCAndPrivacyPolicy: boolean;
 	agreedToReceiveEmailsFromMLH: boolean;
 	applicationStatus?: "pending" | "rejected" | "accepted";
-	accepted?: boolean;
 	referralSources: string[];
 	describeSalt: string;
 	generalResumeRef: string;
@@ -66,7 +65,10 @@ export interface VolunteerSpecificAppData {
 export type ApplicationData = HackerApplicationData &
 	HackerSpecificAppData &
 	MentorSpecificAppData &
-	VolunteerSpecificAppData;
+	VolunteerSpecificAppData &{
+		rsvp?: boolean;
+		applicationStatus: "pending" | "rejected" | "accepted";
+	};
 
 export type ApplicationInputKeys = keyof ApplicationData;
 
