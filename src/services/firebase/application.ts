@@ -76,9 +76,9 @@ export async function getUserApplications(uid: string) {
 	try {
 		const colRef = collection(firestore, APPLICATIONS_COLLECTION);
 		const q = query(
-			colRef, 
+			colRef,
 			where("applicantId", "==", uid),
-			orderBy("timestamp", "desc") //Sort by timestamp in descending order/ which means the most recent application will be first
+			orderBy("timestamp", "desc"), //Sort by timestamp in descending order/ which means the most recent application will be first
 		);
 		const snap = await getDocs(q);
 		const apps: ApplicationData[] = [];
