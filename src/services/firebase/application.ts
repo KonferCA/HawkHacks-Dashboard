@@ -8,6 +8,7 @@ import {
 	doc,
 	getDocs,
 	limit,
+	orderBy,
 	query,
 	setDoc,
 	where,
@@ -74,7 +75,11 @@ export async function submitApplication(data: ApplicationData, uid: string) {
 export async function getUserApplications(uid: string) {
 	try {
 		const colRef = collection(firestore, APPLICATIONS_COLLECTION);
-		const q = query(colRef, where("applicantId", "==", uid));
+		const q = query(
+			colRef, 
+			where("applicantId", "==", uid),
+			orderBy("timestamp", "desc") //Sort by timestamp in descending order/ which means the most recent application will be first
+		);
 		const snap = await getDocs(q);
 		const apps: ApplicationData[] = [];
 		snap.forEach((doc) => apps.push(doc.data() as ApplicationData));
