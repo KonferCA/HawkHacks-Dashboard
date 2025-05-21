@@ -31,10 +31,11 @@ export const useApplications = () => {
 		return queryClient.invalidateQueries({ queryKey });
 	}, [queryClient, queryKey]);
 
-	/** 
-     * Returns the most recent application
-     */
-	const mostRecentApplication = applications.length > 0 ? applications[0] : null;
+	/**
+	 * Returns the most recent application
+	 */
+	const mostRecentApplication =
+		applications.length > 0 ? applications[0] : null;
 
 	return {
 		mostRecentApplication,
